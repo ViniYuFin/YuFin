@@ -1,0 +1,3283 @@
+{
+  "lessons": [
+    {
+      "title": "História do dinheiro",
+      "description": "Descubra como o dinheiro evoluiu ao longo da história, desde o escambo até as criptomoedas",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre história do dinheiro",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender história do dinheiro na prática."
+      },
+      "gradeId": "6º Ano",
+      "module": 1,
+      "order": 1,
+      "difficulty": 1,
+      "estimatedTime": 15,
+      "bnccSkills": [
+        "EF06HI01",
+        "EF06MA01",
+        "EF06GE01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Família e finanças",
+      "description": "Entenda como as finanças funcionam dentro da família e como cada membro pode contribuir",
+      "type": "match",
+      "content": {
+        "pairs": [
+          {
+            "left": "Pai e Mãe",
+            "right": "Responsáveis pelo orçamento principal"
+          },
+          {
+            "left": "Filhos",
+            "right": "Podem ajudar economizando e aprendendo"
+          },
+          {
+            "left": "Avós",
+            "right": "Podem ensinar sobre poupança e história"
+          },
+          {
+            "left": "Tios",
+            "right": "Podem ajudar com conselhos financeiros"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 1,
+      "order": 2,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF06CI01",
+        "EF06MA01",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Necessidades vs desejos",
+      "description": "Aprenda a diferenciar o que é realmente necessário do que é apenas um desejo",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Necessidades Básicas",
+            "items": [
+              "Comida",
+              "Roupa",
+              "Moradia",
+              "Educação",
+              "Saúde"
+            ]
+          },
+          {
+            "name": "Desejos",
+            "items": [
+              "Videogame",
+              "Roupa de marca",
+              "Celular novo",
+              "Brinquedos",
+              "Doces"
+            ]
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 1,
+      "order": 3,
+      "difficulty": 2,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF06CI01",
+        "EF06MA01",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Adição e Subtração",
+      "description": "Pratique matemática básica com problemas financeiros do dia a dia",
+      "type": "math-problems",
+      "content": {
+        "problems": [
+          {
+            "problem": "João tem R$ 25,00 e gasta R$ 8,00 no lanche. Quanto ele ainda tem?",
+            "solution": 17,
+            "explanation": "25 - 8 = 17. João ainda tem R$ 17,00"
+          },
+          {
+            "problem": "Maria economizou R$ 15,00 na semana passada e R$ 20,00 nesta semana. Quanto ela economizou no total?",
+            "solution": 35,
+            "explanation": "15 + 20 = 35. Maria economizou R$ 35,00 no total"
+          },
+          {
+            "problem": "Pedro tinha R$ 50,00, gastou R$ 12,00 e depois ganhou R$ 5,00. Quanto ele tem agora?",
+            "solution": 43,
+            "explanation": "50 - 12 + 5 = 43. Pedro tem R$ 43,00 agora"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 2,
+      "order": 4,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06MA03"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Porcentagens simples",
+      "description": "Aprenda a calcular porcentagens básicas para entender descontos e aumentos",
+      "type": "input",
+      "content": {
+        "examples": [
+          {
+            "scenario": "Uma camiseta custa R$ 40,00 e está com 20% de desconto. Qual o preço final?",
+            "calculation": "40 - (40 × 0,20) = 40 - 8 = 32",
+            "answer": 32,
+            "explanation": "20% de R$ 40,00 = R$ 8,00. Preço final: R$ 32,00"
+          },
+          {
+            "scenario": "Um livro custava R$ 25,00 e aumentou 10%. Qual o novo preço?",
+            "calculation": "25 + (25 × 0,10) = 25 + 2,50 = 27,50",
+            "answer": 27.5,
+            "explanation": "10% de R$ 25,00 = R$ 2,50. Novo preço: R$ 27,50"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 2,
+      "order": 5,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06MA03"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Comparando preços",
+      "description": "Simule compras e aprenda a comparar preços para economizar dinheiro",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre comparando preços?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "6º Ano",
+      "module": 2,
+      "order": 6,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Mesada inteligente",
+      "description": "Aprenda a organizar sua mesada de forma inteligente, separando para diferentes objetivos",
+      "type": "budget-choices",
+      "content": {
+        "budget": 1000,
+        "options": [
+          {
+            "item": "Opção A",
+            "cost": 300,
+            "benefit": "Benefício A"
+          },
+          {
+            "item": "Opção B",
+            "cost": 500,
+            "benefit": "Benefício B"
+          },
+          {
+            "item": "Opção C",
+            "cost": 200,
+            "benefit": "Benefício C"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 3,
+      "order": 7,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Economizando em casa",
+      "description": "Organize itens da casa para aprender como economizar energia, água e outros recursos",
+      "type": "drag-drop",
+      "content": {
+        "zones": [
+          {
+            "name": "Cozinha",
+            "items": [
+              "Desligar fogão",
+              "Fechar torneira",
+              "Usar panela adequada"
+            ]
+          },
+          {
+            "name": "Sala",
+            "items": [
+              "Desligar TV",
+              "Apagar luzes",
+              "Fechar janelas"
+            ]
+          },
+          {
+            "name": "Banheiro",
+            "items": [
+              "Banhos curtos",
+              "Escovar dentes com torneira fechada",
+              "Usar descarga econômica"
+            ]
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 3,
+      "order": 8,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF06CI01",
+        "EF06CH01",
+        "EF06MA01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Primeira poupança",
+      "description": "Simule o processo de poupar dinheiro e veja como ele cresce ao longo do tempo",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre primeira poupança",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender primeira poupança na prática."
+      },
+      "gradeId": "6º Ano",
+      "module": 3,
+      "order": 9,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejando uma festa",
+      "description": "Planeje uma festa de aniversário com orçamento limitado, aprendendo a priorizar gastos",
+      "type": "budget-choices",
+      "content": {
+        "budget": 1000,
+        "options": [
+          {
+            "item": "Opção A",
+            "cost": 300,
+            "benefit": "Benefício A"
+          },
+          {
+            "item": "Opção B",
+            "cost": 500,
+            "benefit": "Benefício B"
+          },
+          {
+            "item": "Opção C",
+            "cost": 200,
+            "benefit": "Benefício C"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 4,
+      "order": 10,
+      "difficulty": 1,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Comprando coletivamente",
+      "description": "Simule compras em grupo para entender como comprar em quantidade pode economizar dinheiro",
+      "type": "budget-choices",
+      "content": {
+        "budget": 1000,
+        "options": [
+          {
+            "item": "Opção A",
+            "cost": 300,
+            "benefit": "Benefício A"
+          },
+          {
+            "item": "Opção B",
+            "cost": 500,
+            "benefit": "Benefício B"
+          },
+          {
+            "item": "Opção C",
+            "cost": 200,
+            "benefit": "Benefício C"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 4,
+      "order": 11,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Revisão e celebração",
+      "description": "Revise tudo o que aprendeu sobre educação financeira e celebre suas conquistas",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Qual é a melhor forma de organizar sua mesada?",
+            "options": [
+              "Gastar tudo de uma vez",
+              "Separar para diferentes objetivos",
+              "Guardar tudo",
+              "Não receber mesada"
+            ],
+            "correct": 1,
+            "explanation": "Separar para diferentes objetivos ajuda a ter controle financeiro"
+          },
+          {
+            "question": "Por que é importante comparar preços?",
+            "options": [
+              "Para perder tempo",
+              "Para economizar dinheiro",
+              "Para confundir",
+              "Para gastar mais"
+            ],
+            "correct": 1,
+            "explanation": "Comparar preços ajuda a encontrar as melhores ofertas e economizar"
+          }
+        ]
+      },
+      "gradeId": "6º Ano",
+      "module": 4,
+      "order": 12,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF06MA01",
+        "EF06MA02",
+        "EF06CH01",
+        "EF06CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Meu primeiro orçamento",
+      "description": "Crie seu primeiro orçamento mensal real, aprendendo a controlar receitas e despesas",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor estratégia para meu primeiro orçamento?",
+        "options": [
+          {
+            "text": "Estratégia A",
+            "correct": true,
+            "explanation": "Esta é a melhor abordagem"
+          },
+          {
+            "text": "Estratégia B",
+            "correct": false,
+            "explanation": "Esta estratégia tem limitações"
+          },
+          {
+            "text": "Estratégia C",
+            "correct": false,
+            "explanation": "Esta estratégia não é ideal"
+          }
+        ],
+        "feedback": "A estratégia correta leva aos melhores resultados financeiros."
+      },
+      "gradeId": "7º Ano",
+      "module": 1,
+      "order": 1,
+      "difficulty": 3,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07MA02",
+        "EF07CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Controle de gastos",
+      "description": "Mantenha um diário financeiro detalhado para entender seus padrões de gastos",
+      "type": "input",
+      "content": {
+        "expenseTracking": {
+          "categories": [
+            "Alimentação",
+            "Transporte",
+            "Educação",
+            "Lazer",
+            "Outros"
+          ],
+          "dailyGoal": "Registrar todos os gastos",
+          "weeklyGoal": "Analisar padrões de gastos",
+          "monthlyGoal": "Identificar oportunidades de economia"
+        }
+      },
+      "gradeId": "7º Ano",
+      "module": 1,
+      "order": 2,
+      "difficulty": 4,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07MA02",
+        "EF07LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Definindo metas",
+      "description": "Aprenda a definir metas financeiras realistas e criar planos para alcançá-las",
+      "type": "choices",
+      "content": {
+        "scenarios": [
+          {
+            "situation": "Você quer comprar um celular novo que custa R$ 800,00",
+            "choices": [
+              {
+                "option": "Guardar R$ 100 por mês durante 8 meses",
+                "consequence": "Meta realista e alcançável",
+                "outcome": "Sucesso garantido com disciplina"
+              },
+              {
+                "option": "Pedir emprestado aos pais",
+                "consequence": "Dependência financeira",
+                "outcome": "Não desenvolve responsabilidade"
+              },
+              {
+                "option": "Gastar toda a mesada e esperar milagre",
+                "consequence": "Planejamento inadequado",
+                "outcome": "Meta provavelmente não será alcançada"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 1,
+      "order": 3,
+      "difficulty": 4,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07CH01",
+        "EF07LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Publicidade e consumo",
+      "description": "Identifique técnicas de publicidade para se tornar um consumidor mais consciente",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Categoria A",
+            "items": [
+              "Item 1",
+              "Item 2"
+            ]
+          },
+          {
+            "name": "Categoria B",
+            "items": [
+              "Item 3",
+              "Item 4"
+            ]
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 2,
+      "order": 4,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF07LP01",
+        "EF07CH01",
+        "EF07CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Comparação de preços",
+      "description": "Compare preços entre diferentes estabelecimentos para fazer as melhores compras",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre comparação de preços?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "7º Ano",
+      "module": 2,
+      "order": 5,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07MA02",
+        "EF07CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Consumo sustentável",
+      "description": "Simule diferentes escolhas de consumo e veja seu impacto no meio ambiente",
+      "type": "shopping-simulation",
+      "content": {
+        "store": "Loja Virtual",
+        "budget": 500,
+        "items": [
+          {
+            "name": "Item A",
+            "price": 150,
+            "category": "Essencial"
+          },
+          {
+            "name": "Item B",
+            "price": 200,
+            "category": "Desejo"
+          },
+          {
+            "name": "Item C",
+            "price": 100,
+            "category": "Essencial"
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 2,
+      "order": 6,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF07CI01",
+        "EF07CN01",
+        "EF07CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Por que poupar?",
+      "description": "Entenda os benefícios de poupar dinheiro e como isso pode melhorar sua vida",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre por que poupar?",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender por que poupar? na prática."
+      },
+      "gradeId": "7º Ano",
+      "module": 3,
+      "order": 7,
+      "difficulty": 1,
+      "estimatedTime": 20,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07CH01",
+        "EF07LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Tipos de poupança",
+      "description": "Conheça diferentes formas de poupar dinheiro e escolha a que melhor se adapta a você",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Poupança Tradicional",
+            "items": [
+              "Conta poupança",
+              "Cofrinho",
+              "Guardar em casa"
+            ],
+            "description": "Formas básicas e seguras de poupar"
+          },
+          {
+            "name": "Poupança Programada",
+            "items": [
+              "Poupança automática",
+              "Metas mensais",
+              "Desafios de economia"
+            ],
+            "description": "Poupança com planejamento e disciplina"
+          },
+          {
+            "name": "Poupança Inteligente",
+            "items": [
+              "Aplicativos de economia",
+              "Desafios financeiros",
+              "Gamificação"
+            ],
+            "description": "Poupança com tecnologia e diversão"
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 3,
+      "order": 8,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07CH01",
+        "EF07CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Juros simples",
+      "description": "Aprenda a calcular juros simples para entender como o dinheiro pode crescer",
+      "type": "math-problems",
+      "content": {
+        "problems": [
+          {
+            "problem": "Maria depositou R$ 100,00 na poupança que rende 0,5% ao mês. Quanto ela terá após 6 meses?",
+            "solution": 103,
+            "calculation": "100 + (100 × 0,005 × 6) = 100 + 3 = 103",
+            "explanation": "Juros simples: Capital × Taxa × Tempo"
+          },
+          {
+            "problem": "João emprestou R$ 50,00 para Pedro por 3 meses com juros de 2% ao mês. Quanto Pedro deve devolver?",
+            "solution": 53,
+            "calculation": "50 + (50 × 0,02 × 3) = 50 + 3 = 53",
+            "explanation": "Valor total = Capital + Juros"
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 3,
+      "order": 9,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07MA02",
+        "EF07MA03"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes e golpes",
+      "description": "Identifique e evite golpes financeiros comuns para proteger seu dinheiro",
+      "type": "drag-drop",
+      "content": {
+        "zones": [
+          {
+            "name": "Golpes Digitais",
+            "items": [
+              "E-mails falsos",
+              "Links suspeitos",
+              "Promessas milagrosas"
+            ]
+          },
+          {
+            "name": "Golpes Telefônicos",
+            "items": [
+              "Ligações de bancos falsos",
+              "Promessas de prêmios",
+              "Dívidas falsas"
+            ]
+          },
+          {
+            "name": "Golpes Presenciais",
+            "items": [
+              "Vendedores agressivos",
+              "Produtos falsificados",
+              "Contratos enganosos"
+            ]
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 4,
+      "order": 10,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF07CI01",
+        "EF07CH01",
+        "EF07LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Segurança digital",
+      "description": "Aprenda a proteger suas informações financeiras no mundo digital",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre segurança digital",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender segurança digital na prática."
+      },
+      "gradeId": "7º Ano",
+      "module": 4,
+      "order": 11,
+      "difficulty": 1,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF07CI01",
+        "EF07CH01",
+        "EF07LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros básicos",
+      "description": "Simule diferentes cenários de seguro para entender como se proteger financeiramente",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Categoria A",
+            "items": [
+              "Item 1",
+              "Item 2"
+            ]
+          },
+          {
+            "name": "Categoria B",
+            "items": [
+              "Item 3",
+              "Item 4"
+            ]
+          }
+        ]
+      },
+      "gradeId": "7º Ano",
+      "module": 4,
+      "order": 12,
+      "difficulty": 1,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF07MA01",
+        "EF07CH01",
+        "EF07CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Orçamento familiar avançado",
+      "description": "Aprenda a criar e gerenciar um orçamento familiar completo, incluindo receitas e despesas de todos os membros",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor estratégia para orçamento familiar avançado?",
+        "options": [
+          {
+            "text": "Estratégia A",
+            "correct": true,
+            "explanation": "Esta é a melhor abordagem"
+          },
+          {
+            "text": "Estratégia B",
+            "correct": false,
+            "explanation": "Esta estratégia tem limitações"
+          },
+          {
+            "text": "Estratégia C",
+            "correct": false,
+            "explanation": "Esta estratégia não é ideal"
+          }
+        ],
+        "feedback": "A estratégia correta leva aos melhores resultados financeiros."
+      },
+      "gradeId": "8º Ano",
+      "module": 1,
+      "order": 1,
+      "difficulty": 5,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08MA02",
+        "EF08CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise de gastos",
+      "description": "Analise seus gastos em detalhes para identificar padrões e oportunidades de economia",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor estratégia para análise de gastos?",
+        "options": [
+          {
+            "text": "Estratégia A",
+            "correct": true,
+            "explanation": "Esta é a melhor abordagem"
+          },
+          {
+            "text": "Estratégia B",
+            "correct": false,
+            "explanation": "Esta estratégia tem limitações"
+          },
+          {
+            "text": "Estratégia C",
+            "correct": false,
+            "explanation": "Esta estratégia não é ideal"
+          }
+        ],
+        "feedback": "A estratégia correta leva aos melhores resultados financeiros."
+      },
+      "gradeId": "8º Ano",
+      "module": 1,
+      "order": 2,
+      "difficulty": 6,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08MA02",
+        "EF08LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejamento de longo prazo",
+      "description": "Desenvolva metas financeiras de longo prazo e crie planos estratégicos para alcançá-las",
+      "type": "choices",
+      "content": {
+        "scenarios": [
+          {
+            "situation": "Você quer comprar um carro usado em 3 anos que custa R$ 25.000,00",
+            "choices": [
+              {
+                "option": "Poupar R$ 700 por mês durante 3 anos",
+                "consequence": "Meta realista com disciplina",
+                "outcome": "Carro pago à vista, sem dívidas"
+              },
+              {
+                "option": "Pegar financiamento de 60 meses",
+                "consequence": "Pagamento de juros altos",
+                "outcome": "Custo total muito maior que o valor do carro"
+              },
+              {
+                "option": "Esperar herança ou presente",
+                "consequence": "Dependência externa",
+                "outcome": "Meta pode nunca ser alcançada"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 1,
+      "order": 3,
+      "difficulty": 6,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08CH01",
+        "EF08LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Marketing e persuasão",
+      "description": "Identifique técnicas avançadas de marketing e aprenda a resistir à persuasão comercial",
+      "type": "shopping-simulation",
+      "content": {
+        "store": "Loja Virtual",
+        "budget": 500,
+        "items": [
+          {
+            "name": "Item A",
+            "price": 150,
+            "category": "Essencial"
+          },
+          {
+            "name": "Item B",
+            "price": 200,
+            "category": "Desejo"
+          },
+          {
+            "name": "Item C",
+            "price": 100,
+            "category": "Essencial"
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 2,
+      "order": 4,
+      "difficulty": 3,
+      "estimatedTime": 25,
+      "bnccSkills": [
+        "EF08LP01",
+        "EF08CH01",
+        "EF08CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Comparação avançada de preços",
+      "description": "Compare preços considerando qualidade, durabilidade e custo-benefício total",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre comparação avançada de preços?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "8º Ano",
+      "module": 2,
+      "order": 5,
+      "difficulty": 3,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08MA02",
+        "EF08CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Impacto ambiental das finanças",
+      "description": "Simule como suas escolhas financeiras impactam o meio ambiente e a sociedade",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre impacto ambiental das finanças?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "8º Ano",
+      "module": 2,
+      "order": 6,
+      "difficulty": 3,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF08CI01",
+        "EF08CN01",
+        "EF08CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Juros compostos",
+      "description": "Aprenda a calcular juros compostos para entender como o dinheiro pode crescer exponencialmente",
+      "type": "math-problems",
+      "content": {
+        "compoundInterestProblems": [
+          {
+            "problem": "Maria investiu R$ 1.000,00 em uma aplicação que rende 1% ao mês. Quanto ela terá após 12 meses?",
+            "solution": 1126.83,
+            "calculation": "1000 × (1 + 0,01)¹² = 1000 × 1,12683 = 1126,83",
+            "explanation": "Juros compostos: Capital × (1 + taxa)^tempo"
+          },
+          {
+            "problem": "João quer ter R$ 5.000,00 em 5 anos. Quanto deve investir mensalmente se a aplicação rende 0,8% ao mês?",
+            "solution": 67.5,
+            "calculation": "5000 ÷ [(1 + 0,008)⁶⁰ - 1] ÷ 0,008 = 67,50",
+            "explanation": "Aplicação mensal = Meta ÷ Fator de acumulação"
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 3,
+      "order": 7,
+      "difficulty": 4,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08MA02",
+        "EF08MA03"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Tipos de investimento",
+      "description": "Conheça diferentes tipos de investimento e suas características de risco e retorno",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Categoria A",
+            "items": [
+              "Item 1",
+              "Item 2"
+            ]
+          },
+          {
+            "name": "Categoria B",
+            "items": [
+              "Item 3",
+              "Item 4"
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 3,
+      "order": 8,
+      "difficulty": 4,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08CH01",
+        "EF08CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Diversificação de investimentos",
+      "description": "Simule diferentes estratégias de diversificação para entender como reduzir riscos",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Categoria A",
+            "items": [
+              "Item 1",
+              "Item 2"
+            ]
+          },
+          {
+            "name": "Categoria B",
+            "items": [
+              "Item 3",
+              "Item 4"
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 3,
+      "order": 9,
+      "difficulty": 4,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08CH01",
+        "EF08CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes digitais avançadas",
+      "description": "Identifique e evite golpes digitais sofisticados para proteger suas finanças",
+      "type": "drag-drop",
+      "content": {
+        "advancedFraudZones": [
+          {
+            "name": "Phishing Avançado",
+            "items": [
+              "E-mails falsos de bancos",
+              "Sites clonados",
+              "Links maliciosos"
+            ]
+          },
+          {
+            "name": "Malware Financeiro",
+            "items": [
+              "Vírus de banco",
+              "Keyloggers",
+              "Trojans bancários"
+            ]
+          },
+          {
+            "name": "Engenharia Social",
+            "items": [
+              "Perfis falsos",
+              "Promessas milagrosas",
+              "Urgência falsa"
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 4,
+      "order": 10,
+      "difficulty": 3,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF08CI01",
+        "EF08CH01",
+        "EF08LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Segurança cibernética",
+      "description": "Aprenda práticas avançadas de segurança cibernética para proteger suas informações financeiras",
+      "type": "choices",
+      "content": {
+        "cybersecurityScenarios": [
+          {
+            "situation": "Você recebe uma mensagem no WhatsApp de um amigo pedindo dinheiro urgentemente",
+            "choices": [
+              {
+                "option": "Transferir imediatamente",
+                "consequence": "Alto risco de fraude",
+                "outcome": "Pode estar ajudando um golpista"
+              },
+              {
+                "option": "Ligar para o amigo para confirmar",
+                "consequence": "Segurança",
+                "outcome": "Sempre confirme por outro canal"
+              },
+              {
+                "option": "Ignorar a mensagem",
+                "consequence": "Segurança",
+                "outcome": "Melhor ser cauteloso"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 4,
+      "order": 11,
+      "difficulty": 3,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF08CI01",
+        "EF08CH01",
+        "EF08LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros especializados",
+      "description": "Simule diferentes tipos de seguro para entender como se proteger em situações específicas",
+      "type": "classify",
+      "content": {
+        "categories": [
+          {
+            "name": "Categoria A",
+            "items": [
+              "Item 1",
+              "Item 2"
+            ]
+          },
+          {
+            "name": "Categoria B",
+            "items": [
+              "Item 3",
+              "Item 4"
+            ]
+          }
+        ]
+      },
+      "gradeId": "8º Ano",
+      "module": 4,
+      "order": 12,
+      "difficulty": 3,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF08MA01",
+        "EF08CH01",
+        "EF08CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejamento financeiro pessoal",
+      "description": "Desenvolva um plano financeiro pessoal completo para sua vida adulta, incluindo metas de curto, médio e longo prazo",
+      "type": "budget-distribution",
+      "content": {
+        "personalFinancialPlan": {
+          "lifeStages": [
+            {
+              "stage": "18-25 anos",
+              "goals": [
+                "Educação",
+                "Primeiro emprego",
+                "Independência financeira"
+              ]
+            },
+            {
+              "stage": "26-35 anos",
+              "goals": [
+                "Carreira",
+                "Primeira casa",
+                "Família"
+              ]
+            },
+            {
+              "stage": "36-50 anos",
+              "goals": [
+                "Crescimento patrimonial",
+                "Educação dos filhos",
+                "Preparação para aposentadoria"
+              ]
+            },
+            {
+              "stage": "51+ anos",
+              "goals": [
+                "Preservação de capital",
+                "Aposentadoria",
+                "Legado"
+              ]
+            }
+          ],
+          "financialGoals": [
+            {
+              "shortTerm": "Reserva de emergência",
+              "mediumTerm": "Entrada para casa",
+              "longTerm": "Aposentadoria"
+            }
+          ]
+        }
+      },
+      "gradeId": "9º Ano",
+      "module": 1,
+      "order": 1,
+      "difficulty": 7,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09MA02",
+        "EF09CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise de fluxo de caixa",
+      "description": "Analise seu fluxo de caixa pessoal para entender como o dinheiro entra e sai ao longo do tempo",
+      "type": "budget-distribution",
+      "content": {
+        "totalBudget": 1000,
+        "categories": [
+          {
+            "name": "Essenciais",
+            "percentage": 50,
+            "items": [
+              "Alimentação",
+              "Moradia",
+              "Transporte"
+            ]
+          },
+          {
+            "name": "Educação",
+            "percentage": 20,
+            "items": [
+              "Livros",
+              "Cursos",
+              "Material"
+            ]
+          },
+          {
+            "name": "Lazer",
+            "percentage": 15,
+            "items": [
+              "Entretenimento",
+              "Hobbies"
+            ]
+          },
+          {
+            "name": "Emergências",
+            "percentage": 15,
+            "items": [
+              "Reserva",
+              "Imprevistos"
+            ]
+          }
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 1,
+      "order": 2,
+      "difficulty": 8,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09MA02",
+        "EF09LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Decisões financeiras complexas",
+      "description": "Analise cenários financeiros complexos e tome decisões baseadas em múltiplos fatores",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre decisões financeiras complexas",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender decisões financeiras complexas na prática."
+      },
+      "gradeId": "9º Ano",
+      "module": 1,
+      "order": 3,
+      "difficulty": 8,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09CH01",
+        "EF09LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Psicologia do consumo",
+      "description": "Entenda os fatores psicológicos que influenciam o consumo e aprenda a controlá-los",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre psicologia do consumo",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender psicologia do consumo na prática."
+      },
+      "gradeId": "9º Ano",
+      "module": 2,
+      "order": 4,
+      "difficulty": 5,
+      "estimatedTime": 30,
+      "bnccSkills": [
+        "EF09LP01",
+        "EF09CH01",
+        "EF09CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise de custo-benefício",
+      "description": "Realize análises avançadas de custo-benefício para tomar decisões financeiras inteligentes",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre análise de custo-benefício?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "9º Ano",
+      "module": 2,
+      "order": 5,
+      "difficulty": 5,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09MA02",
+        "EF09CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Finanças sustentáveis",
+      "description": "Simule como suas decisões financeiras podem contribuir para um futuro sustentável",
+      "type": "shopping-simulation",
+      "content": {
+        "store": "Loja Virtual",
+        "budget": 500,
+        "items": [
+          {
+            "name": "Item A",
+            "price": 150,
+            "category": "Essencial"
+          },
+          {
+            "name": "Item B",
+            "price": 200,
+            "category": "Desejo"
+          },
+          {
+            "name": "Item C",
+            "price": 100,
+            "category": "Essencial"
+          }
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 2,
+      "order": 6,
+      "difficulty": 5,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF09CI01",
+        "EF09CN01",
+        "EF09CH01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Matemática financeira avançada",
+      "description": "Resolva problemas complexos de matemática financeira para aplicações reais",
+      "type": "math-problems",
+      "content": {
+        "advancedFinancialMath": [
+          {
+            "problem": "Calcule o valor presente de uma série de pagamentos de R$ 500,00 mensais durante 5 anos, considerando uma taxa de desconto de 1% ao mês",
+            "solution": 22500.5,
+            "calculation": "500 × [(1 - (1 + 0,01)^(-60)) ÷ 0,01] = 500 × 45,001 = 22500,50",
+            "explanation": "Valor presente de uma anuidade: PMT × [(1 - (1 + r)^(-n)) ÷ r]"
+          },
+          {
+            "problem": "Uma aplicação rende 12% ao ano. Em quantos anos o capital dobrará?",
+            "solution": 6.12,
+            "calculation": "ln(2) ÷ ln(1,12) = 0,693 ÷ 0,113 = 6,12 anos",
+            "explanation": "Regra do 72: 72 ÷ taxa = anos para dobrar (aproximado)"
+          }
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 3,
+      "order": 7,
+      "difficulty": 6,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09MA02",
+        "EF09MA03"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Estratégias de investimento",
+      "description": "Classifique e entenda diferentes estratégias de investimento para criar um portfólio personalizado",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre estratégias de investimento, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda estratégias de investimento e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 3,
+      "order": 8,
+      "difficulty": 6,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09CH01",
+        "EF09CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Gestão de risco financeiro",
+      "description": "Simule diferentes cenários de risco para aprender a proteger seu patrimônio financeiro",
+      "type": "choices",
+      "content": {
+        "question": "Qual a melhor decisão sobre gestão de risco financeiro?",
+        "options": [
+          {
+            "text": "Opção A",
+            "correct": true,
+            "explanation": "Esta é a melhor escolha"
+          },
+          {
+            "text": "Opção B",
+            "correct": false,
+            "explanation": "Esta opção tem desvantagens"
+          },
+          {
+            "text": "Opção C",
+            "correct": false,
+            "explanation": "Esta opção não é ideal"
+          }
+        ],
+        "feedback": "A escolha correta leva aos melhores resultados."
+      },
+      "gradeId": "9º Ano",
+      "module": 3,
+      "order": 9,
+      "difficulty": 6,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09CH01",
+        "EF09CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes corporativas",
+      "description": "Identifique e evite golpes corporativos sofisticados para proteger investimentos e negócios",
+      "type": "drag-drop",
+      "content": {
+        "corporateFraudZones": [
+          {
+            "name": "Fraudes de Investimento",
+            "items": [
+              "Pirâmides financeiras",
+              "Promessas de retorno alto",
+              "Empresas fantasmas"
+            ]
+          },
+          {
+            "name": "Fraudes de Negócio",
+            "items": [
+              "Parceiros falsos",
+              "Contratos enganosos",
+              "Produtos inexistentes"
+            ]
+          },
+          {
+            "name": "Fraudes de Emprego",
+            "items": [
+              "Vagas falsas",
+              "Treinamentos pagos",
+              "Comissões irreais"
+            ]
+          }
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 4,
+      "order": 10,
+      "difficulty": 5,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF09CI01",
+        "EF09CH01",
+        "EF09LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Compliance e ética financeira",
+      "description": "Aprenda sobre compliance financeiro e ética para tomar decisões responsáveis",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre compliance e ética financeira",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender compliance e ética financeira na prática."
+      },
+      "gradeId": "9º Ano",
+      "module": 4,
+      "order": 11,
+      "difficulty": 5,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EF09CI01",
+        "EF09CH01",
+        "EF09LP01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros corporativos",
+      "description": "Simule diferentes cenários de seguro corporativo para entender como proteger negócios",
+      "type": "price-comparison",
+      "content": {
+        "products": [
+          {
+            "name": "Produto A",
+            "price": 100,
+            "quality": "Alta"
+          },
+          {
+            "name": "Produto B",
+            "price": 80,
+            "quality": "Média"
+          },
+          {
+            "name": "Produto C",
+            "price": 120,
+            "quality": "Premium"
+          }
+        ],
+        "criteria": [
+          "Preço",
+          "Qualidade",
+          "Durabilidade"
+        ]
+      },
+      "gradeId": "9º Ano",
+      "module": 4,
+      "order": 12,
+      "difficulty": 5,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EF09MA01",
+        "EF09CH01",
+        "EF09CI01"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejamento financeiro familiar avançado",
+      "description": "Desenvolva um planejamento financeiro familiar completo e sofisticado para múltiplas gerações",
+      "type": "budget-distribution",
+      "content": {
+        "advancedFamilyPlanning": {
+          "multiGenerationalPlan": [
+            {
+              "generation": "Avós (60+)",
+              "focus": [
+                "Preservação de capital",
+                "Seguros de vida",
+                "Planejamento sucessório"
+              ]
+            },
+            {
+              "generation": "Pais (35-60)",
+              "focus": [
+                "Crescimento patrimonial",
+                "Educação dos filhos",
+                "Preparação para aposentadoria"
+              ]
+            },
+            {
+              "generation": "Jovens (18-35)",
+              "focus": [
+                "Independência financeira",
+                "Primeiros investimentos",
+                "Formação de patrimônio"
+              ]
+            }
+          ],
+          "integratedStrategies": [
+            "Planejamento tributário familiar",
+            "Estratégias de herança",
+            "Fundos educacionais",
+            "Seguros familiares integrados"
+          ]
+        }
+      },
+      "gradeId": "1º EM",
+      "module": 1,
+      "order": 1,
+      "difficulty": 8,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise financeira empresarial",
+      "description": "Analise indicadores financeiros empresariais para entender a saúde financeira de empresas",
+      "type": "input",
+      "content": {
+        "businessFinancialAnalysis": {
+          "keyMetrics": [
+            "Liquidez corrente",
+            "Endividamento",
+            "Rentabilidade",
+            "Eficiência operacional",
+            "Crescimento de receitas"
+          ],
+          "analysisTools": [
+            "Análise horizontal e vertical",
+            "Índices de rentabilidade",
+            "Análise de fluxo de caixa",
+            "Projeções financeiras"
+          ]
+        }
+      },
+      "gradeId": "1º EM",
+      "module": 1,
+      "order": 2,
+      "difficulty": 9,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Decisões estratégicas de investimento",
+      "description": "Analise cenários de investimento complexos e tome decisões estratégicas baseadas em múltiplos fatores",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre decisões estratégicas de investimento",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender decisões estratégicas de investimento na prática."
+      },
+      "gradeId": "1º EM",
+      "module": 1,
+      "order": 3,
+      "difficulty": 9,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Neuroeconomia e finanças comportamentais",
+      "description": "Entenda como o cérebro influencia decisões financeiras e aprenda a superar vieses cognitivos",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre neuroeconomia e finanças comportamentais, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda neuroeconomia e finanças comportamentais e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 2,
+      "order": 4,
+      "difficulty": 7,
+      "estimatedTime": 35,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise fundamentalista",
+      "description": "Analise empresas usando fundamentos para identificar oportunidades de investimento de valor",
+      "type": "price-comparison",
+      "content": {
+        "products": [
+          {
+            "name": "Produto A",
+            "price": 100,
+            "quality": "Alta",
+            "features": [
+              "Durabilidade",
+              "Garantia"
+            ]
+          },
+          {
+            "name": "Produto B",
+            "price": 80,
+            "quality": "Média",
+            "features": [
+              "Preço baixo",
+              "Básico"
+            ]
+          },
+          {
+            "name": "Produto C",
+            "price": 120,
+            "quality": "Premium",
+            "features": [
+              "Luxo",
+              "Exclusivo"
+            ]
+          }
+        ],
+        "criteria": [
+          "Preço",
+          "Qualidade",
+          "Durabilidade",
+          "Valor agregado"
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 2,
+      "order": 5,
+      "difficulty": 7,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Impacto social dos investimentos",
+      "description": "Simule como seus investimentos podem gerar impacto social positivo além do retorno financeiro",
+      "type": "price-comparison",
+      "content": {
+        "products": [
+          {
+            "name": "Produto A",
+            "price": 100,
+            "quality": "Alta"
+          },
+          {
+            "name": "Produto B",
+            "price": 80,
+            "quality": "Média"
+          },
+          {
+            "name": "Produto C",
+            "price": 120,
+            "quality": "Premium"
+          }
+        ],
+        "criteria": [
+          "Preço",
+          "Qualidade",
+          "Durabilidade"
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 2,
+      "order": 6,
+      "difficulty": 7,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Matemática financeira corporativa",
+      "description": "Resolva problemas complexos de matemática financeira aplicados ao mundo corporativo",
+      "type": "math-problems",
+      "content": {
+        "corporateFinancialMath": [
+          {
+            "problem": "Calcule o WACC (Custo Médio Ponderado de Capital) de uma empresa com: Dívida de R$ 1.000.000 a 8% ao ano, Patrimônio Líquido de R$ 2.000.000 com custo de 12% ao ano, e alíquota de IR de 34%",
+            "solution": 9.87,
+            "calculation": "WACC = (1.000.000 × 0,08 × 0,66 + 2.000.000 × 0,12) ÷ 3.000.000 = 9,87%",
+            "explanation": "WACC considera custo da dívida após IR e custo do patrimônio, ponderados pela estrutura de capital"
+          },
+          {
+            "problem": "Uma empresa tem fluxo de caixa livre de R$ 500.000 por ano, crescendo 5% ao ano. Qual o valor da empresa se o WACC é 10%?",
+            "solution": 10500000,
+            "calculation": "Valor = 500.000 × (1 + 0,05) ÷ (0,10 - 0,05) = 10.500.000",
+            "explanation": "Modelo de crescimento perpétuo: FCF × (1 + g) ÷ (WACC - g)"
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 3,
+      "order": 7,
+      "difficulty": 8,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Estratégias de trading avançadas",
+      "description": "Classifique e entenda estratégias avançadas de trading para mercados financeiros",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre estratégias de trading avançadas, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda estratégias de trading avançadas e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 3,
+      "order": 8,
+      "difficulty": 8,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Gestão de risco corporativo",
+      "description": "Simule cenários de risco corporativo para aprender estratégias avançadas de proteção",
+      "type": "match",
+      "content": {
+        "pairs": [
+          {
+            "left": "Conceito A",
+            "right": "Definição A"
+          },
+          {
+            "left": "Conceito B",
+            "right": "Definição B"
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 3,
+      "order": 9,
+      "difficulty": 8,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes em mercados financeiros",
+      "description": "Identifique e evite fraudes sofisticadas em mercados financeiros para proteger investimentos",
+      "type": "drag-drop",
+      "content": {
+        "financialMarketFraudZones": [
+          {
+            "name": "Fraudes de Mercado",
+            "items": [
+              "Insider Trading",
+              "Pump and Dump",
+              "Front Running",
+              "Wash Trading"
+            ]
+          },
+          {
+            "name": "Fraudes de Investimento",
+            "items": [
+              "Fundos fantasmas",
+              "Retornos falsos",
+              "Estratégias inexistentes",
+              "Corretoras falsas"
+            ]
+          },
+          {
+            "name": "Fraudes de Informação",
+            "items": [
+              "Relatórios falsos",
+              "Dados manipulados",
+              "Análises enganosas",
+              "Notícias falsas"
+            ]
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 4,
+      "order": 10,
+      "difficulty": 7,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Regulação e compliance avançado",
+      "description": "Aprenda sobre regulação financeira avançada e compliance para operar em mercados regulamentados",
+      "type": "choices",
+      "content": {
+        "advancedComplianceScenarios": [
+          {
+            "situation": "Sua empresa está considerando uma operação de fusão que pode gerar sinergias de R$ 50 milhões, mas existe risco de não aprovação antitruste",
+            "choices": [
+              {
+                "option": "Proceder sem análise antitruste",
+                "consequence": "Alto risco regulatório",
+                "outcome": "Pode resultar em multas e bloqueio da operação"
+              },
+              {
+                "option": "Consultar advogados especializados",
+                "consequence": "Custo adicional, mas segurança",
+                "outcome": "Operação pode ser aprovada com condições"
+              },
+              {
+                "option": "Desistir da operação",
+                "consequence": "Perda de oportunidade",
+                "outcome": "Sem risco, mas sem sinergias"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 4,
+      "order": 11,
+      "difficulty": 7,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros empresariais avançados",
+      "description": "Simule cenários complexos de seguro empresarial para entender proteções avançadas",
+      "type": "match",
+      "content": {
+        "pairs": [
+          {
+            "left": "Conceito A",
+            "right": "Definição A"
+          },
+          {
+            "left": "Conceito B",
+            "right": "Definição B"
+          }
+        ]
+      },
+      "gradeId": "1º EM",
+      "module": 4,
+      "order": 12,
+      "difficulty": 7,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT101",
+        "EM13CNT102",
+        "EM13CNT103"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejamento financeiro corporativo",
+      "description": "Desenvolva planos financeiros corporativos completos para empresas de diferentes portes e setores",
+      "type": "budget-distribution",
+      "content": {
+        "corporateFinancialPlanning": {
+          "planningLevels": [
+            {
+              "level": "Estratégico",
+              "horizon": "5-10 anos",
+              "focus": [
+                "Crescimento",
+                "Expansão",
+                "Posicionamento de mercado"
+              ]
+            },
+            {
+              "level": "Tático",
+              "horizon": "1-3 anos",
+              "focus": [
+                "Orçamentos",
+                "Projetos",
+                "Metas departamentais"
+              ]
+            },
+            {
+              "level": "Operacional",
+              "horizon": "1-12 meses",
+              "focus": [
+                "Fluxo de caixa",
+                "Controle de custos",
+                "Gestão de receitas"
+              ]
+            }
+          ],
+          "planningTools": [
+            "Projeções financeiras",
+            "Análise de cenários",
+            "Modelagem financeira",
+            "Gestão de capital de giro"
+          ]
+        }
+      },
+      "gradeId": "2º EM",
+      "module": 1,
+      "order": 1,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise de demonstrações financeiras",
+      "description": "Analise demonstrações financeiras completas para avaliar a saúde e performance de empresas",
+      "type": "input",
+      "content": {
+        "financialStatementAnalysis": {
+          "statements": [
+            "Balanço Patrimonial",
+            "Demonstração de Resultados",
+            "Demonstração de Fluxo de Caixa",
+            "Demonstração de Valor Adicionado"
+          ],
+          "analysisTechniques": [
+            "Análise horizontal e vertical",
+            "Análise de tendências",
+            "Análise de índices",
+            "Análise comparativa setorial"
+          ],
+          "keyRatios": [
+            "Liquidez",
+            "Solvência",
+            "Rentabilidade",
+            "Eficiência operacional"
+          ]
+        }
+      },
+      "gradeId": "2º EM",
+      "module": 1,
+      "order": 2,
+      "difficulty": 9,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Decisões de investimento corporativo",
+      "description": "Analise cenários complexos de investimento corporativo e tome decisões estratégicas",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre decisões de investimento corporativo",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender decisões de investimento corporativo na prática."
+      },
+      "gradeId": "2º EM",
+      "module": 1,
+      "order": 3,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Psicologia de mercado e crowd behavior",
+      "description": "Entenda como a psicologia coletiva influencia mercados financeiros e aprenda a identificar padrões",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre psicologia de mercado e crowd behavior, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda psicologia de mercado e crowd behavior e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 2,
+      "order": 4,
+      "difficulty": 8,
+      "estimatedTime": 40,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise técnica avançada",
+      "description": "Realize análises técnicas avançadas para identificar oportunidades de trading e investimento",
+      "type": "price-comparison",
+      "content": {
+        "products": [
+          {
+            "name": "Produto A",
+            "price": 100,
+            "quality": "Alta",
+            "features": [
+              "Durabilidade",
+              "Garantia"
+            ]
+          },
+          {
+            "name": "Produto B",
+            "price": 80,
+            "quality": "Média",
+            "features": [
+              "Preço baixo",
+              "Básico"
+            ]
+          },
+          {
+            "name": "Produto C",
+            "price": 120,
+            "quality": "Premium",
+            "features": [
+              "Luxo",
+              "Exclusivo"
+            ]
+          }
+        ],
+        "criteria": [
+          "Preço",
+          "Qualidade",
+          "Durabilidade",
+          "Valor agregado"
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 2,
+      "order": 5,
+      "difficulty": 8,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Finanças internacionais",
+      "description": "Simule operações financeiras internacionais para entender riscos e oportunidades globais",
+      "type": "simulation",
+      "content": {
+        "internationalFinanceSimulation": {
+          "globalScenarios": [
+            {
+              "scenario": "Investimento em mercado emergente",
+              "opportunities": [
+                "Alto crescimento",
+                "Diversificação geográfica",
+                "Potencial de valorização"
+              ],
+              "risks": [
+                "Volatilidade cambial",
+                "Risco político",
+                "Liquidez limitada"
+              ],
+              "strategies": [
+                "Hedge cambial",
+                "Diversificação",
+                "Análise de risco país"
+              ]
+            },
+            {
+              "scenario": "Operação de câmbio",
+              "opportunities": [
+                "Especulação cambial",
+                "Proteção contra volatilidade",
+                "Arbitragem"
+              ],
+              "risks": [
+                "Perda por movimento adverso",
+                "Custos de transação",
+                "Risco de liquidação"
+              ],
+              "strategies": [
+                "Stop loss",
+                "Posições limitadas",
+                "Análise fundamental"
+              ]
+            }
+          ]
+        }
+      },
+      "gradeId": "2º EM",
+      "module": 2,
+      "order": 6,
+      "difficulty": 8,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Matemática financeira de derivativos",
+      "description": "Resolva problemas complexos de matemática financeira aplicados a derivativos e produtos estruturados",
+      "type": "math-problems",
+      "content": {
+        "derivativesFinancialMath": [
+          {
+            "problem": "Calcule o preço de uma opção de compra (call) usando o modelo Black-Scholes: S = R$ 100, K = R$ 95, T = 1 ano, r = 5% ao ano, σ = 20% ao ano",
+            "solution": 12.34,
+            "calculation": "d1 = [ln(100/95) + (0,05 + 0,2²/2) × 1] ÷ (0,2 × √1) = 0,65; d2 = 0,65 - 0,2 × √1 = 0,45; C = 100 × N(0,65) - 95 × e^(-0,05×1) × N(0,45) = 12,34",
+            "explanation": "Modelo Black-Scholes para precificação de opções europeias"
+          },
+          {
+            "problem": "Uma empresa quer fazer hedge de R$ 1.000.000 em dívida com juros flutuantes. Quantos contratos futuros de juros precisa comprar se cada contrato tem valor de R$ 100.000?",
+            "solution": 10,
+            "calculation": "1.000.000 ÷ 100.000 = 10 contratos",
+            "explanation": "Número de contratos = Valor a ser protegido ÷ Valor de cada contrato"
+          }
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 3,
+      "order": 7,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Estratégias de hedge e proteção",
+      "description": "Classifique e entenda diferentes estratégias de hedge para proteger investimentos e operações",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre estratégias de hedge e proteção, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda estratégias de hedge e proteção e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 3,
+      "order": 8,
+      "difficulty": 9,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Gestão de risco de portfólio",
+      "description": "Simule cenários de gestão de risco de portfólio para otimizar retorno e risco",
+      "type": "simulation",
+      "content": {
+        "portfolioRiskSimulation": {
+          "riskScenarios": [
+            {
+              "scenario": "Crise de mercado global",
+              "conservativePortfolio": {
+                "loss": "8%",
+                "recovery": "8 meses",
+                "strategy": "Diversificação defensiva"
+              },
+              "aggressivePortfolio": {
+                "loss": "35%",
+                "recovery": "3 anos",
+                "strategy": "Concentração em risco"
+              },
+              "lesson": "Diversificação reduz perdas em crises"
+            },
+            {
+              "scenario": "Inflação galopante",
+              "conservativePortfolio": {
+                "protection": "Alta",
+                "strategy": "Títulos indexados, ouro, imóveis"
+              },
+              "aggressivePortfolio": {
+                "protection": "Baixa",
+                "strategy": "Dinheiro em espécie, títulos fixos"
+              },
+              "lesson": "Ativos reais protegem da inflação"
+            }
+          ]
+        }
+      },
+      "gradeId": "2º EM",
+      "module": 3,
+      "order": 9,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes em produtos estruturados",
+      "description": "Identifique e evite fraudes em produtos financeiros estruturados e complexos",
+      "type": "drag-drop",
+      "content": {
+        "structuredProductFraudZones": [
+          {
+            "name": "Fraudes de Produtos",
+            "items": [
+              "Produtos com risco oculto",
+              "Comissões abusivas",
+              "Estruturas complexas desnecessárias"
+            ]
+          },
+          {
+            "name": "Fraudes de Distribuição",
+            "items": [
+              "Venda inadequada",
+              "Omissão de informações",
+              "Promessas irreais"
+            ]
+          },
+          {
+            "name": "Fraudes de Gestão",
+            "items": [
+              "Conflitos de interesse",
+              "Operações não autorizadas",
+              "Manipulação de preços"
+            ]
+          }
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 4,
+      "order": 10,
+      "difficulty": 8,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Compliance e governança corporativa",
+      "description": "Aprenda sobre compliance avançado e governança corporativa para empresas listadas",
+      "type": "choices",
+      "content": {
+        "governanceComplianceScenarios": [
+          {
+            "situation": "Sua empresa está considerando uma operação de relacionamento com parte relacionada que pode gerar benefícios de R$ 10 milhões, mas existe risco de conflito de interesse",
+            "choices": [
+              {
+                "option": "Proceder sem análise de compliance",
+                "consequence": "Alto risco regulatório e reputacional",
+                "outcome": "Pode resultar em multas e perda de credibilidade"
+              },
+              {
+                "option": "Submeter ao comitê de compliance",
+                "consequence": "Análise independente e transparente",
+                "outcome": "Operação pode ser aprovada com salvaguardas"
+              },
+              {
+                "option": "Desistir da operação",
+                "consequence": "Perda de oportunidade, mas sem risco",
+                "outcome": "Proteção da reputação e compliance"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "2º EM",
+      "module": 4,
+      "order": 11,
+      "difficulty": 8,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros corporativos especializados",
+      "description": "Simule cenários complexos de seguro corporativo especializado para diferentes setores",
+      "type": "simulation",
+      "content": {
+        "specializedCorporateInsuranceSimulation": {
+          "sectorScenarios": [
+            {
+              "sector": "Setor Financeiro",
+              "insuranceNeeds": [
+                "Responsabilidade de diretores",
+                "Seguro de fidelidade",
+                "Seguro de ciber-riscos",
+                "Seguro de responsabilidade profissional",
+                "Seguro de propriedade",
+                "Seguro de interrupção de negócio"
+              ],
+              "totalCost": 500000,
+              "coverage": "Proteção abrangente para riscos financeiros e operacionais"
+            },
+            {
+              "sector": "Setor de Saúde",
+              "insuranceNeeds": [
+                "Responsabilidade médica",
+                "Seguro de equipamentos médicos",
+                "Seguro de responsabilidade hospitalar",
+                "Seguro de interrupção de serviços",
+                "Seguro de transporte de medicamentos"
+              ],
+              "totalCost": 800000,
+              "coverage": "Proteção para riscos específicos da área da saúde"
+            }
+          ]
+        }
+      },
+      "gradeId": "2º EM",
+      "module": 4,
+      "order": 12,
+      "difficulty": 8,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT201",
+        "EM13CNT202",
+        "EM13CNT203"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Planejamento financeiro estratégico",
+      "description": "Desenvolva planos financeiros estratégicos de longo prazo para organizações complexas e multinacionais",
+      "type": "budget-distribution",
+      "content": {
+        "strategicFinancialPlanning": {
+          "planningDimensions": [
+            {
+              "dimension": "Temporal",
+              "horizon": "10-20 anos",
+              "focus": [
+                "Visão de futuro",
+                "Sustentabilidade",
+                "Legado"
+              ]
+            },
+            {
+              "dimension": "Geográfica",
+              "scope": "Global",
+              "focus": [
+                "Expansão internacional",
+                "Diversificação geográfica",
+                "Gestão de risco país"
+              ]
+            },
+            {
+              "dimension": "Setorial",
+              "scope": "Multi-setorial",
+              "focus": [
+                "Diversificação setorial",
+                "Sinergias",
+                "Gestão de portfólio"
+              ]
+            }
+          ],
+          "strategicTools": [
+            "Modelagem financeira avançada",
+            "Análise de cenários múltiplos",
+            "Gestão de risco integrada",
+            "Planejamento de capital"
+          ]
+        }
+      },
+      "gradeId": "3º EM",
+      "module": 1,
+      "order": 1,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise financeira setorial",
+      "description": "Analise indicadores financeiros setoriais para entender dinâmicas de mercado e posicionamento competitivo",
+      "type": "input",
+      "content": {
+        "sectorFinancialAnalysis": {
+          "analysisLevels": [
+            "Análise macroeconômica setorial",
+            "Análise competitiva",
+            "Análise de cadeia de valor",
+            "Análise de tendências setoriais"
+          ],
+          "keyMetrics": [
+            "Margem setorial média",
+            "ROE setorial",
+            "Endividamento setorial",
+            "Crescimento setorial",
+            "Volatilidade setorial"
+          ],
+          "benchmarking": [
+            "Comparação com pares",
+            "Análise de líderes setoriais",
+            "Identificação de melhores práticas",
+            "Análise de gaps de performance"
+          ]
+        }
+      },
+      "gradeId": "3º EM",
+      "module": 1,
+      "order": 2,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Decisões de investimento estratégico",
+      "description": "Analise cenários complexos de investimento estratégico e tome decisões de longo prazo",
+      "type": "simulation",
+      "content": {
+        "scenario": "Simule uma situação real sobre decisões de investimento estratégico",
+        "options": [
+          {
+            "choice": "Opção A",
+            "outcome": "Resultado positivo"
+          },
+          {
+            "choice": "Opção B",
+            "outcome": "Resultado neutro"
+          },
+          {
+            "choice": "Opção C",
+            "outcome": "Resultado negativo"
+          }
+        ],
+        "feedback": "Esta simulação ajuda a entender decisões de investimento estratégico na prática."
+      },
+      "gradeId": "3º EM",
+      "module": 1,
+      "order": 3,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Psicologia de mercado institucional",
+      "description": "Entenda como a psicologia institucional influencia mercados financeiros globais",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre psicologia de mercado institucional, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda psicologia de mercado institucional e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 2,
+      "order": 4,
+      "difficulty": 9,
+      "estimatedTime": 45,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Análise quantitativa avançada",
+      "description": "Realize análises quantitativas avançadas para identificar oportunidades de arbitragem e trading algorítmico",
+      "type": "price-comparison",
+      "content": {
+        "products": [
+          {
+            "name": "Produto A",
+            "price": 100,
+            "quality": "Alta",
+            "features": [
+              "Durabilidade",
+              "Garantia"
+            ]
+          },
+          {
+            "name": "Produto B",
+            "price": 80,
+            "quality": "Média",
+            "features": [
+              "Preço baixo",
+              "Básico"
+            ]
+          },
+          {
+            "name": "Produto C",
+            "price": 120,
+            "quality": "Premium",
+            "features": [
+              "Luxo",
+              "Exclusivo"
+            ]
+          }
+        ],
+        "criteria": [
+          "Preço",
+          "Qualidade",
+          "Durabilidade",
+          "Valor agregado"
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 2,
+      "order": 5,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Finanças corporativas globais",
+      "description": "Simule operações financeiras corporativas globais para entender complexidades internacionais",
+      "type": "simulation",
+      "content": {
+        "globalCorporateFinanceSimulation": {
+          "globalScenarios": [
+            {
+              "scenario": "Financiamento corporativo internacional",
+              "opportunities": [
+                "Acesso a mercados de capital globais",
+                "Diversificação de fontes de financiamento",
+                "Otimização de custo de capital"
+              ],
+              "risks": [
+                "Risco cambial",
+                "Risco de taxa de juros",
+                "Risco regulatório",
+                "Risco político"
+              ],
+              "strategies": [
+                "Hedge integrado",
+                "Estruturação de dívida",
+                "Gestão de risco corporativo"
+              ]
+            },
+            {
+              "scenario": "Investimento direto estrangeiro",
+              "opportunities": [
+                "Expansão geográfica",
+                "Acesso a novos mercados",
+                "Sinergias operacionais"
+              ],
+              "risks": [
+                "Risco país",
+                "Risco de liquidação",
+                "Risco operacional",
+                "Risco de reputação"
+              ],
+              "strategies": [
+                "Due diligence avançada",
+                "Estruturação jurídica",
+                "Gestão de risco integrada"
+              ]
+            }
+          ]
+        }
+      },
+      "gradeId": "3º EM",
+      "module": 2,
+      "order": 6,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Matemática financeira de produtos estruturados",
+      "description": "Resolva problemas complexos de matemática financeira aplicados a produtos estruturados e exóticos",
+      "type": "math-problems",
+      "content": {
+        "problems": [
+          {
+            "question": "Calcule o valor futuro de um investimento de R$ 1.000,00 a uma taxa de 5% ao ano por 3 anos",
+            "formula": "FV = PV × (1 + r)^n",
+            "variables": {
+              "PV": 1000,
+              "r": 0.05,
+              "n": 3
+            },
+            "answer": 1157.63,
+            "explanation": "Aplicando a fórmula dos juros compostos"
+          }
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 3,
+      "order": 7,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Estratégias de investimento alternativo",
+      "description": "Classifique e entenda estratégias de investimento alternativo para portfólios sofisticados",
+      "type": "quiz",
+      "content": {
+        "questions": [
+          {
+            "question": "Sobre estratégias de investimento alternativo, qual das opções está correta?",
+            "options": [
+              "Opção A - Conceito básico",
+              "Opção B - Conceito intermediário",
+              "Opção C - Conceito avançado",
+              "Opção D - Conceito especializado"
+            ],
+            "correct": 1,
+            "explanation": "Esta lição aborda estratégias de investimento alternativo e seus conceitos fundamentais."
+          }
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 3,
+      "order": 8,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Gestão de risco sistêmico",
+      "description": "Simule cenários de risco sistêmico para entender proteções em crises financeiras globais",
+      "type": "simulation",
+      "content": {
+        "systemicRiskSimulation": {
+          "systemicScenarios": [
+            {
+              "scenario": "Crise financeira global",
+              "conservativeStrategy": {
+                "protection": "Alta",
+                "strategy": "Diversificação global, ouro, títulos soberanos"
+              },
+              "aggressiveStrategy": {
+                "protection": "Baixa",
+                "strategy": "Concentração em mercados emergentes"
+              },
+              "lesson": "Diversificação global protege contra riscos sistêmicos"
+            },
+            {
+              "scenario": "Colapso de moeda fiduciária",
+              "conservativeStrategy": {
+                "protection": "Alta",
+                "strategy": "Ouro, prata, criptomoedas, ativos reais"
+              },
+              "aggressiveStrategy": {
+                "protection": "Baixa",
+                "strategy": "Dinheiro em espécie, títulos em moeda local"
+              },
+              "lesson": "Ativos reais protegem contra colapso monetário"
+            }
+          ]
+        }
+      },
+      "gradeId": "3º EM",
+      "module": 3,
+      "order": 9,
+      "difficulty": 9,
+      "estimatedTime": 60,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Fraudes em mercados de capitais",
+      "description": "Identifique e evite fraudes sofisticadas em mercados de capitais globais",
+      "type": "drag-drop",
+      "content": {
+        "capitalMarketsFraudZones": [
+          {
+            "name": "Fraudes de Mercado de Capitais",
+            "items": [
+              "Manipulação de preços",
+              "Front running",
+              "Wash trading",
+              "Pump and dump"
+            ]
+          },
+          {
+            "name": "Fraudes de Informação",
+            "items": [
+              "Insider trading",
+              "Informações privilegiadas",
+              "Relatórios falsos",
+              "Dados manipulados"
+            ]
+          },
+          {
+            "name": "Fraudes de Estruturação",
+            "items": [
+              "Produtos complexos desnecessários",
+              "Estruturas de comissão ocultas",
+              "Conflitos de interesse"
+            ]
+          }
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 4,
+      "order": 10,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Compliance e regulação global",
+      "description": "Aprenda sobre compliance e regulação financeira global para operações internacionais",
+      "type": "choices",
+      "content": {
+        "globalComplianceScenarios": [
+          {
+            "situation": "Sua empresa está considerando uma operação de fusão internacional que pode gerar sinergias de R$ 100 milhões, mas existe risco de não aprovação antitruste em múltiplas jurisdições",
+            "choices": [
+              {
+                "option": "Proceder sem análise antitruste global",
+                "consequence": "Alto risco regulatório internacional",
+                "outcome": "Pode resultar em multas globais e bloqueio da operação"
+              },
+              {
+                "option": "Consultar advogados especializados em cada jurisdição",
+                "consequence": "Custo alto, mas segurança global",
+                "outcome": "Operação pode ser aprovada com condições em cada país"
+              },
+              {
+                "option": "Desistir da operação",
+                "consequence": "Perda de oportunidade global, mas sem risco",
+                "outcome": "Proteção contra riscos regulatórios internacionais"
+              }
+            ]
+          }
+        ]
+      },
+      "gradeId": "3º EM",
+      "module": 4,
+      "order": 11,
+      "difficulty": 9,
+      "estimatedTime": 50,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    },
+    {
+      "title": "Seguros corporativos globais",
+      "description": "Simule cenários complexos de seguro corporativo global para multinacionais",
+      "type": "simulation",
+      "content": {
+        "globalCorporateInsuranceSimulation": {
+          "multinationalScenarios": [
+            {
+              "scenario": "Multinacional de tecnologia com operações em 50 países",
+              "insuranceNeeds": [
+                "Responsabilidade civil global",
+                "Seguro de propriedade mundial",
+                "Seguro de responsabilidade de produtos",
+                "Seguro de responsabilidade de diretores",
+                "Seguro de ciber-riscos globais",
+                "Seguro de interrupção de negócio",
+                "Seguro de transporte internacional",
+                "Seguro de responsabilidade profissional"
+              ],
+              "totalCost": 2500000,
+              "coverage": "Proteção abrangente para operações globais e riscos tecnológicos"
+            },
+            {
+              "scenario": "Multinacional de mineração com projetos em 20 países",
+              "insuranceNeeds": [
+                "Responsabilidade civil ambiental",
+                "Seguro de equipamentos de mineração",
+                "Seguro de responsabilidade profissional",
+                "Seguro de transporte de minérios",
+                "Seguro de interrupção de operações",
+                "Seguro de responsabilidade de diretores",
+                "Seguro de propriedade global"
+              ],
+              "totalCost": 5000000,
+              "coverage": "Proteção para riscos específicos da mineração global"
+            }
+          ]
+        }
+      },
+      "gradeId": "3º EM",
+      "module": 4,
+      "order": 12,
+      "difficulty": 9,
+      "estimatedTime": 55,
+      "bnccSkills": [
+        "EM13CNT301",
+        "EM13CNT302",
+        "EM13CNT303"
+      ],
+      "isActive": true
+    }
+  ]
+}

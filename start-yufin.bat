@@ -1,0 +1,9 @@
+@echo off
+echo Iniciando YuFin...
+echo.
+echo Iniciando backend MongoDB...
+start /B backend\yufin-backend.exe
+timeout /t 3 /nobreak > nul
+echo.
+echo Iniciando aplicacao Electron...
+npm run electron

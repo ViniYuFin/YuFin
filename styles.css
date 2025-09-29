@@ -1,0 +1,906 @@
+@import url('https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --border-orange: rgb(238, 145, 22);
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --card-bg: #ffffff;
+  --interface-bg: #f8fafc;
+}
+
+.dark {
+  --bg-primary: #1f2937;
+  --bg-secondary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --border-color: #4b5563;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #374151;
+  --interface-bg: #111827;
+}
+
+/* Reset e configurações básicas */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.yufin-title {
+  font-family: 'Cherry Bomb One', cursive;
+}
+
+/* ===== RESPONSIVIDADE BÁSICA - MANTENDO IDENTIDADE VISUAL ===== */
+
+/* Mobile First - Ajustes mínimos para evitar quebras */
+@media (max-width: 640px) {
+  .lesson-node {
+    width: 90%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .lesson-path {
+    padding: 0 1rem;
+    min-height: 300px;
+  }
+  
+  /* Ajuste mínimo para evitar overflow */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Tablet - Ajustes moderados */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .lesson-node {
+    width: 70%;
+    padding: 0.75rem;
+    border-radius: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .lesson-path {
+    padding: 0 2rem;
+    min-height: 400px;
+  }
+}
+
+/* Desktop - Mantém o design original */
+@media (min-width: 1024px) {
+  .lesson-node {
+    width: 46%;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    margin-bottom: 3.5rem;
+  }
+  
+  .lesson-path {
+    padding: 0 3rem;
+    min-height: 500px;
+  }
+}
+
+/* ===== ESTILO ORIGINAL DA TRILHA DE LIÇÕES ===== */
+.lesson-path {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 300px;
+  width: 100%;
+  padding: 0 2rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  margin-bottom: 1rem;
+}
+
+.lesson-path::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: linear-gradient(to bottom, #EE9116, #FFB300);
+  z-index: 0;
+  transform: translateX(-1px);
+  margin: 1rem 0;
+}
+
+.lesson-node {
+  display: flex;
+  align-items: center;
+  border: 2px solid var(--border-orange);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  transition: transform 0.2s ease-in-out, background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+  padding: 0.6rem;
+  border-radius: 0.75rem;
+  width: 46%;
+  margin-bottom: 3.5rem;
+  position: relative;
+  max-width: 100%;
+}
+
+.lesson-node:hover {
+  transform: scale(1.03);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Estilos para alternar a posição dos nós */
+.lesson-path .lesson-node:nth-child(odd) {
+  align-self: flex-start;
+  margin-right: 0;
+  transform: translateX(0.5rem);
+}
+
+.lesson-path .lesson-node:nth-child(even) {
+  align-self: flex-end;
+  margin-left: 0;
+  transform: translateX(-0.5rem);
+}
+
+.lesson-node.completed {
+  background-color: #4FD1C5;
+  border-color: #3DA095;
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.3);
+}
+
+.lesson-node.available {
+  background-color: #fff;
+  border-color: #EE9116;
+  animation: pulse 1.5s infinite;
+  color: #333;
+  box-shadow: 0 4px 12px rgba(238, 145, 22, 0.2);
+}
+
+.lesson-node.locked {
+  background-color: #D1D5DB;
+  border-color: #9CA3AF;
+  color: #6B7280;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== ANIMAÇÕES ORIGINAIS ===== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.animate-pop {
+  animation: pop 0.5s ease-out;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== NAVEGAÇÃO ORIGINAL ===== */
+nav.fixed.bottom-0 {
+  z-index: 9999 !important;
+}
+
+.custom-nav-border {
+  border-top: 3px solid #EE9116 !important;
+  border-top-width: 3px !important;
+  border-top-style: solid !important;
+  border-top-color: #EE9116 !important;
+}
+
+.custom-header-border {
+  border-bottom: 3px solid #EE9116 !important;
+  border-bottom-width: 3px !important;
+  border-bottom-style: solid !important;
+  border-bottom-color: #EE9116 !important;
+}
+
+nav.custom-nav-border {
+  border-top: 3px solid #EE9116 !important;
+}
+
+div.custom-header-border {
+  border-bottom: 3px solid #EE9116 !important;
+}
+
+/* ===== NOTIFICAÇÕES ORIGINAIS ===== */
+@keyframes slideInFromTop {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOutToTop {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.notification-item {
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+.notification-item.removing {
+  animation: slideOutToTop 0.3s ease-in;
+}
+
+/* ===== LIÇÕES ORIGINAIS ===== */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.6s ease-out;
+}
+
+/* ===== PROGRESSO ORIGINAL ===== */
+@keyframes progressFill {
+  0% {
+    width: 0%;
+  }
+  100% {
+    width: var(--progress-width);
+  }
+}
+
+.progress-animate {
+  animation: progressFill 1s ease-out;
+}
+
+/* ===== NOVA ANIMAÇÃO DE PREENCHIMENTO SUAVE ===== */
+@keyframes progressFillGradient {
+  0% {
+    width: 0%;
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    width: var(--target-width);
+    opacity: 1;
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.progress-fill-animated {
+  background: linear-gradient(90deg, #EE9116, #FFB300, #FF8F00, #EE9116) !important;
+  background-size: 200% 100% !important;
+  animation: progressFillGradient 2s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+             gradientShift 3s ease-in-out infinite !important;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Garantir que o gradiente seja aplicado mesmo com classes Tailwind */
+.progress-fill-animated,
+div.progress-fill-animated,
+.progress-fill-animated.rounded-full,
+.progress-fill-animated.shadow-lg {
+  background: linear-gradient(90deg, #EE9116, #FFB300, #FF8F00, #EE9116) !important;
+  background-size: 200% 100% !important;
+}
+
+/* Força a aplicação do gradiente com máxima especificidade */
+div[class*="progress-fill-animated"] {
+  background: linear-gradient(90deg, #EE9116, #FFB300, #FF8F00, #EE9116) !important;
+  background-size: 200% 100% !important;
+}
+
+.progress-fill-animated::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  animation: progressShine 2s ease-in-out infinite;
+}
+
+@keyframes progressShine {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* ===== BOTÕES ORIGINAIS ===== */
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.button-pulse {
+  animation: buttonPulse 0.3s ease-out;
+}
+
+/* ===== LOADING ORIGINAL ===== */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ===== CONQUISTAS ORIGINAIS ===== */
+@keyframes achievementUnlock {
+  0% {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+.achievement-unlock {
+  animation: achievementUnlock 0.8s ease-out;
+}
+
+/* ===== SCROLLBAR ORIGINAL ===== */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ===== ANIMAÇÕES ADICIONAIS ORIGINAIS ===== */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(238, 145, 22, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(238, 145, 22, 0.8), 0 0 30px rgba(238, 145, 22, 0.6);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Classes de animação originais */
+.animate-slideIn {
+  animation: slideInFromBottom 0.8s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ===== EFEITOS HOVER ORIGINAIS ===== */
+.hover-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== LIÇÕES DUOLINGO ORIGINAL ===== */
+.learning-path {
+  position: relative;
+}
+
+.learning-path::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(to bottom, #EE9116, #FFB300);
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+
+.lesson-node-duolingo {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lesson-node-duolingo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-node-duolingo.completed {
+  background: #4FD1C5;
+  border: 2px solid #4FD1C5;
+  color: white;
+  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.3);
+}
+
+.lesson-node-duolingo.available {
+  background: white;
+  border: 2px solid #EE9116;
+  color: #1f2937;
+  box-shadow: 0 4px 12px rgba(238, 145, 22, 0.2);
+}
+
+.lesson-node-duolingo.locked {
+  background: #d1d5db;
+  border: 2px solid #6b7280;
+  color: #6b7280;
+  opacity: 0.7;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== EFEITOS GLASSMORPHISM ORIGINAL ===== */
+.glass {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* ===== GRADIENTES ORIGINAIS ===== */
+.gradient-primary {
+  background: linear-gradient(135deg, #EE9116 0%, #FFB300 100%);
+}
+
+.gradient-success {
+  background: linear-gradient(135deg, #4FD1C5 0%, #63B3ED 100%);
+}
+
+.gradient-warning {
+  background: linear-gradient(135deg, #FFB300 0%, #EE9116 100%);
+}
+
+.gradient-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+/* ===== LOADING DOTS ORIGINAL ===== */
+.loading-dots {
+  display: inline-block;
+}
+
+.loading-dots::after {
+  content: '';
+  animation: dots 1.5s steps(5, end) infinite;
+}
+
+@keyframes dots {
+  0%, 20% {
+    content: '';
+  }
+  40% {
+    content: '.';
+  }
+  60% {
+    content: '..';
+  }
+  80%, 100% {
+    content: '...';
+  }
+}
+
+/* ===== ACESSIBILIDADE ORIGINAL ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid #EE9116;
+  outline-offset: 2px;
+}
+
+/* ===== NOTIFICAÇÕES ORIGINAIS ===== */
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.notification.success {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 1px solid #10b981;
+  color: #065f46;
+}
+
+.notification.error {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border: 1px solid #ef4444;
+  color: #991b1b;
+}
+
+.notification.warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #f59e0b;
+  color: #92400e;
+}
+
+.notification.info {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border: 1px solid #3b82f6;
+  color: #1e40af;
+}
+
+/* ===== INTERFACE DUOLINGO ORIGINAL ===== */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.learning-trail {
+  position: relative;
+  min-height: 100vh;
+  padding-bottom: 100px;
+}
+
+.lesson-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.lesson-number {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Animações para nós da trilha originais */
+.lesson-node-duolingo:nth-child(odd) {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.lesson-node-duolingo:nth-child(even) {
+  animation: slideInFromRight 0.6s ease-out;
+}
+
+/* Efeito de brilho para nós disponíveis original */
+.lesson-node-duolingo.available::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #EE9116, #FFB300, #4FD1C5, #EE9116);
+  border-radius: 24px;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lesson-node-duolingo.available:hover::before {
+  opacity: 1;
+}
+
+/* ===== ÍCONES DE STATUS ORIGINAL ===== */
+.icon-wrapper {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.icon-wrapper.completed {
+  background-color: #3DA095;
+}
+
+.icon-wrapper.available {
+  background-color: #FFB300;
+}
+
+.icon-wrapper.locked {
+  background-color: #A0A9B5;
+}
+
+/* ===== LAYOUT ZIG-ZAG ORIGINAL ===== */
+.lesson-node:nth-child(odd) {
+  align-self: flex-start;
+  margin-right: 50%;
+  transform: translateX(-1.5rem);
+}
+
+.lesson-node:nth-child(even) {
+  align-self: flex-end;
+  margin-left: 50%;
+  transform: translateX(1.5rem);
+}
+
+/* ===== SOMBRAS ORIGINAIS ===== */
+.shadow-lesson {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.shadow-lesson-hover {
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-nav-active {
+  box-shadow: 0 2px 8px rgba(238, 145, 22, 0.3);
+}
+
+/* ===== VARIÁVEIS CSS ORIGINAIS ===== */
+.bg-interface {
+  background-color: var(--interface-bg);
+}
+
+.bg-white {
+  background-color: var(--card-bg);
+}
+
+.text-gray-600 {
+  color: var(--text-secondary);
+}
+
+.text-gray-800 {
+  color: var(--text-primary);
+}
+
+.border-gray-200 {
+  border-color: var(--border-color);
+}
+
+.shadow-lg {
+  box-shadow: 0 10px 15px -3px var(--shadow-color);
+}
+
+.font-cherry {
+  font-family: 'Cherry Bomb One', cursive;
+}
+
+/* ===== CONFETTI ORIGINAL ===== */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.confetti {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  height: 18px;
+  border-radius: 3px;
+  opacity: 0.85;
+  animation: confetti-fall 2.2s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-40px) rotateZ(0deg);
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(90vh) rotateZ(360deg);
+    opacity: 0;
+  }
+}

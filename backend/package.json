@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "migrate": "node scripts/migrate-data.js",
+    "populate-lessons": "node scripts/populate-lessons.js",
+    "create-grades": "node create-basic-grades.js",
+    "setup-db": "node setup-database.js",
+    "redistribute-lessons": "node redistribute-lessons.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.11.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.17.1"
+  },
+  "description": "Backend do YuFin com MongoDB - Sistema de educação financeira",
+  "bin": "index.js"
+}
