@@ -212,3 +212,8 @@ Para dúvidas ou sugestões, entre em contato através do GitHub Issues.
 ---
 
 **🎓 YüFin - Transformando educação financeira em uma experiência divertida e interativa!**
+
+
+
+
+

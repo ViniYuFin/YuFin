@@ -11,8 +11,8 @@ yarn-error.log*
 dist/electron/
 
 # Production builds
-dist/
 build/
+dist-electron/
 
 # Environment variables
 .env
@@ -99,3 +99,9 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+.vercel
+
+.vercel
+
+.vercel

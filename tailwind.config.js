@@ -1,6 +1,20 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class',
   content: ["./*.{html,js,jsx}", "./src/**/*.{js,jsx}"],
+  safelist: [
+    'dark:bg-gray-800',
+    'dark:bg-gray-700', 
+    'dark:bg-gray-900',
+    'dark:text-white',
+    'dark:text-gray-300',
+    'dark:text-orange-400',
+    'dark:border-gray-600',
+    'dark:border-orange-400',
+    'dark:border-orange-600',
+    'dark:hover:bg-gray-600',
+    'dark:hover:bg-gray-700'
+  ],
   theme: {
     extend: {
       screens: {

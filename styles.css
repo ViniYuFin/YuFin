@@ -904,3 +904,151 @@ textarea:focus {
     opacity: 0;
   }
 }
+
+/* Modo escuro - estilos específicos para Settings */
+.dark {
+  --bg-primary: #1f2937;
+  --bg-secondary: #374151;
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --border-color: #4b5563;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --card-bg: #374151;
+  --interface-bg: #111827;
+}
+
+/* Estilos específicos para modo escuro */
+.dark .bg-interface {
+  background-color: #111827 !important;
+}
+
+.dark .bg-white {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: #4b5563 !important;
+}
+
+.dark .text-gray-800 {
+  color: #f9fafb !important;
+}
+
+.dark .text-gray-600 {
+  color: #d1d5db !important;
+}
+
+.dark .text-primary {
+  color: #fb923c !important;
+}
+
+/* CORREÇÃO DO CONTRASTE DOS TEXTOS NO MODO ESCURO */
+.dark .text-gray-800 {
+  color: #ffffff !important;
+}
+
+.dark .text-gray-600 {
+  color: #e5e7eb !important;
+}
+
+.dark .text-gray-700 {
+  color: #f3f4f6 !important;
+}
+
+.dark .text-gray-500 {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-400 {
+  color: #9ca3af !important;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA CARTÕES DE CONFIGURAÇÃO */
+.dark .bg-gray-50 {
+  background-color: #4b5563 !important;
+}
+
+.dark .bg-gray-50 label {
+  color: #ffffff !important;
+}
+
+.dark .bg-gray-50 span {
+  color: #e5e7eb !important;
+}
+
+.dark .bg-gray-50 .text-gray-800 {
+  color: #ffffff !important;
+}
+
+.dark .bg-gray-50 .text-gray-600 {
+  color: #e5e7eb !important;
+}
+
+/* Forçar contraste adequado em todos os textos */
+.dark label {
+  color: #ffffff !important;
+}
+
+.dark span {
+  color: #e5e7eb !important;
+}
+
+.dark div {
+  color: inherit;
+}
+
+/* Textos específicos que precisam de mais contraste */
+.dark .font-semibold {
+  color: #ffffff !important;
+}
+
+.dark .text-sm {
+  color: #d1d5db !important;
+}
+
+/* Título "Ajustes" específico */
+.dark .text-2xl {
+  color: #ffffff !important;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA STUDENTDASHBOARD */
+.dark .bg-white {
+  background-color: #374151 !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: #4b5563 !important;
+}
+
+.dark .text-gray-800 {
+  color: #ffffff !important;
+}
+
+.dark .text-gray-500 {
+  color: #d1d5db !important;
+}
+
+.dark .text-gray-600 {
+  color: #e5e7eb !important;
+}
+
+/* CORREÇÃO ESPECÍFICA PARA FRIENDS */
+.dark .bg-interface {
+  background-color: #111827 !important;
+}
+
+.dark .text-primary {
+  color: #fb923c !important;
+}
+
+/* Animação personalizada para o spinner YuFin */
+@keyframes yufinPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}

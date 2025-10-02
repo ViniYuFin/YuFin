@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Backend
+backend/
+**/backend/
+
+# Electron
+*.exe
+*.bat
+dist-electron/
+electron/
+YüFin.exe
+main.js
+icon.ico
+start-yufin.bat
+
+# Version control
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+
+# Scripts
+scripts/
+
+# Backups and tests
+backup-*
+test-*
+analyze-*
+quick-test.js
+force-reload.js
+
+# Documentation
+*.md
+!README.md
+
+# Large files
+dist/electron/
+

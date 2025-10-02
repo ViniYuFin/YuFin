@@ -1,0 +1,310 @@
+/* Sistema de Gradientes Responsivos - YuFin */
+
+/* Variáveis CSS para gradientes - MANTENDO CORES ORIGINAIS */
+
+:root {
+  --gradient-primary: linear-gradient(135deg, #EE9116 0%, #FFB300 100%);
+  --gradient-secondary: linear-gradient(135deg, #FFD49E 0%, #FFFFFF 100%);
+  --gradient-accent: linear-gradient(90deg, #EE9116 0%, #FFB300 50%, #FF8F00 100%);
+  --gradient-teal: linear-gradient(135deg, #4FD1C5 0%, #63B3ED 100%);
+  /* Cores base para fallbacks - CORES ORIGINAIS */
+  --color-primary: #EE9116;
+  --color-secondary: #FFB300;
+  --color-interface: #FFD49E;
+  --color-teal: #4FD1C5;
+}
+
+/* Gradiente principal das lições - Responsivo */
+
+.lesson-background {
+  /* Fallback sólido */
+  background-color: var(--color-interface);
+  /* Gradiente responsivo */
+  background: linear-gradient(
+    135deg,
+    #FFD49E 0%,
+    #FFFFFF 50%,
+    rgba(255, 179, 0, 0.4) 100%
+  );
+  /* Adaptação para mobile */
+  @media (max-width: 480px) {
+    background: linear-gradient(
+      180deg,
+      #FFD49E 0%,
+      #FFFFFF 100%
+    );
+  }
+  /* Adaptação para landscape mobile */
+  @media (orientation: landscape) and (max-height: 500px) {
+    background: linear-gradient(
+      90deg,
+      #FFD49E 0%,
+      #FFFFFF 100%
+    );
+  }
+  /* Adaptação para telas grandes */
+  @media (min-width: 1920px) {
+    background: linear-gradient(
+      135deg,
+      #FFD49E 0%,
+      #FFFFFF 30%,
+      rgba(255, 179, 0, 0.4) 100%
+    );
+  }
+  /* Adaptação para ultrawide */
+  @media (min-width: 2560px) {
+    background: linear-gradient(
+      135deg,
+      #FFD49E 0%,
+      #FFFFFF 25%,
+      rgba(255, 179, 0, 0.3) 100%
+    );
+  }
+}
+
+/* Gradiente da área de conteúdo das lições */
+
+.lesson-content-background {
+  /* Fallback sólido */
+  background-color: rgba(255, 212, 158, 0.6);
+  /* Gradiente responsivo */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 212, 158, 0.6) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 179, 0, 0.2) 100%
+  );
+  /* Adaptação para mobile */
+  @media (max-width: 480px) {
+    background: linear-gradient(
+      180deg,
+      rgba(255, 212, 158, 0.6) 0%,
+      rgba(255, 255, 255, 0.8) 100%
+    );
+  }
+  /* Adaptação para landscape mobile */
+  @media (orientation: landscape) and (max-height: 500px) {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 212, 158, 0.6) 0%,
+      rgba(255, 255, 255, 0.8) 100%
+    );
+  }
+}
+
+/* Gradientes de autenticação responsivos */
+
+.auth-background {
+  background: var(--gradient-primary);
+  /* Adaptação para landscape */
+  @media (orientation: landscape) and (max-height: 500px) {
+    background: linear-gradient(
+      90deg,
+      #EE9116 0%,
+      #FFB300 100%
+    );
+  }
+  /* Fallback para telas muito pequenas */
+  @media (max-width: 320px) {
+    background: var(--color-primary);
+  }
+  /* Adaptação para telas grandes */
+  @media (min-width: 1920px) {
+    background: linear-gradient(
+      135deg,
+      #EE9116 0%,
+      #FFB300 100%
+    );
+  }
+}
+
+/* Gradiente de registro (teal) */
+
+.auth-background-teal {
+  background: var(--gradient-teal);
+  /* Adaptação para landscape */
+  @media (orientation: landscape) and (max-height: 500px) {
+    background: linear-gradient(
+      90deg,
+      #4FD1C5 0%,
+      #63B3ED 100%
+    );
+  }
+  /* Fallback para telas muito pequenas */
+  @media (max-width: 320px) {
+    background: var(--color-teal);
+  }
+}
+
+/* Gradientes de componentes responsivos */
+
+.gradient-primary {
+  background: var(--gradient-primary);
+  @media (max-width: 480px) {
+    background: linear-gradient(180deg, #EE9116 0%, #FFB300 100%);
+  }
+}
+
+.gradient-secondary {
+  background: var(--gradient-secondary);
+  @media (max-width: 480px) {
+    background: var(--color-interface);
+  }
+}
+
+/* Barra de progresso animada responsiva */
+
+.progress-bar-gradient {
+  background: var(--gradient-accent);
+  background-size: 200% 100%;
+  will-change: background-position;
+  /* Otimização para performance */
+  @media (prefers-reduced-motion: reduce) {
+    background: var(--color-primary);
+
+    background-size: 100% 100%;
+  }
+  /* Fallback para telas de baixa qualidade */
+  @media (max-width: 480px) {
+    background: var(--color-primary);
+
+    background-size: 100% 100%;
+  }
+}
+
+/* Cards de memória responsivos */
+
+.memory-card-gradient {
+  background: linear-gradient(135deg, #f97316 0%, #eab308 100%);
+  @media (max-width: 480px) {
+    background: linear-gradient(180deg, #f97316 0%, #eab308 100%);
+  }
+}
+
+/* Texto com gradiente responsivo */
+
+.text-gradient-primary {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* Fallback para navegadores que não suportam */
+  @supports not (-webkit-background-clip: text) {
+    color: var(--color-primary);
+  }
+}
+
+/* Dashboard gradientes responsivos - CORES ORIGINAIS */
+
+.dashboard-background {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  @media (min-width: 1920px) {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  }
+  @media (min-width: 2560px) {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  }
+}
+
+/* Cards de métricas responsivos - CORES ORIGINAIS */
+
+.metric-card-gradient {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  @media (max-width: 480px) {
+    background: #fef3c7;
+  }
+}
+
+/* Otimizações para telas grandes */
+
+@media (min-width: 1920px) {
+  /* Ajustar gradientes para telas grandes */
+
+  .lesson-background {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .lesson-content-background {
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Dashboard para telas grandes */
+
+  .dashboard-background {
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+@media (min-width: 2560px) {
+  /* Ajustar gradientes para 4K */
+
+  .lesson-background {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .lesson-content-background {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .dashboard-background {
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+@media (min-width: 3440px) {
+  /* Ajustar gradientes para ultrawide */
+
+  .lesson-background {
+    background: radial-gradient(ellipse at center, #FFD49E 0%, #FFFFFF 50%, rgba(255, 179, 0, 0.4) 100%);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .lesson-content-background {
+    background: radial-gradient(ellipse at center, rgba(255, 212, 158, 0.6) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 179, 0, 0.2) 100%);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .dashboard-background {
+    background: radial-gradient(ellipse at center, #fef3c7 0%, #fed7aa 100%);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .auth-background {
+    background: radial-gradient(ellipse at center, #EE9116 0%, #FFB300 100%);
+    background-size: cover;
+    background-position: center;
+  }
+
+  .auth-background-teal {
+    background: radial-gradient(ellipse at center, #4FD1C5 0%, #63B3ED 100%);
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Suporte a preferências de movimento reduzido */
+
+@media (prefers-reduced-motion: reduce) {
+  .progress-bar-gradient {
+    background: var(--color-primary);
+    background-size: 100% 100%;
+  }
+}
+
+/* Suporte a modo escuro (preparação futura) */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --gradient-primary: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    --gradient-secondary: linear-gradient(135deg, #451a03 0%, #1f2937 100%);
+  }
+}
