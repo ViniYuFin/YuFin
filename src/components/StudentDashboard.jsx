@@ -820,8 +820,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         {/* Espaçamento para evitar sobreposição com header superior fixo */}
         <div className="mt-12 h-64 pb-20"></div>
         {/* Card do 6º Ano */}
-        <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl 2xl:max-w-9xl mx-auto p-6 lg:p-8 xl:p-12">
-          <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-orange-200">
+        <div className="w-full max-w-full px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl 2xl:max-w-9xl mx-auto lg:p-8 xl:p-12">
+          <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-orange-200 mb-8">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-3xl font-bold text-orange-600">{grade.name}</h2>
@@ -905,8 +905,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         </div>
 
         {/* Navegação de Módulos e Botão Próximo Ano */}
-        <div className="max-w-6xl lg:max-w-7xl xl:max-w-8xl 2xl:max-w-9xl mx-auto p-6 lg:p-8 xl:p-12">
-        <div className="flex space-x-3 mb-8 overflow-x-auto">
+        <div className="w-full max-w-full px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl 2xl:max-w-9xl mx-auto lg:p-8 xl:p-12 mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 lg:flex lg:space-x-3 lg:overflow-x-auto">
           {[1, 2, 3, 4].map(moduleNum => {
             const moduleData = progress.byModule[moduleNum];
             const isCompleted = moduleData && moduleData.completed === moduleData.total && moduleData.total > 0;
@@ -915,7 +915,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
               <button
                 key={moduleNum}
                 onClick={() => handleModuleChange(moduleNum)}
-                className={`flex-shrink-0 px-6 py-4 rounded-xl font-semibold transition-all shadow-lg ${
+                className={`px-4 py-3 sm:px-6 sm:py-4 rounded-xl font-semibold transition-all shadow-lg lg:flex-shrink-0 ${
                   selectedModule === moduleNum
                     ? 'bg-white text-orange-600 border-2 border-orange-500 transform scale-105'
                     : isCompleted
@@ -1017,7 +1017,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         </motion.div>
 
         {/* Grid de Lições e Conquista */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 lg:gap-6">
           {/* Lições do Módulo */}
           {moduleProgress && moduleProgress.lessons ? moduleProgress.lessons.map((lesson, index) => {
             // Verificar se modo dev está ativo
@@ -1040,7 +1040,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className={`relative bg-white rounded-xl shadow-lg border-2 transition-all cursor-pointer transform hover:scale-105 h-80 hover:shadow-2xl ${
+                className={`relative bg-white rounded-xl shadow-lg border-2 transition-all cursor-pointer transform hover:scale-105 min-h-64 flex flex-col lg:h-80 hover:shadow-2xl ${
                   lesson.isCompleted
                     ? 'border-green-500 shadow-green-200'
                     : canAccess

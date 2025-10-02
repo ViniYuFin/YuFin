@@ -525,18 +525,18 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
                       </div>
                     </div>
                     
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-wrap gap-2 sm:flex-nowrap sm:space-x-2">
                       <button
                         onClick={() => sendGift(friend.id, 'yuCoins')}
                         disabled={(user.progress?.yuCoins || 0) < 10}
-                        className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-yellow-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="bg-yellow-500 text-white px-2 py-1 rounded-lg text-xs sm:text-sm sm:px-3 hover:bg-yellow-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Enviar 10 YüCoins (Custo: 10 YüCoins)"
                       >
                         💰 Presente
                       </button>
                       <button
                             onClick={() => removeFriend(friend.id)}
-                            className="bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600 transition"
+                            className="bg-red-500 text-white px-2 py-1 rounded-lg text-xs sm:text-sm sm:px-3 hover:bg-red-600 transition"
                             title="Remover amigo"
                           >
                             ❌ Remover

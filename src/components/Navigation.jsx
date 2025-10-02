@@ -67,14 +67,14 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
         color: darkMode ? '#ffffff' : '#000000'
       }}
     >
-      <div className="flex justify-around items-center h-16 px-2 w-full">
+      <div className="flex justify-between items-center h-16 px-4 sm:px-6 lg:justify-around lg:px-2 w-full">
         {navItems.map((item) => {
           const isActive = activeScreen === item.screen;
           return (
             <button
               key={item.id}
               onClick={() => setActiveScreen(item.screen)}
-              className="flex flex-col items-center justify-center p-2"
+              className="flex flex-col items-center justify-center p-1 sm:p-2"
               style={{
                 color: isActive ? '#EE9116' : (darkMode ? '#ffffff' : '#9CA3AF'),
                 outline: 'none',
