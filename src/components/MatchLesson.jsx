@@ -447,7 +447,7 @@ const MatchLesson = ({ lesson, onComplete, onExit }) => {
               <div 
                 className="grid gap-8 max-w-5xl"
                 style={{ 
-                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gridTemplateColumns: window.innerWidth < 640 ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)',
                   display: 'grid'
                 }}
               >

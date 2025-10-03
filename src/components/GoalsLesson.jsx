@@ -257,13 +257,13 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
                   >
                     🎯 Sua vez! Calcule:
                   </h4>
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="mb-3">
                     <input
                       type="number"
                       placeholder="Digite sua resposta..."
                       value={currentExampleInput}
                       onChange={(e) => handleExampleInputChange(e.target.value)}
-                      className="flex-1 p-2 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                      className="w-full p-3 border border-purple-300 rounded-lg focus:ring-2 focus:ring-purple-500 mb-3"
                       disabled={currentExampleResult}
                       style={{
                         backgroundColor: darkMode ? '#374151' : '#ffffff',
@@ -273,7 +273,7 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
                     <button
                        onClick={handleCheckExample}
                        disabled={!currentExampleInput || currentExampleResult}
-                       className={`px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
+                       className={`w-full px-4 py-3 rounded-lg font-medium transition-all duration-300 ${
                          !currentExampleInput || currentExampleResult
                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                            : 'bg-primary text-white shadow-lg transform hover:scale-105'

@@ -270,9 +270,9 @@ const IntelligentDashboard = ({ user, setUser, setActiveScreen }) => {
               📊 Seu Perfil de Aprendizado
             </h2>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
               <div 
-                className="text-center p-3 bg-blue-50 rounded-lg"
+                className="text-center p-2 sm:p-3 bg-blue-50 rounded-lg"
                 style={darkMode ? { backgroundColor: '#1e3a8a' } : {}}
               >
                 <div className="text-2xl mb-1">🎯</div>
@@ -291,7 +291,7 @@ const IntelligentDashboard = ({ user, setUser, setActiveScreen }) => {
               </div>
               
               <div 
-                className="text-center p-3 bg-green-50 rounded-lg"
+                className="text-center p-2 sm:p-3 bg-green-50 rounded-lg"
                 style={darkMode ? { backgroundColor: '#14532d' } : {}}
               >
                 <div className="text-2xl mb-1">⚡</div>
@@ -310,7 +310,7 @@ const IntelligentDashboard = ({ user, setUser, setActiveScreen }) => {
               </div>
               
               <div 
-                className="text-center p-3 bg-yellow-50 rounded-lg"
+                className="text-center p-2 sm:p-3 bg-yellow-50 rounded-lg"
                 style={darkMode ? { backgroundColor: '#451a03' } : {}}
               >
                 <div className="text-2xl mb-1">🕐</div>
@@ -329,7 +329,7 @@ const IntelligentDashboard = ({ user, setUser, setActiveScreen }) => {
               </div>
               
               <div 
-                className="text-center p-3 bg-purple-50 rounded-lg"
+                className="text-center p-2 sm:p-3 bg-purple-50 rounded-lg"
                 style={darkMode ? { backgroundColor: '#581c87' } : {}}
               >
                 <div className="text-2xl mb-1">💪</div>

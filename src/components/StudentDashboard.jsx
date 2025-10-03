@@ -759,13 +759,15 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
               <span className="text-lg">👤</span>
             </div>
                           <div className="flex flex-col">
-                <span className="text-base font-semibold text-gray-800">{user.name}</span>
+                <span className="text-base font-semibold text-gray-800">
+                  {window.innerWidth < 640 ? (user.name?.split(' ')[0] || user.name) : user.name}
+                </span>
                 <div className="flex items-center space-x-2">
                   <span 
                     className="text-xs"
                     style={darkMode ? { color: '#ffffff' } : { color: '#6b7280' }}
                   >
-                    Nível {user.progress?.level || 1}
+                    {window.innerWidth < 640 ? `N${user.progress?.level || 1}` : `Nível ${user.progress?.level || 1}`}
                   </span>
                   <span className="text-xs text-primary font-medium">• {user.progress?.totalXp || user.progress?.xp || 0}/{user.progress?.xpToNextLevel || 100} XP</span>
                 </div>

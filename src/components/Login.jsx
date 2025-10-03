@@ -5,6 +5,7 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmitLogin = async (e) => {
     e.preventDefault();
@@ -68,18 +69,43 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
           disabled={loading}
           autoComplete="email"
         />
-        <input
-          type="password"
-          id="password-login"
-          name="password"
-          placeholder="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-          disabled={loading}
-          autoComplete="current-password"
-        />
+        <div style={{ position: 'relative' }}>
+          <input
+            type={showPassword ? "text" : "password"}
+            id="password-login"
+            name="password"
+            placeholder="Senha"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="p-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            required
+            disabled={loading}
+            autoComplete="current-password"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            style={{
+              position: 'absolute',
+              right: '8px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              zIndex: 10,
+              outline: 'none',
+              boxShadow: 'none'
+            }}
+            disabled={loading}
+          >
+            {showPassword ? (
+              <span style={{ fontSize: '18px' }}>🙈</span>
+            ) : (
+              <span style={{ fontSize: '18px' }}>👁️</span>
+            )}
+          </button>
+        </div>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"

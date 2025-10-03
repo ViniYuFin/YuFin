@@ -245,15 +245,15 @@ const Lesson = (props) => {
               </p>
             </div>
             
-            {savingsReward > 0 && (
-              <div className="bg-gradient-to-r from-green-100 to-green-200 rounded-lg p-4 animate-pulse">
-                <p className="text-sm text-gray-600">💰 Poupança Automática</p>
-                <p className="text-xl font-semibold text-green-600">
-                  +R$ {savingsReward.toFixed(2)}
-                </p>
+            <div className="bg-gradient-to-r from-green-100 to-green-200 rounded-lg p-4">
+              <p className="text-sm text-gray-600">💰 Poupança Automática</p>
+              <p className="text-xl font-semibold text-green-600">
+                {savingsReward > 0 ? `+R$ ${savingsReward.toFixed(2)}` : 'R$ 0,00'}
+              </p>
+              {savingsReward > 0 && (
                 <p className="text-xs text-green-600 mt-1">Adicionado à sua carteira!</p>
-              </div>
-            )}
+              )}
+            </div>
             
             {isPerfect && (
               <div className="bg-gradient-to-r from-purple-100 to-purple-200 rounded-lg p-4 animate-pulse">

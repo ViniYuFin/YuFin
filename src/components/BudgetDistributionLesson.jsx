@@ -162,10 +162,6 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
         } else if (['educacao', 'lazer'].includes(category.id)) {
           groups.desejos.categories.push({ ...category, allocated });
           groups.desejos.total += allocated;
-        } else if (['poupanca', 'investimentos', 'reserva', 'emergencia', 'renda-fixa', 'acoes', 'fundos', 'alternativos'].includes(category.id)) {
-          // Categorias específicas de poupança/investimentos
-          groups.poupanca.categories.push({ ...category, allocated });
-          groups.poupanca.total += allocated;
         } else {
           // Qualquer outra categoria vai para poupança/investimentos
           groups.poupanca.categories.push({ ...category, allocated });
@@ -204,6 +200,76 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
         }
       }
     });
+
+    // Para "O Orçamento da Família", garantir que sempre tenha uma categoria de poupança/investimentos
+    if (lesson.title === "O Orçamento da Família" && groups.poupanca.categories.length === 0) {
+      const poupancaCategory = {
+        id: 'poupanca',
+        name: 'Poupança/Investimentos',
+        description: 'Reserva de emergência, investimentos e poupança',
+        icon: '💰',
+        priority: 'low',
+        group: 'Poupança/Investimentos',
+        allocated: allocatedBudgets['Poupança/Investimentos'] || 0
+      };
+      groups.poupanca.categories.push(poupancaCategory);
+      groups.poupanca.total += poupancaCategory.allocated;
+    }
+
+    // Para "O Orçamento da Família", substituir todas as categorias de poupança por "Investimentos"
+    if (lesson.title === "O Orçamento da Família") {
+      // Limpar categorias existentes de poupança
+      groups.poupanca.categories = [];
+      groups.poupanca.total = 0;
+      
+      // Adicionar apenas a categoria "Investimentos"
+      const investimentosCategory = {
+        id: 'investimentos',
+        name: 'Investimentos',
+        description: 'Poupança, investimentos, reserva',
+        icon: '📈',
+        priority: 'low',
+        group: 'Poupança/Investimentos',
+        allocated: allocatedBudgets['Investimentos'] || 0
+      };
+      groups.poupanca.categories.push(investimentosCategory);
+      groups.poupanca.total += investimentosCategory.allocated;
+    }
+    
+    // Para "Previdência e Aposentadoria", garantir que as categorias apareçam
+    if (lesson.title === "Previdência e Aposentadoria") {
+      // Se não há categorias em nenhum grupo, adicionar categorias padrão
+      const totalCategories = Object.values(groups).reduce((sum, group) => sum + group.categories.length, 0);
+      
+      if (totalCategories === 0) {
+        // Adicionar categorias padrão para Previdência e Aposentadoria
+        const previdenciaCategories = [
+          {
+            id: 'previdencia',
+            name: 'Previdência',
+            description: 'Contribuições para aposentadoria',
+            icon: '🏦',
+            priority: 'high',
+            group: 'Necessidades',
+            allocated: allocatedBudgets['Previdência'] || 0
+          },
+          {
+            id: 'aposentadoria',
+            name: 'Aposentadoria',
+            description: 'Reserva para aposentadoria',
+            icon: '👴',
+            priority: 'high',
+            group: 'Necessidades',
+            allocated: allocatedBudgets['Aposentadoria'] || 0
+          }
+        ];
+        
+        previdenciaCategories.forEach(category => {
+          groups.necessidades.categories.push(category);
+          groups.necessidades.total += category.allocated;
+        });
+      }
+    }
 
     return groups;
   }, [selectedScenario, allocatedBudgets, totalBudget, lesson.content?.categories]);
@@ -650,7 +716,7 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                       {group.categories.map((category, index) => (
                         <div 
                           key={index} 
-                          className={`flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                          className={`p-4 rounded-lg border transition-colors ${
                             (!category.allocated || category.allocated < 1) 
                               ? 'border-red-300' 
                               : 'hover:border-gray-300'
@@ -664,9 +730,9 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                               : (darkMode ? '#6b7280' : '#e5e7eb')
                           }}
                         >
-                          <div className="flex items-center space-x-4">
+                          <div className="flex items-center space-x-4 mb-3">
                             <span className="text-2xl">{category.icon}</span>
-                            <div>
+                            <div className="flex-1">
                               <h4 
                                 className="font-semibold"
                                 style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
@@ -702,7 +768,7 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                               step="1"
                               value={category.allocated || ''}
                               onChange={(e) => handleBudgetChange(category.name, e.target.value)}
-                              className={`w-28 px-3 py-2 border-2 rounded-lg focus:outline-none text-right font-medium ${
+                              className={`w-32 px-3 py-2 border-2 rounded-lg focus:outline-none text-right font-medium ${
                                 (!category.allocated || category.allocated < 1)
                                   ? 'border-red-300 focus:border-red-500'
                                   : 'border-gray-300 focus:border-primary'

@@ -13,6 +13,20 @@ class NotificationService {
       this.container = document.createElement('div');
       this.container.id = 'notification-container';
       this.container.className = 'fixed top-4 right-4 z-50 space-y-2 max-w-sm';
+      
+      // Adicionar CSS responsivo
+      const style = document.createElement('style');
+      style.textContent = `
+        @media (max-width: 1023px) {
+          #notification-container {
+            left: 1rem !important;
+            right: 1rem !important;
+            max-width: none !important;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+      
       document.body.appendChild(this.container);
     } else {
       this.container = document.getElementById('notification-container');
