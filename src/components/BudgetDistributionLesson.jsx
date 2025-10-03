@@ -716,7 +716,7 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                       {group.categories.map((category, index) => (
                         <div 
                           key={index} 
-                          className={`p-4 rounded-lg border transition-colors ${
+                          className={`p-3 sm:p-4 rounded-lg border transition-colors ${
                             (!category.allocated || category.allocated < 1) 
                               ? 'border-red-300' 
                               : 'hover:border-gray-300'
@@ -730,61 +730,66 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                               : (darkMode ? '#6b7280' : '#e5e7eb')
                           }}
                         >
-                          <div className="flex items-center space-x-4 mb-3">
-                            <span className="text-2xl">{category.icon}</span>
-                            <div className="flex-1">
-                              <h4 
-                                className="font-semibold"
-                                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                              >
-                                {category.name}
-                              </h4>
-                              <p 
-                                className="text-sm mt-1"
-                                style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
-                              >
-                                {category.description}
-                              </p>
-                              {(!category.allocated || category.allocated < 1) && (
-                                <p 
-                                  className="text-xs mt-1 font-medium"
-                                  style={{ color: '#dc2626' }}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            {/* Lado Esquerdo - Informações */}
+                            <div className="flex items-center space-x-4 flex-1">
+                              <span className="text-2xl">{category.icon}</span>
+                              <div className="flex-1">
+                                <h4 
+                                  className="font-semibold"
+                                  style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
                                 >
-                                  Mínimo: R$ 1,00
+                                  {category.name}
+                                </h4>
+                                <p 
+                                  className="text-sm mt-1"
+                                  style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                                >
+                                  {category.description}
                                 </p>
-                              )}
+                                {(!category.allocated || category.allocated < 1) && (
+                                  <p 
+                                    className="text-xs mt-1 font-medium"
+                                    style={{ color: '#dc2626' }}
+                                  >
+                                    Mínimo: R$ 1,00
+                                  </p>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span 
-                              className="font-medium"
-                              style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                            >
-                              R$
-                            </span>
-                            <input
-                              type="number"
-                              min="0"
-                              step="1"
-                              value={category.allocated || ''}
-                              onChange={(e) => handleBudgetChange(category.name, e.target.value)}
-                              className={`w-32 px-3 py-2 border-2 rounded-lg focus:outline-none text-right font-medium ${
-                                (!category.allocated || category.allocated < 1)
-                                  ? 'border-red-300 focus:border-red-500'
-                                  : 'border-gray-300 focus:border-primary'
-                              }`}
-                              style={{
-                                backgroundColor: darkMode ? '#374151' : '#ffffff',
-                                color: darkMode ? '#ffffff' : '#1f2937'
-                              }}
-                              placeholder="1"
-                            />
-                            <span 
-                              className="font-medium"
-                              style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                            >
-                              ,00
-                            </span>
+                            
+                            {/* Lado Direito - Input */}
+                            <div className="flex items-center space-x-2 sm:ml-4">
+                              <span 
+                                className="font-medium"
+                                style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                              >
+                                R$
+                              </span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="1"
+                                value={category.allocated || ''}
+                                onChange={(e) => handleBudgetChange(category.name, e.target.value)}
+                                className={`w-20 sm:w-32 px-2 sm:px-3 py-2 border-2 rounded-lg focus:outline-none text-right font-medium ${
+                                  (!category.allocated || category.allocated < 1)
+                                    ? 'border-red-300 focus:border-red-500'
+                                    : 'border-gray-300 focus:border-primary'
+                                }`}
+                                style={{
+                                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                                  color: darkMode ? '#ffffff' : '#1f2937'
+                                }}
+                                placeholder="1"
+                              />
+                              <span 
+                                className="font-medium"
+                                style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                              >
+                                ,00
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}

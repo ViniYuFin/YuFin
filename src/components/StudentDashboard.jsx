@@ -755,10 +755,12 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         <div className="flex justify-between items-center h-16 lg:h-18 xl:h-20 px-6 lg:px-8 xl:px-12 w-full">
           {/* Lado Esquerdo - Informações do Usuário */}
           <div className="flex items-center space-x-4">
-            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-              <span className="text-lg">👤</span>
-            </div>
-                          <div className="flex flex-col">
+            {window.innerWidth >= 640 && (
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <span className="text-lg">👤</span>
+              </div>
+            )}
+            <div className="flex flex-col">
                 <span className="text-base font-semibold text-gray-800">
                   {window.innerWidth < 640 ? (user.name?.split(' ')[0] || user.name) : user.name}
                 </span>
