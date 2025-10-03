@@ -865,7 +865,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                 </div>
                 {!user.classId && (
                   <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
-                    ⏳ Aguardando
+                    {window.innerWidth >= 640 ? '⏳ Aguardando' : 'Aguardando'}
                   </div>
                 )}
               </div>
