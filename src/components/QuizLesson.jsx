@@ -240,7 +240,14 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
 
           {/* Answer Options */}
           <div className="p-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div 
+              className="gap-4"
+              style={{
+                display: 'grid',
+                gridTemplateColumns: window.innerWidth < 768 ? '1fr' : 'repeat(2, 1fr)',
+                gap: window.innerWidth < 768 ? '16px' : '24px'
+              }}
+            >
               {currentQuestion.options.map((option, index) => (
                 <button
                   key={index}
@@ -262,10 +269,11 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
                       ? (darkMode ? '#ffffff' : '#1f2937')
                       : undefined,
                     // Ajustes específicos para mobile
-                    minHeight: window.innerWidth < 768 ? '80px' : 'auto',
+                    minHeight: window.innerWidth < 768 ? '60px' : 'auto',
                     display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center'
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start'
                   }}
                 >
                   <div className="flex items-center space-x-3">
@@ -281,8 +289,8 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
                       }`}
                       style={{
                         // Ícone perfeitamente redondo para mobile
-                        width: window.innerWidth < 768 ? '32px' : '40px',
-                        height: window.innerWidth < 768 ? '32px' : '40px',
+                        width: window.innerWidth < 768 ? '28px' : '40px',
+                        height: window.innerWidth < 768 ? '28px' : '40px',
                         borderRadius: '50%',
                         aspectRatio: '1/1',
                         flexShrink: 0
