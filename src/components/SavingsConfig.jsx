@@ -22,6 +22,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
   const [linkedStudents, setLinkedStudents] = useState([]);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     // Carregar alunos vinculados do backend
@@ -32,6 +33,22 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
           : [];
         setLinkedStudents(students);
       });
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, [user.linkedStudents]);
 
   const handleConfigChange = (field, value) => {
@@ -109,7 +126,13 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
     <div className="min-h-screen bg-interface p-4 pb-20">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
           <div className="flex items-center justify-between mb-4">
             <div>
               <button
@@ -118,22 +141,45 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
               >
                 ← Voltar ao Dashboard
               </button>
-              <h1 className="text-3xl font-yufin text-primary">💰 Configurar Poupança Educativa</h1>
+              <h1 
+                className="text-3xl font-yufin"
+                style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
+              >
+                💰 Configurar Poupança Educativa
+              </h1>
             </div>
           </div>
-          <p className="text-gray-600">Configure as regras de poupança para incentivar o aprendizado dos seus filhos</p>
+          <p 
+            style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+          >
+            Configure as regras de poupança para incentivar o aprendizado dos seus filhos
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Configurações */}
           <div className="space-y-6">
             {/* Recompensas por Atividade */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">🎯 Recompensas por Atividade</h2>
+            <div 
+              className="rounded-xl shadow-lg p-6 border-2" 
+              style={{ 
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderColor: 'rgb(238, 145, 22)' 
+              }}
+            >
+              <h2 
+                className="text-xl font-bold mb-4"
+                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+              >
+                🎯 Recompensas por Atividade
+              </h2>
               
               <div className="space-y-4">
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Por Lição Concluída (R$)
                   </label>
                   <input
@@ -142,14 +188,27 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.perLesson}
                     onChange={(e) => handleConfigChange('perLesson', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="0.50"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Valor depositado automaticamente quando seu filho completa uma lição</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >
+                    Valor depositado automaticamente quando seu filho completa uma lição
+                  </p>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Por Streak Diário (R$)
                   </label>
                   <input
@@ -158,14 +217,25 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.perStreak}
                     onChange={(e) => handleConfigChange('perStreak', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="2.00"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Bônus por manter consistência diária</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Bônus por manter consistência diária</p>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Por Lição Perfeita (R$)
                   </label>
                   <input
@@ -174,14 +244,25 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.perPerfectLesson}
                     onChange={(e) => handleConfigChange('perPerfectLesson', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="1.00"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Bônus extra por pontuação perfeita (100%)</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Bônus extra por pontuação perfeita (100%)</p>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Por Subida de Nível (R$)
                   </label>
                   <input
@@ -190,14 +271,25 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.perLevelUp}
                     onChange={(e) => handleConfigChange('perLevelUp', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="5.00"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Recompensa especial por evolução no aprendizado</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Recompensa especial por evolução no aprendizado</p>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Por Conquista (R$)
                   </label>
                   <input
@@ -206,10 +298,18 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.perAchievement}
                     onChange={(e) => handleConfigChange('perAchievement', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="3.00"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Bônus por desbloquear conquistas especiais</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Bônus por desbloquear conquistas especiais</p>
                 </div>
               </div>
             </div>
@@ -325,7 +425,10 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
               
               <div className="space-y-4">
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Limite Mensal (R$)
                   </label>
                   <input
@@ -334,14 +437,25 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.monthlyLimit}
                     onChange={(e) => handleConfigChange('monthlyLimit', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="100"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Limite máximo de depósitos por mês</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Limite máximo de depósitos por mês</p>
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-gray-700 mb-2">
+                  <label 
+                    className="block font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
                     Meta Semanal (R$)
                   </label>
                   <input
@@ -350,10 +464,18 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     min="0"
                     value={config.weeklyGoal}
                     onChange={(e) => handleConfigChange('weeklyGoal', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
                     placeholder="20"
                   />
-                  <p className="text-sm text-gray-600 mt-1">Meta de poupança semanal para incentivar consistência</p>
+                  <p 
+                    className="text-sm mt-1"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >Meta de poupança semanal para incentivar consistência</p>
                 </div>
 
                 <div className="flex items-center space-x-3">

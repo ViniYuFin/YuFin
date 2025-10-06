@@ -21,11 +21,28 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showProgressionModal, setShowProgressionModal] = useState(false);
   const [activeTab, setActiveTab] = useState('overview'); // overview, tokens, progression
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
       setShowOnboarding(true);
     }
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -288,7 +305,13 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         )}
         <div className="max-w-6xl mx-auto">
           {/* Header */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
             <div className="flex items-center justify-between mb-4">
               <div>
                 <button
@@ -298,10 +321,19 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
                   ← Voltar ao Resumo
                 </button>
                 <h1 className="text-3xl font-yufin text-primary">📊 {selectedClass.name}</h1>
-                <p className="text-gray-600">Professor: {selectedClass.teacher}</p>
+                <p 
+                  style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                >
+                  Professor: {selectedClass.teacher}
+                </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-600">Taxa de Engajamento</p>
+                <p 
+                  className="text-sm"
+                  style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                >
+                  Taxa de Engajamento
+                </p>
                 <p className="text-2xl font-bold text-green-600">{classStats.engagementRate}%</p>
               </div>
             </div>
@@ -328,17 +360,43 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           </div>
 
           {/* Progresso por Matéria */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📚 Progresso por Matéria</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📚 Progresso por Matéria
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.entries(subjectProgress).map(([subject, progress]) => (
-                <div key={subject} className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{subject}</h3>
-                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <div 
+                  key={subject} 
+                  className="rounded-lg p-4"
+                  style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                >
+                  <h3 
+                    className="text-lg font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                  >
+                    {subject}
+                  </h3>
+                  <div 
+                    className="flex justify-between text-sm mb-2"
+                    style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                  >
                     <span>{progress.completed} lições concluídas</span>
                     <span>{progress.students.size} alunos ativos</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="w-full rounded-full h-2"
+                    style={{ backgroundColor: darkMode ? '#6b7280' : '#e5e7eb' }}
+                  >
                     <div
                       className="bg-primary h-2 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min((progress.completed / progress.total) * 100, 100)}%` }}
@@ -350,31 +408,92 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           </div>
 
           {/* Lista de Alunos da Turma */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">👥 Alunos da Turma</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              👥 Alunos da Turma
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {classStudents.map((student, index) => (
-                <div key={student.id} className="bg-gray-50 rounded-lg p-4">
+                <div 
+                  key={student.id} 
+                  className="rounded-lg p-4"
+                  style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                >
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="font-semibold text-gray-800">{student.name}</h4>
-                    <span className="text-sm text-gray-600">#{index + 1}</span>
+                    <h4 
+                      className="font-semibold"
+                      style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                    >
+                      {student.name}
+                    </h4>
+                    <span 
+                      className="text-sm"
+                      style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                    >
+                      #{index + 1}
+                    </span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
-                      <span className="text-gray-600">Nível:</span>
-                      <span className="font-semibold ml-1">{student.progress?.level || 1}</span>
+                      <span 
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
+                        Nível:
+                      </span>
+                      <span 
+                        className="font-semibold ml-1"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {student.progress?.level || 1}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">XP:</span>
-                      <span className="font-semibold ml-1">{student.progress?.xp || 0}</span>
+                      <span 
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
+                        XP:
+                      </span>
+                      <span 
+                        className="font-semibold ml-1"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {student.progress?.xp || 0}
+                      </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Streak:</span>
-                      <span className="font-semibold ml-1">{student.progress?.streak || 0} 🔥</span>
+                      <span 
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
+                        Streak:
+                      </span>
+                      <span 
+                        className="font-semibold ml-1"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {student.progress?.streak || 0} 🔥
+                      </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Lições:</span>
-                      <span className="font-semibold ml-1">{student.progress?.completedLessons?.length || 0}</span>
+                      <span 
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
+                        Lições:
+                      </span>
+                      <span 
+                        className="font-semibold ml-1"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {student.progress?.completedLessons?.length || 0}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -394,41 +513,89 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
       )}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h1 className="text-4xl font-yufin text-primary mb-4">🏫 Dashboard da Escola</h1>
-          <p className="text-gray-600">Acompanhe o progresso educacional de toda a escola</p>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
+          <h1 
+            className="text-4xl font-yufin mb-4"
+            style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
+          >
+            🏫 Dashboard da Escola
+          </h1>
+          <p 
+            style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+          >
+            Acompanhe o progresso educacional de toda a escola
+          </p>
           
           {/* Abas */}
           <div className="flex space-x-2 mt-6">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
                 activeTab === 'overview'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                  : darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
               }`}
             >
-              📊 Visão Geral
+              <span 
+                style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+              >
+                📊 Geral
+              </span>
+              <span 
+                style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+              >
+                📊 Visão Geral
+              </span>
             </button>
             <button
               onClick={() => setActiveTab('tokens')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
                 activeTab === 'tokens'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                  : darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
               }`}
             >
-              🔑 Tokens de Registro
+              <span 
+                style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+              >
+                🔑 Tokens
+              </span>
+              <span 
+                style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+              >
+                🔑 Tokens de Registro
+              </span>
             </button>
             <button
               onClick={() => setActiveTab('progression')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
                 activeTab === 'progression'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                  : darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
               }`}
             >
-              🎓 Progressão Escolar
+              <span 
+                style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+              >
+                🎓 Progressão
+              </span>
+              <span 
+                style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+              >
+                🎓 Progressão Escolar
+              </span>
             </button>
           </div>
         </div>
@@ -437,32 +604,43 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         {activeTab === 'overview' && (
           <>
             {/* Estatísticas Gerais da Escola */}
-            <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Resumo da Escola</h2>
+            <div 
+              className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+              style={{ 
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderColor: 'rgb(238, 145, 22)' 
+              }}
+            >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            📊 Resumo da Escola
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary mb-2">{schoolStats.totalStudents}</div>
-              <p className="text-gray-600">Total de Alunos</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Total de Alunos</p>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-green-600 mb-2">{schoolStats.activeStudents}</div>
-              <p className="text-gray-600">Alunos Ativos</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Alunos Ativos</p>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-blue-600 mb-2">{schoolStats.totalLessons}</div>
-              <p className="text-gray-600">Lições Concluídas</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Lições Concluídas</p>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-purple-600 mb-2">{schoolStats.totalXp}</div>
-              <p className="text-gray-600">XP Total</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>XP Total</p>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-orange-600 mb-2">{schoolStats.averageLevel}</div>
-              <p className="text-gray-600">Nível Médio</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Nível Médio</p>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-teal-600 mb-2">{schoolStats.engagementRate}%</div>
-              <p className="text-gray-600">Engajamento</p>
+              <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Engajamento</p>
             </div>
           </div>
         </div>
@@ -470,33 +648,58 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
 
 
         {/* Turmas */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">🏫 Turmas</h2>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            🏫 Turmas
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {classes.map((classData) => {
               const classStats = calculateClassStats(classData);
               return (
-                <div key={classData.id} className="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow">
+                <div 
+                  key={classData.id} 
+                  className="rounded-lg p-6 hover:shadow-lg transition-shadow"
+                  style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                >
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800">{classData.name}</h3>
-                    <span className="text-sm text-gray-600">{classData.grade}</span>
+                    <h3 
+                      className="text-lg font-semibold"
+                      style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                    >
+                      {classData.name}
+                    </h3>
+                    <span 
+                      className="text-sm"
+                      style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                    >
+                      {classData.grade}
+                    </span>
                   </div>
                   <div className="space-y-2 mb-4">
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Professor:</span>
-                      <span className="font-semibold">{classData.teacher}</span>
+                      <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Professor:</span>
+                      <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{classData.teacher}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Alunos:</span>
-                      <span className="font-semibold">{classStats.totalStudents}</span>
+                      <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Alunos:</span>
+                      <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{classStats.totalStudents}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Nível Médio:</span>
-                      <span className="font-semibold">{classStats.averageLevel}</span>
+                      <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Nível Médio:</span>
+                      <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{classStats.averageLevel}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Engajamento:</span>
-                      <span className="font-semibold">{classStats.engagementRate}%</span>
+                      <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Engajamento:</span>
+                      <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{classStats.engagementRate}%</span>
                     </div>
                   </div>
                   <button
@@ -512,23 +715,53 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         </div>
 
         {/* Ranking da Escola */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">🏆 Ranking da Escola</h2>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            🏆 Ranking da Escola
+          </h2>
           <div className="space-y-3">
             {calculateSchoolRanking().map((student, index) => (
-              <div key={student.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div 
+                key={student.id} 
+                className="flex items-center justify-between p-4 rounded-lg"
+                style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+              >
                 <div className="flex items-center space-x-4">
                   <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                     {index + 1}
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-800">{student.name}</h4>
-                    <p className="text-sm text-gray-600">Nível {student.level} • {student.lessonsCompleted} lições</p>
+                    <h4 
+                      className="font-semibold"
+                      style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                    >
+                      {student.name}
+                    </h4>
+                    <p 
+                      className="text-sm"
+                      style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                    >
+                      Nível {student.level} • {student.lessonsCompleted} lições
+                    </p>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-lg font-bold text-primary">{student.xp} XP</div>
-                  <div className="text-sm text-gray-600">{student.streak} 🔥</div>
+                  <div 
+                    className="text-sm"
+                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+                  >
+                    {student.streak} 🔥
+                  </div>
                 </div>
               </div>
             ))}

@@ -5,6 +5,7 @@ const TokenManager = ({ user }) => {
   const [tokens, setTokens] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
   const [newToken, setNewToken] = useState({
     type: 'school', // Escolas só podem criar tokens do tipo 'school'
     maxUses: 1,
@@ -18,6 +19,22 @@ const TokenManager = ({ user }) => {
 
   useEffect(() => {
     fetchTokens();
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, []);
 
   const fetchTokens = async () => {
@@ -211,18 +228,35 @@ const TokenManager = ({ user }) => {
       {/* Lista de tokens */}
       <div className="space-y-4">
         {tokens.length === 0 ? (
-          <div className="text-center py-8 bg-gray-50 rounded-lg">
-            <p className="text-gray-600">Nenhum token criado ainda.</p>
+          <div 
+            className="text-center py-8 rounded-lg"
+            style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+          >
+            <p 
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            >
+              Nenhum token criado ainda.
+            </p>
           </div>
         ) : (
           tokens.map((token) => (
-            <div key={token.id} className="bg-white rounded-lg p-4 border shadow-sm">
+            <div 
+              key={token.id} 
+              className="rounded-lg p-4 border shadow-sm"
+              style={{ 
+                backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                borderColor: darkMode ? '#6b7280' : '#e5e7eb'
+              }}
+            >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(token)}`}>
                     {getStatusText(token)}
                   </span>
-                  <span className="text-sm text-gray-500">
+                  <span 
+                    className="text-sm"
+                    style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                  >
                     {token.type === 'school' ? '🏫 Escola' : '👨‍👩‍👧‍👦 Responsável'}
                   </span>
                 </div>
@@ -236,7 +270,13 @@ const TokenManager = ({ user }) => {
               
               <div className="mb-3">
                 <div className="flex items-center space-x-2 mb-2">
-                  <code className="bg-gray-100 px-2 py-1 rounded text-sm font-mono">
+                  <code 
+                    className="px-2 py-1 rounded text-sm font-mono"
+                    style={{
+                      backgroundColor: darkMode ? '#374151' : '#f3f4f6',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
+                  >
                     {token.token}
                   </code>
                   <button
@@ -248,7 +288,10 @@ const TokenManager = ({ user }) => {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+              <div 
+                className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm"
+                style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+              >
                 <div>
                   <span className="font-medium">Usos:</span> {token.usedCount}
                   {token.maxUses && `/${token.maxUses}`}
@@ -269,11 +312,23 @@ const TokenManager = ({ user }) => {
               </div>
               
               {token.usedBy && token.usedBy.length > 0 && (
-                <div className="mt-3 pt-3 border-t">
-                  <h5 className="text-sm font-medium text-gray-700 mb-2">Usado por:</h5>
+                <div 
+                  className="mt-3 pt-3"
+                  style={{ borderTopColor: darkMode ? '#6b7280' : '#e5e7eb' }}
+                >
+                  <h5 
+                    className="text-sm font-medium mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                  >
+                    Usado por:
+                  </h5>
                   <div className="space-y-1">
                     {token.usedBy.map((usage, index) => (
-                      <div key={index} className="text-sm text-gray-600">
+                      <div 
+                        key={index} 
+                        className="text-sm"
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
                         {usage.studentName} - {formatDate(usage.usedAt)}
                       </div>
                     ))}

@@ -22,7 +22,7 @@ import Settings from './src/components/Settings';
 import Friends from './src/components/Friends';
 import IntelligentDashboard from './src/components/IntelligentDashboard';
 import Classes from './src/components/Classes';
-import { loginUser, registerUser, logoutUser, getCurrentSession } from './src/utils/authService';
+import { loginUser, registerUser, logoutUser, getCurrentSession, loadUserFromStorage } from './src/utils/authService';
 import { storageService, STORAGE_KEYS } from './src/utils/storageService';
 import notificationService from './src/utils/notificationService';
 import analyticsService from './src/utils/analyticsService';
@@ -56,43 +56,52 @@ function App() {
 
   // Efeito para carregar o usuário do localStorage ao iniciar o app
   useEffect(() => {
-    const savedUser = storageService.load(STORAGE_KEYS.USER);
-    const session = getCurrentSession();
-    if (savedUser && session) {
+    const initializeApp = () => {
       try {
-        setUser(savedUser);
-        advancedGamificationService.loadData();
-        if (savedUser.role === 'student') {
-          setActiveScreen('home');
-        } else if (savedUser.role === 'parent') {
-          setActiveScreen('parent-dashboard');
-        } else if (savedUser.role === 'school') {
-          setActiveScreen('school-dashboard');
-        } else if (savedUser.role === 'admin') {
-          setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
+        // Usar a nova função de carregamento com validação
+        const savedUser = loadUserFromStorage();
+        
+        if (savedUser) {
+          setUser(savedUser);
+          advancedGamificationService.loadData();
+          
+          if (savedUser.role === 'student') {
+            setActiveScreen('home');
+          } else if (savedUser.role === 'parent') {
+            setActiveScreen('parent-dashboard');
+          } else if (savedUser.role === 'school') {
+            setActiveScreen('school-dashboard');
+          } else if (savedUser.role === 'admin') {
+            setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
+          }
+        } else {
+          // Limpar dados inválidos
+          storageService.remove(STORAGE_KEYS.USER);
+          storageService.remove(STORAGE_KEYS.SESSION);
+          localStorage.removeItem('darkMode');
+          document.documentElement.classList.remove('dark');
+          setUser(null);
+          setActiveScreen('welcome');
         }
-      } catch (e) {
+      } catch (error) {
+        // Em caso de erro, limpar tudo e ir para welcome
         storageService.remove(STORAGE_KEYS.USER);
         storageService.remove(STORAGE_KEYS.SESSION);
         setUser(null);
         setActiveScreen('welcome');
+      } finally {
+        setIsInitializing(false);
       }
-    } else {
-      // Limpa tudo e força welcome imediatamente
-      storageService.remove(STORAGE_KEYS.USER);
-      storageService.remove(STORAGE_KEYS.SESSION);
-      // Limpar modo escuro do localStorage
-      localStorage.removeItem('darkMode');
-      // Remover classe dark do DOM
-      document.documentElement.classList.remove('dark');
-      setUser(null);
-      setActiveScreen('welcome');
-    }
-    setIsInitializing(false);
+    };
+    
+    initializeApp();
   }, []);
 
   // Efeito para salvar/remover usuário no localStorage sempre que o estado 'user' muda
   useEffect(() => {
+    // NÃO executar durante a inicialização para evitar race condition
+    if (isInitializing) return;
+    
     if (user) {
       storageService.save(STORAGE_KEYS.USER, user);
       
@@ -110,7 +119,7 @@ function App() {
       document.documentElement.classList.remove('dark');
       setActiveScreen('welcome');
     }
-  }, [user]);
+  }, [user, isInitializing]);
 
   // Função para lidar com registro com token
   const handleRegisterWithToken = async (userData) => {
@@ -411,16 +420,11 @@ function App() {
 
   // Lógica simplificada para mostrar navegação
   const screenName = getScreenName(activeScreen);
-  const shouldShowNavigation = user && screenName && !screenName.startsWith('lesson-') && 
+  const shouldShowNavigation = user && 
+    !isInitializing &&
+    screenName && 
+    !screenName.startsWith('lesson-') && 
     !['welcome', 'login-student', 'login-parent', 'login-school', 'register-student', 'register-parent', 'register-school'].includes(screenName);
-
-  // Debug logs
-  console.log('Debug Navigation:', {
-    user: !!user,
-    userRole: user?.role,
-    activeScreen,
-    shouldShowNavigation
-  });
 
   if (isInitializing) return null;
 
@@ -434,3 +438,6 @@ function App() {
 
 const root = createRoot(document.getElementById('root'));
 root.render(<App />);
+
+// Export default para compatibilidade com Fast Refresh
+export default App;

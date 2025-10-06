@@ -118,3 +118,45 @@ export const updateLastActivity = () => {
     storageService.save(STORAGE_KEYS.SESSION, session);
   }
 };
+
+// Validar se a sessão ainda é válida
+export const validateSession = (session) => {
+  if (!session) return false;
+  
+  try {
+    // Verificar se a sessão não expirou (24 horas)
+    const sessionTime = new Date(session.loginTime);
+    const now = new Date();
+    const hoursDiff = (now - sessionTime) / (1000 * 60 * 60);
+    
+    if (hoursDiff > 24) {
+      return false;
+    }
+    
+    // Verificar se tem dados essenciais
+    return session.userId && session.loginTime;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Carregar usuário com validação
+export const loadUserFromStorage = () => {
+  try {
+    const user = storageService.load(STORAGE_KEYS.USER);
+    const session = getCurrentSession();
+    
+    if (!user || !session) return null;
+    
+    // Validar sessão
+    if (!validateSession(session)) {
+      storageService.remove(STORAGE_KEYS.USER);
+      storageService.remove(STORAGE_KEYS.SESSION);
+      return null;
+    }
+    
+    return user;
+  } catch (error) {
+    return null;
+  }
+};

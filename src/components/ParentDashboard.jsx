@@ -21,11 +21,28 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // overview, tokens
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem(ONBOARDING_KEY)) {
       setShowOnboarding(true);
     }
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, []);
 
   // Buscar todos os alunos do backend ao abrir o modal
@@ -372,9 +389,24 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
       )}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h1 className="text-4xl font-yufin text-primary mb-4">👨‍👩‍👧‍👦 Dashboard da Família</h1>
-          <p className="text-gray-600">Acompanhe o progresso educacional e financeiro dos seus filhos</p>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
+          <h1 
+            className="text-4xl font-yufin mb-4"
+            style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
+          >
+            👨‍👩‍👧‍👦 Dashboard da Família
+          </h1>
+          <p 
+            style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+          >
+            Acompanhe o progresso educacional e financeiro dos seus filhos
+          </p>
           
           {/* Abas */}
           <div className="flex space-x-2 mt-6">
@@ -383,7 +415,9 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
                 activeTab === 'overview'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                  : darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
               }`}
             >
               📊 Visão Geral
@@ -394,7 +428,9 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
               className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
                 activeTab === 'tokens'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                  : darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
               }`}
             >
               🔑 Tokens para Filhos
@@ -407,37 +443,59 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           <>
             {/* Estatísticas Gerais da Família */}
             {familyStats && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Resumo da Família</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📊 Resumo da Família
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
               <div className="text-center">
                 <div className="text-3xl font-bold text-primary mb-2">{familyStats.activeStudents}</div>
-                <p className="text-gray-600">Filhos Ativos</p>
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Filhos Ativos</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-green-600 mb-2">{familyStats.totalLessons}</div>
-                <p className="text-gray-600">Lições Concluídas</p>
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Lições Concluídas</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-blue-600 mb-2">{familyStats.totalXp}</div>
-                <p className="text-gray-600">XP Total</p>
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>XP Total</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-purple-600 mb-2">{familyStats.averageLevel}</div>
-                <p className="text-gray-600">Nível Médio</p>
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Nível Médio</p>
               </div>
               <div className="text-center">
                 <div className="text-3xl font-bold text-orange-600 mb-2">R$ {familyStats.totalSavings.toFixed(2)}</div>
-                <p className="text-gray-600">Poupança Total</p>
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Poupança Total</p>
               </div>
             </div>
           </div>
         )}
 
         {/* Lista de Filhos */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">👶 Seus Filhos</h2>
+            <h2 
+              className="text-2xl font-bold"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              👶 Seus Filhos
+            </h2>
             <button
               onClick={() => setShowLinkChildModal(true)}
               className="bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition"
@@ -447,7 +505,12 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           </div>
           {linkedStudents.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600 mb-4">Nenhum filho vinculado ainda.</p>
+              <p 
+                className="mb-4"
+                style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+              >
+                Nenhum filho vinculado ainda.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -458,67 +521,79 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                 const completedSubjects = Object.values(subjectProgress).filter(p => p.completed > 0).length;
 
                 return (
-                  <div key={student.id} className="bg-gray-50 rounded-lg p-6 hover:shadow-lg transition-shadow">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="text-xl font-semibold text-gray-800">{student.name}</h3>
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${trends.trendColor}`}>
-                        {trends.trend}
-                      </span>
-                      <button
-                        onClick={async () => {
-                          try {
-                            const updatedParent = await apiPatch(`/users/${user.id}/desvincular-filho`, { studentId: student.id });
-                            setUser(updatedParent);
-                          } catch (err) {
-                            alert('Erro ao remover filho: ' + err.message);
-                          }
-                        }}
-                        className="ml-2 text-xs text-red-600 underline hover:text-red-800"
-                      >
-                        Remover
-                      </button>
+                  <div 
+                    key={student.id} 
+                    className="rounded-lg p-6 hover:shadow-lg transition-shadow flex flex-col h-full"
+                    style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                  >
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1 min-w-0">
+                        <h3 
+                          className="text-xl font-semibold break-words"
+                          style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                        >
+                          {student.name}
+                        </h3>
+                      </div>
+                      <div className="flex items-end ml-2">
+                        <button
+                          onClick={async () => {
+                            try {
+                              const updatedParent = await apiPatch(`/users/${user.id}/desvincular-filho`, { studentId: student.id });
+                              setUser(updatedParent);
+                            } catch (err) {
+                              alert('Erro ao remover filho: ' + err.message);
+                            }
+                          }}
+                          className="text-xs text-red-600 underline hover:text-red-800"
+                        >
+                          Remover
+                        </button>
+                      </div>
                     </div>
                     
-                    <div className="space-y-3 mb-4">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Nível:</span>
-                        <span className="font-semibold">{student.progress?.level || 1}</span>
+                    <div className="flex-1">
+                      <div className="space-y-3 mb-4">
+                        <div className="flex justify-between">
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Nível:</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{student.progress?.level || 1}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>XP:</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{student.progress?.xp || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Streak:</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>🔥 {trends.streak}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Lições:</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{student.progress?.completedLessons?.length || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Poupança:</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>R$ {(student.savings?.balance || 0).toFixed(2)}</span>
+                        </div>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">XP:</span>
-                        <span className="font-semibold">{student.progress?.xp || 0}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Streak:</span>
-                        <span className="font-semibold">🔥 {trends.streak}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Lições:</span>
-                        <span className="font-semibold">{student.progress?.completedLessons?.length || 0}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Poupança:</span>
-                        <span className="font-semibold">R$ {(student.savings?.balance || 0).toFixed(2)}</span>
-                      </div>
-                    </div>
 
-                    {/* Barra de Progresso Geral */}
-                    <div className="mb-4">
-                      <div className="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Progresso Geral</span>
-                        <span>{completedSubjects}/{totalSubjects} matérias</span>
-                      </div>
-                      <div className="w-full bg-gray-200 rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${totalSubjects > 0 ? (completedSubjects / totalSubjects) * 100 : 0}%` }}
-                        ></div>
+                      {/* Barra de Progresso Geral */}
+                      <div className="mb-4">
+                        <div className="flex justify-between text-sm mb-1" style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>
+                          <span>Progresso Geral</span>
+                          <span>{completedSubjects}/{totalSubjects} matérias</span>
+                        </div>
+                        <div className="w-full rounded-full h-2" style={{ backgroundColor: darkMode ? '#6b7280' : '#e5e7eb' }}>
+                          <div
+                            className="bg-primary h-2 rounded-full transition-all duration-500"
+                            style={{ width: `${totalSubjects > 0 ? (completedSubjects / totalSubjects) * 100 : 0}%` }}
+                          ></div>
+                        </div>
                       </div>
                     </div>
 
                     <button
                       onClick={() => handleStudentSelect(student)}
-                      className="w-full bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition"
+                      className="w-full bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition mt-auto"
                     >
                       Ver Detalhes
                     </button>
@@ -593,9 +668,25 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
 
         {/* Ações Rápidas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">💰 Configurações Financeiras</h2>
-            <p className="text-gray-600 mb-4">Gerencie as regras de poupança educativa para seus filhos</p>
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              💰 Configurações Financeiras
+            </h2>
+            <p 
+              className="mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            >
+              Gerencie as regras de poupança educativa para seus filhos
+            </p>
         <button
           onClick={() => setActiveScreen('savings-config')}
               className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition"
@@ -604,9 +695,25 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
         </button>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">📊 Relatórios Detalhados</h2>
-            <p className="text-gray-600 mb-4">Acesse relatórios completos de progresso e engajamento</p>
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📊 Relatórios Detalhados
+            </h2>
+            <p 
+              className="mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            >
+              Acesse relatórios completos de progresso e engajamento
+            </p>
             <button
               onClick={() => setActiveScreen('reports')}
               className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition"
@@ -622,7 +729,13 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
 
         {/* Aba de Tokens */}
         {activeTab === 'tokens' && (
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
             <ParentTokenManager user={user} />
           </div>
         )}

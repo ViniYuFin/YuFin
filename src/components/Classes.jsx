@@ -26,10 +26,27 @@ const Classes = ({ user, onChange }) => {
   const [allTeachers, setAllTeachers] = useState([]);
   const [newClassTeacher, setNewClassTeacher] = useState('');
   const [editTeacher, setEditTeacher] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     fetchClasses();
     fetchAllStudents();
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, []);
 
   const fetchClasses = async () => {
@@ -145,18 +162,30 @@ const Classes = ({ user, onChange }) => {
   return (
     <div className="min-h-screen bg-interface p-4 pb-20">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6 border-2 mb-6" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+        <div 
+          className="rounded-xl shadow-lg p-6 border-2 mb-6" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Gestão Escolar</h2>
-          </div>
-          
-          <div className="mb-6">
-            <h3 className="text-xl font-semibold text-gray-800">📚 Gestão de Turmas</h3>
+            <h2 
+              className="text-2xl font-bold"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📚 Gestão de Turmas
+            </h2>
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-gray-800">Gerenciar Turmas</h3>
+              <h3 
+                className="text-xl font-semibold"
+                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+              >
+                Gerenciar Turmas
+              </h3>
               <button
                 onClick={handleAddClass}
                 className="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition"
@@ -171,21 +200,40 @@ const Classes = ({ user, onChange }) => {
                 placeholder="Série/Ano (ex: 6º Ano, 7º Ano)"
                 value={newClassGrade}
                 onChange={e => setNewClassGrade(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                className="px-4 py-2 border rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                style={{
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                  color: darkMode ? '#ffffff' : '#1f2937'
+                }}
               />
               <input
                 type="text"
                 placeholder="Professor"
                 value={newClassTeacher}
                 onChange={e => setNewClassTeacher(e.target.value)}
-                className="px-4 py-2 border border-gray-300 rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                className="px-4 py-2 border rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors duration-200"
+                style={{
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                  color: darkMode ? '#ffffff' : '#1f2937'
+                }}
               />
             </div>
             
             {error && <p className="text-red-600 mb-2">{error}</p>}
             
-            <div className="bg-blue-50 rounded-lg p-3 mb-4 border border-blue-200">
-              <p className="text-sm text-blue-700">
+            <div 
+              className="rounded-lg p-3 mb-4 border"
+              style={{ 
+                backgroundColor: darkMode ? '#1e3a8a' : '#dbeafe',
+                borderColor: darkMode ? '#3b82f6' : '#93c5fd'
+              }}
+            >
+              <p 
+                className="text-sm"
+                style={{ color: darkMode ? '#dbeafe' : '#1e40af' }}
+              >
                 💡 <strong>Dica:</strong> O nome da turma será gerado automaticamente (Turma A, Turma B, etc.) baseado na série selecionada.
               </p>
             </div>
@@ -198,9 +246,21 @@ const Classes = ({ user, onChange }) => {
                   <p className="text-gray-600 col-span-2">Nenhuma turma cadastrada ainda.</p>
                 )}
                 {classes.map((turma) => (
-                  <div key={turma.id} className="bg-gray-50 rounded-lg p-4 border shadow-sm">
+                  <div 
+                    key={turma.id} 
+                    className="rounded-lg p-4 border shadow-sm"
+                    style={{ 
+                      backgroundColor: darkMode ? '#4b5563' : '#f9fafb',
+                      borderColor: darkMode ? '#6b7280' : '#e5e7eb'
+                    }}
+                  >
                     <div className="flex justify-between items-center mb-2">
-                      <h3 className="text-lg font-bold text-gray-800">{turma.name}</h3>
+                      <h3 
+                        className="text-lg font-bold"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {turma.name}
+                      </h3>
                       <button
                         className="text-xs text-primary underline"
                         onClick={() => {
@@ -211,9 +271,14 @@ const Classes = ({ user, onChange }) => {
                         {selectedClassId === turma.id ? 'Fechar' : 'Gerenciar Alunos'}
                       </button>
                     </div>
-                    <p className="text-gray-600">Série: {turma.grade}</p>
-                    <p className="text-gray-600">Professor: {turma.teacher}</p>
-                    <p className="text-gray-600 mb-2">Alunos: {turma.students ? turma.students.length : 0}</p>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Série: {turma.grade}</p>
+                    <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Professor: {turma.teacher}</p>
+                    <p 
+                      className="mb-2"
+                      style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                    >
+                      Alunos: {turma.students ? turma.students.length : 0}
+                    </p>
                     
                     {editingId === turma.id ? (
                       <>
@@ -222,12 +287,22 @@ const Classes = ({ user, onChange }) => {
                           value={editName}
                           onChange={e => setEditName(e.target.value)}
                           className="p-2 border rounded-md mb-2 w-full"
+                          style={{
+                            backgroundColor: darkMode ? '#374151' : '#ffffff',
+                            borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                            color: darkMode ? '#ffffff' : '#1f2937'
+                          }}
                         />
                         <input
                           type="text"
                           value={editGrade}
                           onChange={e => setEditGrade(e.target.value)}
                           className="p-2 border rounded-md mb-2 w-full"
+                          style={{
+                            backgroundColor: darkMode ? '#374151' : '#ffffff',
+                            borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                            color: darkMode ? '#ffffff' : '#1f2937'
+                          }}
                         />
                         <input
                           type="text"
@@ -235,6 +310,11 @@ const Classes = ({ user, onChange }) => {
                           onChange={e => setEditTeacher(e.target.value)}
                           placeholder="Professor"
                           className="p-2 border rounded-md mb-2 w-full"
+                          style={{
+                            backgroundColor: darkMode ? '#374151' : '#ffffff',
+                            borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                            color: darkMode ? '#ffffff' : '#1f2937'
+                          }}
                         />
                         <div className="flex gap-2">
                           <button onClick={() => handleSaveEdit(turma.id)} className="bg-primary text-white px-3 py-1 rounded">Salvar</button>
@@ -251,22 +331,39 @@ const Classes = ({ user, onChange }) => {
                     )}
                     
                     {selectedClassId === turma.id && (
-                      <div className="mt-4 p-3 bg-orange-50 rounded">
-                        <h4 className="font-semibold mb-2">Alunos da Turma</h4>
+                      <div 
+                        className="mt-4 p-3 rounded"
+                        style={{ backgroundColor: darkMode ? '#374151' : '#fef3c7' }}
+                      >
+                        <h4 
+                          className="font-semibold mb-2"
+                          style={{ color: darkMode ? '#ffffff' : '#92400e' }}
+                        >
+                          Alunos da Turma
+                        </h4>
                         {turma.students && turma.students.length > 0 ? (
                           <ul className="mb-2">
                             {turma.students.map(studentId => {
                               const student = allStudents.find(s => s.id.toString() === studentId);
                               return student ? (
-                                <li key={student.id} className="flex justify-between items-center border-b py-1">
-                                  <span>{student.name}</span>
+                                <li 
+                                  key={student.id} 
+                                  className="flex justify-between items-center py-1"
+                                  style={{ borderBottomColor: darkMode ? '#6b7280' : '#f59e0b' }}
+                                >
+                                  <span style={{ color: darkMode ? '#ffffff' : '#92400e' }}>{student.name}</span>
                                   <button onClick={() => handleRemoveStudent(turma.id, student.id)} className="text-xs text-red-600 underline">Remover</button>
                                 </li>
                               ) : null;
                             })}
                           </ul>
                         ) : (
-                          <p className="text-gray-500 mb-2">Nenhum aluno vinculado.</p>
+                          <p 
+                            className="mb-2"
+                            style={{ color: darkMode ? '#d1d5db' : '#a16207' }}
+                          >
+                            Nenhum aluno vinculado.
+                          </p>
                         )}
                         <input
                           type="text"
@@ -274,6 +371,11 @@ const Classes = ({ user, onChange }) => {
                           value={searchStudent}
                           onChange={e => setSearchStudent(e.target.value)}
                           className="p-2 border rounded-md w-full mb-2"
+                          style={{
+                            backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                            borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                            color: darkMode ? '#ffffff' : '#1f2937'
+                          }}
                         />
                         {loadingStudents ? (
                           <p>Carregando alunos...</p>

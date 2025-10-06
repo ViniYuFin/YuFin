@@ -10,10 +10,27 @@ const Reports = ({ user, setActiveScreen }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [reportType, setReportType] = useState('general'); // general, family, school
   const [allUsers, setAllUsers] = useState([]);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     // Buscar todos os usuários do backend ao montar
     apiGet('/users').then(users => setAllUsers(users));
+    
+    // Carregar preferência do modo escuro
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+    setDarkMode(savedDarkMode);
+
+    // Listener para mudanças no modo escuro
+    const handleDarkModeChange = () => {
+      const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+      setDarkMode(savedDarkMode);
+    };
+
+    window.addEventListener('darkModeChanged', handleDarkModeChange);
+    
+    return () => {
+      window.removeEventListener('darkModeChanged', handleDarkModeChange);
+    };
   }, []);
 
   useEffect(() => {
@@ -256,7 +273,8 @@ const Reports = ({ user, setActiveScreen }) => {
               </button>
               <h1 className="text-3xl font-yufin text-primary">📊 Relatórios Detalhados</h1>
             </div>
-            <div className="flex items-center space-x-4">
+            {/* Botões apenas para desktop - ocultar no mobile */}
+            <div className="hidden md:flex items-center space-x-4">
               {user.role === 'parent' && (
                 <select 
                   value={reportType} 
@@ -408,17 +426,43 @@ const Reports = ({ user, setActiveScreen }) => {
 
         {/* Relatório da Escola */}
         {user.role === 'school' && reportType === 'school' && report?.schoolSubjectProgress && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📚 Progresso Escolar por Matéria</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📚 Progresso Escolar por Matéria
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Object.entries(report.schoolSubjectProgress).map(([subject, progress]) => (
-                <div key={subject} className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{subject}</h3>
-                  <div className="flex justify-between text-sm text-gray-600 mb-2">
+                <div 
+                  key={subject} 
+                  className="rounded-lg p-4"
+                  style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                >
+                  <h3 
+                    className="text-lg font-semibold mb-2"
+                    style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                  >
+                    {subject}
+                  </h3>
+                  <div 
+                    className="flex justify-between text-sm mb-2"
+                    style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                  >
                     <span>{progress.completed} lições concluídas</span>
                     <span>{progress.students.size} alunos ativos</span>
                   </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div 
+                    className="w-full rounded-full h-2"
+                    style={{ backgroundColor: darkMode ? '#6b7280' : '#e5e7eb' }}
+                  >
                     <div
                       className="bg-primary h-2 rounded-full transition-all duration-500"
                       style={{ width: `${Math.min((progress.completed / progress.total) * 100, 100)}%` }}
@@ -432,23 +476,53 @@ const Reports = ({ user, setActiveScreen }) => {
 
         {/* Ranking da Escola */}
         {user.role === 'school' && report?.schoolRanking && (
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">🏆 Top 10 Alunos da Escola</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              🏆 Top 10 Alunos da Escola
+            </h2>
             <div className="space-y-3">
               {report.schoolRanking.map((student, index) => (
-                <div key={student.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div 
+                  key={student.id} 
+                  className="flex items-center justify-between p-4 rounded-lg"
+                  style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                >
                   <div className="flex items-center space-x-4">
                     <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
                       {index + 1}
                     </div>
                     <div>
-                      <h4 className="font-semibold text-gray-800">{student.name}</h4>
-                      <p className="text-sm text-gray-600">Nível {student.level} • {student.lessonsCompleted} lições</p>
+                      <h4 
+                        className="font-semibold"
+                        style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                      >
+                        {student.name}
+                      </h4>
+                      <p 
+                        className="text-sm"
+                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                      >
+                        Nível {student.level} • {student.lessonsCompleted} lições
+                      </p>
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-primary">{student.xp} XP</div>
-                    <div className="text-sm text-gray-600">{student.streak} 🔥</div>
+                    <div 
+                      className="text-sm"
+                      style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                    >
+                      {student.streak} 🔥
+                    </div>
                   </div>
                 </div>
               ))}
@@ -488,11 +562,26 @@ const Reports = ({ user, setActiveScreen }) => {
         </div>
 
         {/* Seção de Atividades */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">🎯 Atividades Recentes</h2>
+        <div 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          style={{ 
+            backgroundColor: darkMode ? '#374151' : '#ffffff',
+            borderColor: 'rgb(238, 145, 22)' 
+          }}
+        >
+          <h2 
+            className="text-2xl font-bold mb-4"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            🎯 Atividades Recentes
+          </h2>
           <div className="space-y-4">
             {report.eventsByType && Object.entries(report.eventsByType).map(([eventType, count]) => (
-              <div key={eventType} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div 
+                key={eventType} 
+                className="flex items-center justify-between p-3 rounded-lg"
+                style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+              >
                 <div className="flex items-center space-x-3">
                   <span className="text-2xl">
                     {eventType === 'lesson_complete' && '✅'}
@@ -503,7 +592,10 @@ const Reports = ({ user, setActiveScreen }) => {
                     {eventType === 'error' && '❌'}
                     {!['lesson_complete', 'level_up', 'achievement_unlock', 'store_purchase', 'navigation', 'error'].includes(eventType) && '📊'}
                   </span>
-                  <span className="font-medium text-gray-800">
+                  <span 
+                    className="font-medium"
+                    style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                  >
                     {eventType === 'lesson_complete' && 'Lições Completadas'}
                     {eventType === 'level_up' && 'Subidas de Nível'}
                     {eventType === 'achievement_unlock' && 'Conquistas Desbloqueadas'}

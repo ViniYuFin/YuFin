@@ -260,32 +260,54 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
                       : undefined,
                     color: !isAnswered 
                       ? (darkMode ? '#ffffff' : '#1f2937')
-                      : undefined
+                      : undefined,
+                    // Ajustes específicos para mobile
+                    minHeight: window.innerWidth < 768 ? '80px' : 'auto',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center'
                   }}
                 >
                   <div className="flex items-center space-x-3">
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
-                      !isAnswered 
-                        ? 'bg-gradient-to-r from-primary to-secondary text-white' 
-                        : index === currentQuestion.correctAnswer 
-                          ? 'bg-green-500 text-white' 
-                          : currentAnswer === index 
-                            ? 'bg-red-500 text-white'
-                            : 'bg-gray-200 text-gray-500'
-                    }`}>
+                    <div 
+                      className={`flex items-center justify-center font-bold text-lg ${
+                        !isAnswered 
+                          ? 'bg-gradient-to-r from-primary to-secondary text-white' 
+                          : index === currentQuestion.correctAnswer 
+                            ? 'bg-green-500 text-white' 
+                            : currentAnswer === index 
+                              ? 'bg-red-500 text-white'
+                              : 'bg-gray-200 text-gray-500'
+                      }`}
+                      style={{
+                        // Ícone perfeitamente redondo para mobile
+                        width: window.innerWidth < 768 ? '32px' : '40px',
+                        height: window.innerWidth < 768 ? '32px' : '40px',
+                        borderRadius: '50%',
+                        aspectRatio: '1/1',
+                        flexShrink: 0
+                      }}
+                    >
                       {String.fromCharCode(65 + index)}
                     </div>
                     <span 
                       className="text-sm font-medium flex-1"
-                      style={{ color: !isAnswered ? (darkMode ? '#ffffff' : '#1f2937') : undefined }}
+                      style={{ 
+                        color: !isAnswered ? (darkMode ? '#ffffff' : '#1f2937') : undefined,
+                        // Ajustes de texto para mobile
+                        lineHeight: window.innerWidth < 768 ? '1.3' : '1.5',
+                        fontSize: window.innerWidth < 768 ? '13px' : '14px',
+                        wordBreak: 'break-word',
+                        hyphens: 'auto'
+                      }}
                     >
                       {option}
                     </span>
                     {isAnswered && index === currentQuestion.correctAnswer && (
-                      <div className="text-xl">✅</div>
+                      <div className="text-xl flex-shrink-0">✅</div>
                     )}
                     {isAnswered && currentAnswer === index && index !== currentQuestion.correctAnswer && (
-                      <div className="text-xl">❌</div>
+                      <div className="text-xl flex-shrink-0">❌</div>
                     )}
                   </div>
                 </button>

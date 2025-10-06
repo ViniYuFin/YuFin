@@ -550,35 +550,56 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
             </div>
           )}
 
-          {/* Oportunidades Disponíveis - só aparece quando cenário está selecionado */}
-          {selectedScenario && selectedScenario.opportunities && (
+          {/* Resumo do Orçamento - só aparece quando cenário está selecionado */}
+          {selectedScenario && (
             <div 
-              className="p-4 rounded-lg mb-6 border"
+              className="mb-6 p-4 rounded-lg border"
               style={{
                 backgroundColor: darkMode ? '#374151' : '#f9fafb',
                 borderColor: darkMode ? '#4b5563' : '#e5e7eb'
               }}
             >
-              <h3 
-                className="font-bold text-lg mb-3"
-                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-              >
-                🎯 Oportunidades Disponíveis para {selectedScenario.title}
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                {selectedScenario.opportunities.map((opportunity, index) => (
-                  <div 
-                    key={index} 
-                    className="flex items-center text-sm"
-                    style={{ color: darkMode ? '#e5e7eb' : '#374151' }}
-                  >
-                    <span className="mr-2">✓</span>
-                    <span>{opportunity}</span>
-                  </div>
-                ))}
+              <div className="flex justify-between items-center">
+                <span 
+                  className="text-sm font-medium"
+                  style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                >
+                  Total Distribuído:
+                </span>
+                <span className={`font-bold text-lg ${totalAllocated > totalBudget ? 'text-red-600' : 'text-green-600'}`}>
+                  R$ {totalAllocated.toLocaleString('pt-BR')},00
+                </span>
               </div>
+              <div className="flex justify-between items-center mt-1">
+                <span 
+                  className="text-sm font-medium"
+                  style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                >
+                  Orçamento Total:
+                </span>
+                <span 
+                  className="font-bold text-lg"
+                  style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                >
+                  R$ {totalBudget.toLocaleString('pt-BR')},00
+                </span>
+              </div>
+              {remaining !== 0 && (
+                <div className="flex justify-between items-center mt-1">
+                  <span 
+                    className="text-sm font-medium"
+                    style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+                  >
+                    Restante:
+                  </span>
+                  <span className={`font-bold text-lg ${remaining < 0 ? 'text-red-600' : 'text-blue-600'}`}>
+                    R$ {remaining.toLocaleString('pt-BR')},00
+                  </span>
+                </div>
+              )}
             </div>
           )}
+
 
         </div>
 
@@ -691,7 +712,8 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className={`px-3 py-1 rounded-full text-sm font-bold ${
+                        {/* Tag apenas para desktop - ocultar no mobile */}
+                        <div className={`hidden sm:block px-3 py-1 rounded-full text-sm font-bold ${
                           (lesson.title === "O Orçamento da Família") ? 'bg-gray-100 text-gray-700' :
                           (selectedScenario?.adjustments && group.total > group.maxTotal) ? 'bg-red-100 text-red-700' : 
                           (selectedScenario?.adjustments && group.total === group.maxTotal) ? 'bg-green-100 text-green-700' : 
@@ -802,8 +824,8 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
         )}
       </div>
 
-      {/* Resumo do Orçamento - só aparece quando cenário está selecionado */}
-      {selectedScenario && (
+      {/* Oportunidades Disponíveis - só aparece quando cenário está selecionado */}
+      {selectedScenario && selectedScenario.opportunities && (
         <div 
           className="mb-6 p-4 rounded-lg border"
           style={{
@@ -811,44 +833,24 @@ const BudgetDistributionLesson = ({ lesson, onComplete, onExit }) => {
             borderColor: darkMode ? '#4b5563' : '#e5e7eb'
           }}
         >
-          <div className="flex justify-between items-center">
-            <span 
-              className="text-sm font-medium"
-              style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
-            >
-              Total Distribuído:
-            </span>
-            <span className={`font-bold text-lg ${totalAllocated > totalBudget ? 'text-red-600' : 'text-green-600'}`}>
-              R$ {totalAllocated.toLocaleString('pt-BR')},00
-            </span>
-          </div>
-          <div className="flex justify-between items-center mt-1">
-            <span 
-              className="text-sm font-medium"
-              style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
-            >
-              Orçamento Total:
-            </span>
-            <span 
-              className="font-bold text-lg"
-              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-            >
-              R$ {totalBudget.toLocaleString('pt-BR')},00
-            </span>
-          </div>
-          {remaining !== 0 && (
-            <div className="flex justify-between items-center mt-1">
-              <span 
-                className="text-sm font-medium"
-                style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+          <h3 
+            className="font-bold text-lg mb-3"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            🎯 Oportunidades Disponíveis para {selectedScenario.title}
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+            {selectedScenario.opportunities.map((opportunity, index) => (
+              <div 
+                key={index} 
+                className="flex items-center text-sm"
+                style={{ color: darkMode ? '#e5e7eb' : '#374151' }}
               >
-                Restante:
-              </span>
-              <span className={`font-bold text-lg ${remaining < 0 ? 'text-red-600' : 'text-blue-600'}`}>
-                R$ {remaining.toLocaleString('pt-BR')},00
-              </span>
-            </div>
-          )}
+                <span className="mr-2">✓</span>
+                <span>{opportunity}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
