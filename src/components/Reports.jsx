@@ -274,7 +274,12 @@ const Reports = ({ user, setActiveScreen }) => {
               <h1 className="text-3xl font-yufin text-primary">📊 Relatórios Detalhados</h1>
             </div>
             {/* Botões apenas para desktop - ocultar no mobile */}
-            <div className="hidden md:flex items-center space-x-4">
+            <div 
+              className="items-center space-x-4"
+              style={{ 
+                display: window.innerWidth >= 768 ? 'flex' : 'none' 
+              }}
+            >
               {user.role === 'parent' && (
                 <select 
                   value={reportType} 
