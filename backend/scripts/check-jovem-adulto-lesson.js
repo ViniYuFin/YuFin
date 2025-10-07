@@ -64,3 +64,5 @@ async function checkJovemAdultoLesson() {
 // Executar o script
 checkJovemAdultoLesson();
 
+
+

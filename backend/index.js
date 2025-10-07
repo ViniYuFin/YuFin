@@ -719,7 +719,15 @@ app.delete('/lessons/:id', async (req, res) => {
 // Rotas de turmas
 app.get('/classes', async (req, res) => {
   try {
-    const classes = await Class.find();
+    const { schoolId } = req.query;
+    
+    // Se schoolId for fornecido, filtrar por escola
+    let query = {};
+    if (schoolId) {
+      query.schoolId = schoolId;
+    }
+    
+    const classes = await Class.find(query);
     res.json(classes);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -740,9 +748,21 @@ app.get('/classes/:id', async (req, res) => {
 
 app.post('/classes', async (req, res) => {
   try {
-    const classData = new Class(req.body);
-    await classData.save();
-    res.status(201).json(classData);
+    const { schoolId, ...classData } = req.body;
+    
+    // Verificar se schoolId foi fornecido
+    if (!schoolId) {
+      return res.status(400).json({ error: 'schoolId é obrigatório para criar turmas' });
+    }
+    
+    // Criar turma com schoolId
+    const newClass = new Class({
+      ...classData,
+      schoolId: schoolId
+    });
+    
+    await newClass.save();
+    res.status(201).json(newClass);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
@@ -750,10 +770,19 @@ app.post('/classes', async (req, res) => {
 
 app.put('/classes/:id', async (req, res) => {
   try {
-    const classData = await Class.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!classData) {
+    const { schoolId } = req.body;
+    
+    // Verificar se a turma existe e pertence à escola
+    const existingClass = await Class.findById(req.params.id);
+    if (!existingClass) {
       return res.status(404).json({ error: 'Turma não encontrada' });
     }
+    
+    if (schoolId && existingClass.schoolId !== schoolId) {
+      return res.status(403).json({ error: 'Acesso negado: turma não pertence a esta escola' });
+    }
+    
+    const classData = await Class.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(classData);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -762,10 +791,19 @@ app.put('/classes/:id', async (req, res) => {
 
 app.delete('/classes/:id', async (req, res) => {
   try {
-    const classData = await Class.findByIdAndDelete(req.params.id);
-    if (!classData) {
+    const { schoolId } = req.query;
+    
+    // Verificar se a turma existe e pertence à escola
+    const existingClass = await Class.findById(req.params.id);
+    if (!existingClass) {
       return res.status(404).json({ error: 'Turma não encontrada' });
     }
+    
+    if (schoolId && existingClass.schoolId !== schoolId) {
+      return res.status(403).json({ error: 'Acesso negado: turma não pertence a esta escola' });
+    }
+    
+    const classData = await Class.findByIdAndDelete(req.params.id);
     res.json({ message: 'Turma deletada com sucesso' });
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -775,11 +813,22 @@ app.delete('/classes/:id', async (req, res) => {
 // Adicionar aluno à turma
 app.patch('/classes/:id/add-student', async (req, res) => {
   try {
-    const { studentId } = req.body;
+    const { studentId, schoolId } = req.body;
     const classData = await Class.findById(req.params.id);
     
     if (!classData) {
       return res.status(404).json({ error: 'Turma não encontrada' });
+    }
+    
+    // Verificar se a turma pertence à escola
+    if (schoolId && classData.schoolId !== schoolId) {
+      return res.status(403).json({ error: 'Acesso negado: turma não pertence a esta escola' });
+    }
+    
+    // Verificar se o aluno pertence à mesma escola
+    const student = await User.findById(studentId);
+    if (student && student.schoolId !== classData.schoolId) {
+      return res.status(403).json({ error: 'Acesso negado: aluno não pertence a esta escola' });
     }
     
     // Verificar se o aluno já está na turma
@@ -804,11 +853,16 @@ app.patch('/classes/:id/add-student', async (req, res) => {
 // Remover aluno da turma
 app.patch('/classes/:id/remove-student', async (req, res) => {
   try {
-    const { studentId } = req.body;
+    const { studentId, schoolId } = req.body;
     const classData = await Class.findById(req.params.id);
     
     if (!classData) {
       return res.status(404).json({ error: 'Turma não encontrada' });
+    }
+    
+    // Verificar se a turma pertence à escola
+    if (schoolId && classData.schoolId !== schoolId) {
+      return res.status(403).json({ error: 'Acesso negado: turma não pertence a esta escola' });
     }
     
     // Remover aluno da turma

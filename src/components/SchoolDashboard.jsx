@@ -48,20 +48,24 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
   useEffect(() => {
     apiGet('/users')
       .then(users => {
-        setSchoolStudents(users.filter(u => u.role === 'student'));
+        // Filtrar apenas alunos que pertencem a esta escola específica
+        const schoolStudents = users.filter(u => 
+          u.role === 'student' && u.schoolId === user.id
+        );
+        setSchoolStudents(schoolStudents);
         setLoadingStudents(false);
       })
       .catch(() => setLoadingStudents(false));
-  }, []);
+  }, [user.id]);
 
   useEffect(() => {
-    apiGet('/classes')
+    apiGet(`/classes?schoolId=${user.id}`)
       .then(data => {
         setClasses(data);
         setLoadingClasses(false);
       })
       .catch(() => setLoadingClasses(false));
-  }, []);
+  }, [user.id]);
 
   // Carregar solicitações de progressão
   useEffect(() => {
@@ -115,9 +119,9 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         await loadGradeProgressionRequests();
         
         const updatedUsers = await apiGet('/users');
-        setSchoolStudents(updatedUsers.filter(u => u.role === 'student'));
+        setSchoolStudents(updatedUsers.filter(u => u.role === 'student' && u.schoolId === user.id));
         
-        const updatedClasses = await apiGet('/classes');
+        const updatedClasses = await apiGet(`/classes?schoolId=${user.id}`);
         setClasses(updatedClasses);
       }
       // Se o aluno foi desvinculado, recarregar dados imediatamente
@@ -126,9 +130,9 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         
         // Recarregar dados imediatamente
         const updatedUsers = await apiGet('/users');
-        setSchoolStudents(updatedUsers.filter(u => u.role === 'student'));
+        setSchoolStudents(updatedUsers.filter(u => u.role === 'student' && u.schoolId === user.id));
         
-        const updatedClasses = await apiGet('/classes');
+        const updatedClasses = await apiGet(`/classes?schoolId=${user.id}`);
         setClasses(updatedClasses);
         
         // Recarregar solicitações de progressão
@@ -142,10 +146,10 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           
           // Recarregar lista de alunos
           const updatedUsers = await apiGet('/users');
-          setSchoolStudents(updatedUsers.filter(u => u.role === 'student'));
+          setSchoolStudents(updatedUsers.filter(u => u.role === 'student' && u.schoolId === user.id));
           
           // Recarregar turmas para atualizar contadores
-          const updatedClasses = await apiGet('/classes');
+          const updatedClasses = await apiGet(`/classes?schoolId=${user.id}`);
           setClasses(updatedClasses);
         }, 1000);
       }
@@ -524,7 +528,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
             className="text-4xl font-yufin mb-4"
             style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
           >
-            🏫 Dashboard da Escola
+            🏫 Dashboard da Escola {user.name ? user.name : ''}
           </h1>
           <p 
             style={{ color: darkMode ? '#ffffff' : '#6b7280' }}

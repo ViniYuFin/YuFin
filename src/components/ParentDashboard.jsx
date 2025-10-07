@@ -303,46 +303,84 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             </div>
           </div>
 
-          {/* Progresso por Matéria */}
+          {/* Progresso Geral */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">📚 Progresso por Matéria</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Object.entries(subjectProgress).map(([subject, progress]) => (
-                <div key={subject} className="bg-gray-50 rounded-lg p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">{subject}</h3>
-                  <div className="flex justify-between text-sm text-gray-600 mb-2">
-                    <span>{progress.completed} de {progress.total} lições</span>
-                    <span>{Math.round((progress.completed / progress.total) * 100)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-primary h-2 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.min((progress.completed / progress.total) * 100, 100)}%` }}
-                    ></div>
-                  </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">📊 Progresso</h2>
+            
+            {/* Card de Progresso Geral (replicando o do aluno) */}
+            <div className="bg-white rounded-lg p-6 border-2 border-gray-200 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold text-primary">{selectedStudent.gradeId || '6º Ano'}</h3>
+                  <p className="text-sm text-gray-600">Sexto ano do ensino fundamental</p>
                 </div>
-              ))}
+              <div className="text-right">
+                <div className="text-2xl font-bold text-primary">
+                  {selectedStudent.progress?.completedLessons?.length || 0}/{lessons.length}
+                </div>
+                <p className="text-sm text-gray-600">lições concluídas</p>
+              </div>
+              </div>
+              
+              {/* Barra de Progresso */}
+              <div className="mb-2">
+                <div className="w-full bg-gray-200 rounded-full h-3">
+                  <div
+                    className="bg-primary h-3 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: `${Math.min(((selectedStudent.progress?.completedLessons?.length || 0) / lessons.length) * 100, 100)}%` 
+                    }}
+                  ></div>
+                </div>
+              </div>
+              
+              {/* Porcentagem */}
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-600">Progresso Geral</span>
+                <span className="font-semibold text-primary">
+                  {Math.round(((selectedStudent.progress?.completedLessons?.length || 0) / lessons.length) * 100)}% completo
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Lições Recentes */}
+          {/* Lições Concluídas */}
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
             <h2 className="text-2xl font-bold text-gray-800 mb-4">✅ Lições Concluídas</h2>
-            <div className="space-y-3">
-              {selectedStudent.progress?.completedLessons?.slice(-5).reverse().map(lessonId => {
-                const lesson = lessons.find(l => l.id === lessonId);
-                return lesson ? (
-                  <div key={lessonId} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div>
-                      <h4 className="font-semibold text-gray-800">{lesson.title}</h4>
-                      <p className="text-sm text-gray-600">{lesson.subject} • {lesson.type}</p>
+            <div className="space-y-2">
+              {selectedStudent.progress?.completedLessons?.map(lessonId => {
+                const isPerfect = selectedStudent.progress?.perfectLessons?.includes(lessonId);
+                
+                // Mapear IDs do MongoDB para títulos das lições
+                const lessonTitles = {
+                  '68bf16663f2074bcdd61d1d2': 'A História do Dinheiro',
+                  '68bf16663f2074bcdd61d1d4': 'Necessidades vs Desejos',
+                  '68bf16663f2074bcdd61d1d6': 'O Orçamento da Família',
+                  '68bf16663f2074bcdd61d1d8': 'Contando Moedas e Notas',
+                  '68bf16683f2074bcdd61d1da': 'Porcentagens no dia a dia',
+                  '68bf16683f2074bcdd61d1dc': 'Comparando Preços no Mercado',
+                  '68bf16683f2074bcdd61d1de': 'O valor das escolhas',
+                  '68bf16683f2074bcdd61d1e0': 'Poupança para pequenos objetivos',
+                  '68bf16683f2074bcdd61d1e2': 'Economizando em Casa',
+                  '68bf16683f2074bcdd61d1e4': 'Feira de Troca / Simulação de compras',
+                  '68bf16683f2074bcdd61d1e6': 'Planejando uma pequena viagem',
+                  '68bf16683f2074bcdd61d1e8': 'Revisão e Celebração'
+                };
+                
+                const lessonTitle = lessonTitles[lessonId] || 'Lição Concluída';
+                
+                return (
+                  <div key={lessonId} className={`flex items-center p-3 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
+                    <div className="flex-1">
+                      <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-800'}`}>{lessonTitle}</span>
+                      {isPerfect && <span className="text-green-500 font-medium ml-2">(Perfeita)</span>}
                     </div>
-                    <span className="text-green-600 font-semibold">✅ Concluída</span>
+                    <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>15min</span>
                   </div>
-                ) : null;
+                );
               })}
               {(!selectedStudent.progress?.completedLessons || selectedStudent.progress.completedLessons.length === 0) && (
-                <p className="text-gray-600 text-center py-4">Nenhuma lição concluída ainda.</p>
+                <p className={`text-center py-4 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Nenhuma lição concluída ainda.</p>
               )}
             </div>
           </div>

@@ -52,7 +52,7 @@ const Classes = ({ user, onChange }) => {
   const fetchClasses = async () => {
     setLoading(true);
     try {
-      const data = await apiGet('/classes');
+      const data = await apiGet(`/classes?schoolId=${user.id}`);
       setClasses(data);
     } catch (err) {
       setError('Erro ao carregar turmas');
@@ -93,7 +93,8 @@ const Classes = ({ user, onChange }) => {
         name: autoClassName,
         grade: newClassGrade,
         students: [],
-        teacher: newClassTeacher
+        teacher: newClassTeacher,
+        schoolId: user.id
       };
       await apiPost('/classes', newClass);
       setNewClassName('');
@@ -117,7 +118,12 @@ const Classes = ({ user, onChange }) => {
 
   const handleSaveEdit = async (id) => {
     try {
-      await apiPatch(`/classes/${id}`, { name: editName, grade: editGrade, teacher: editTeacher });
+      await apiPatch(`/classes/${id}`, { 
+        name: editName, 
+        grade: editGrade, 
+        teacher: editTeacher,
+        schoolId: user.id
+      });
       setEditingId(null);
       await fetchClasses();
       await fetchAllStudents();
@@ -130,7 +136,7 @@ const Classes = ({ user, onChange }) => {
   const handleDeleteClass = async (id) => {
     if (!window.confirm('Tem certeza que deseja remover esta turma?')) return;
     try {
-      await apiDelete(`/classes/${id}`);
+      await apiDelete(`/classes/${id}?schoolId=${user.id}`);
       await fetchClasses();
       await fetchAllStudents();
       if (onChange) onChange();
@@ -141,7 +147,10 @@ const Classes = ({ user, onChange }) => {
 
   const handleAddStudent = async (classId, studentId) => {
     try {
-      await apiPatch(`/classes/${classId}/add-student`, { studentId });
+      await apiPatch(`/classes/${classId}/add-student`, { 
+        studentId,
+        schoolId: user.id
+      });
       fetchClasses();
       if (onChange) onChange();
     } catch (err) {
@@ -151,7 +160,10 @@ const Classes = ({ user, onChange }) => {
 
   const handleRemoveStudent = async (classId, studentId) => {
     try {
-      await apiPatch(`/classes/${classId}/remove-student`, { studentId });
+      await apiPatch(`/classes/${classId}/remove-student`, { 
+        studentId,
+        schoolId: user.id
+      });
       fetchClasses();
       if (onChange) onChange();
     } catch (err) {

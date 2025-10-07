@@ -377,4 +377,4 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
   );
 };
 
-export default QuizLesson; 
+export default QuizLesson;

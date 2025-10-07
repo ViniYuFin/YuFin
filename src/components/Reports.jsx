@@ -113,15 +113,19 @@ const Reports = ({ user, setActiveScreen }) => {
       familyStats,
       familySubjectProgress,
       linkedStudents,
-      sessionDuration: 0, // Placeholder
+      sessionDuration: linkedStudents.reduce((sum, student) => sum + (student.progress?.timeSpent || 0), 0),
       userEngagement: {
         totalLessons: familyStats.totalLessons,
         perfectLessons: linkedStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0),
         perfectRate: familyStats.totalLessons > 0 
           ? (linkedStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0) / familyStats.totalLessons) * 100 
           : 0,
-        averageScore: 85, // Placeholder
-        averageTimePerLesson: 300 // Placeholder
+        averageScore: familyStats.totalLessons > 0 
+          ? (linkedStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0) / familyStats.totalLessons) * 100 
+          : 0,
+        averageTimePerLesson: familyStats.totalLessons > 0 
+          ? Math.round(linkedStudents.reduce((sum, student) => sum + (student.progress?.timeSpent || 0), 0) / familyStats.totalLessons)
+          : 0
       },
       performance: {
         achievements: linkedStudents.reduce((sum, student) => sum + (student.progress?.achievements?.length || 0), 0),
@@ -200,15 +204,19 @@ const Reports = ({ user, setActiveScreen }) => {
       schoolSubjectProgress,
       schoolRanking,
       schoolStudents,
-      sessionDuration: 0, // Placeholder
+      sessionDuration: schoolStudents.reduce((sum, student) => sum + (student.progress?.timeSpent || 0), 0),
       userEngagement: {
         totalLessons: schoolStats.totalLessons,
         perfectLessons: schoolStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0),
         perfectRate: schoolStats.totalLessons > 0 
           ? (schoolStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0) / schoolStats.totalLessons) * 100 
           : 0,
-        averageScore: 82, // Placeholder
-        averageTimePerLesson: 280 // Placeholder
+        averageScore: schoolStats.totalLessons > 0 
+          ? (schoolStudents.reduce((sum, student) => sum + (student.progress?.perfectLessons?.length || 0), 0) / schoolStats.totalLessons) * 100 
+          : 0,
+        averageTimePerLesson: schoolStats.totalLessons > 0 
+          ? Math.round(schoolStudents.reduce((sum, student) => sum + (student.progress?.timeSpent || 0), 0) / schoolStats.totalLessons)
+          : 0
       },
       performance: {
         achievements: schoolStudents.reduce((sum, student) => sum + (student.progress?.achievements?.length || 0), 0),
