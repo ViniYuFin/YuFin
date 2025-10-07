@@ -274,7 +274,10 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                 >
                   ← Voltar ao Resumo
                 </button>
-                <h1 className="text-3xl font-yufin text-primary">📊 Progresso de {selectedStudent.name}</h1>
+                <h1 className="text-3xl font-yufin text-primary">
+                  <span style={{ display: window.innerWidth >= 768 ? 'inline' : 'none' }}>📊 </span>
+                  Progresso de {selectedStudent.name}
+                </h1>
               </div>
               <div className="text-right">
                 <p className="text-sm text-gray-600">Tendência</p>

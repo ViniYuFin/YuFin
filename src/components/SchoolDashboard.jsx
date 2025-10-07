@@ -808,21 +808,47 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
 
         {/* Aba de Progressão Escolar */}
         {activeTab === 'progression' && (
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">🎓 Progressão Escolar</h2>
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2" 
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-2xl font-bold mb-4"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              🎓 Progressão Escolar
+            </h2>
             
             {/* Autorizações de Progressão */}
             {gradeProgressionRequests.length > 0 ? (
               <div className="space-y-4">
                 {gradeProgressionRequests.map((request, index) => (
-                  <div key={request.student.id} className="bg-gray-50 rounded-lg p-4 border-l-4 border-primary shadow-md hover:shadow-lg transition-all duration-200">
+                  <div 
+                    key={request.student.id} 
+                    className="rounded-lg p-4 border-l-4 border-primary shadow-md hover:shadow-lg transition-all duration-200"
+                    style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+                  >
                     <div className="flex items-center justify-between">
                       <div className="flex-1">
-                        <h4 className="font-bold text-gray-800 text-lg">{request.student.name}</h4>
-                        <p className="text-sm text-gray-700 mt-1">
+                        <h4 
+                          className="font-bold text-lg"
+                          style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                        >
+                          {request.student.name}
+                        </h4>
+                        <p 
+                          className="text-sm mt-1"
+                          style={{ color: darkMode ? '#d1d5db' : '#374151' }}
+                        >
                           Solicitou progressão de <strong className="text-primary">{request.status.currentGrade}</strong> para <strong className="text-green-600">{request.status.nextGrade}</strong>
                         </p>
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p 
+                          className="text-xs mt-2"
+                          style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}
+                        >
                           📅 Solicitado em: {new Date(request.requestDate).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
@@ -842,8 +868,13 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-8 bg-gray-50 rounded-lg">
-                <p className="text-gray-600">Nenhuma solicitação de progressão pendente.</p>
+              <div 
+                className="text-center py-8 rounded-lg"
+                style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
+              >
+                <p style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>
+                  Nenhuma solicitação de progressão pendente.
+                </p>
               </div>
             )}
           </div>
