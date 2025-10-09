@@ -2187,20 +2187,36 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
     const devMode = req.body.devMode === true;
     console.log('🚀 [BACKEND DEBUG] devMode:', devMode);
     
+    console.log('🔍 [BACKEND DEBUG] Buscando usuário no banco...');
     const student = await User.findById(req.params.userId);
-    if (!student || student.role !== 'student') {
+    console.log('🔍 [BACKEND DEBUG] Usuário encontrado:', student ? 'SIM' : 'NÃO');
+    
+    if (!student) {
+      console.log('❌ [BACKEND DEBUG] Usuário não encontrado no banco');
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
+    
+    if (student.role !== 'student') {
+      console.log('❌ [BACKEND DEBUG] Usuário não é aluno, role:', student.role);
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    
+    console.log('✅ [BACKEND DEBUG] Usuário validado:', student.email, 'Série atual:', student.gradeId);
     
     if (devMode) {
       console.log('🔧 [DEV MODE] Progressão real sem autorização da escola');
       
       // Em modo dev, fazer progressão real sem validações
+      console.log('🔍 [BACKEND DEBUG] Buscando grade atual:', student.gradeId);
       let currentGrade = await Grade.findOne({ name: student.gradeId });
+      console.log('🔍 [BACKEND DEBUG] Grade atual encontrada:', currentGrade ? 'SIM' : 'NÃO');
+      
       if (!currentGrade) {
+        console.log('🔧 [DEV MODE] Criando nova grade para:', student.gradeId);
         // Se a grade não existe, criar uma
         const levelMatch = student.gradeId.match(/(\d+)º/);
         const level = levelMatch ? parseInt(levelMatch[1]) : 6;
+        console.log('🔧 [DEV MODE] Level extraído:', level);
         
         currentGrade = new Grade({
           name: student.gradeId,
@@ -2211,11 +2227,16 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
           difficultyRange: { min: Math.max(1, level - 5), max: Math.min(6, level - 4) }
         });
         await currentGrade.save();
+        console.log('✅ [DEV MODE] Nova grade criada e salva');
       }
 
       // Verificar se existe próxima série
+      console.log('🔍 [BACKEND DEBUG] Buscando próxima série, level atual:', currentGrade.level);
       const nextGrade = await Grade.findOne({ level: currentGrade.level + 1 });
+      console.log('🔍 [BACKEND DEBUG] Próxima série encontrada:', nextGrade ? 'SIM' : 'NÃO');
+      
       if (!nextGrade) {
+        console.log('❌ [BACKEND DEBUG] Não há próxima série disponível');
         return res.status(400).json({ error: 'Não há próxima série disponível' });
       }
 
@@ -2240,12 +2261,17 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
     }
 
     // Verificar se já solicitou
+    console.log('🔍 [BACKEND DEBUG] Verificando se já solicitou progressão...');
     if (student.gradeProgression?.nextGradeRequested) {
+      console.log('❌ [BACKEND DEBUG] Progressão já foi solicitada');
       return res.status(400).json({ error: 'Progressão já foi solicitada' });
     }
+    console.log('✅ [BACKEND DEBUG] Progressão não foi solicitada ainda');
 
     // Verificar se completou a série atual
+    console.log('🔍 [BACKEND DEBUG] Buscando grade atual para validação:', student.gradeId);
     let currentGrade = await Grade.findOne({ name: student.gradeId });
+    console.log('🔍 [BACKEND DEBUG] Grade atual encontrada:', currentGrade ? 'SIM' : 'NÃO');
     if (!currentGrade) {
       // Se a grade não existe, verificar se existe uma grade com o mesmo level
       const levelMatch = student.gradeId.match(/(\d+)º/);

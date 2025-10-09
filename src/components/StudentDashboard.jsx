@@ -219,8 +219,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     try {
       setRequestingProgression(true);
       console.log('🚀 [DEBUG] Fazendo POST para request-grade-progression...');
+      console.log('🚀 [DEBUG] URL:', `/users/${user.id}/request-grade-progression`);
+      console.log('🚀 [DEBUG] User ID:', user.id);
+      console.log('🚀 [DEBUG] User email:', user.email);
+      
       const response = await apiPost(`/users/${user.id}/request-grade-progression`);
       console.log('✅ [DEBUG] Resposta recebida:', response);
+      console.log('✅ [DEBUG] Tipo da resposta:', typeof response);
+      console.log('✅ [DEBUG] Response é objeto?', response && typeof response === 'object');
       
       // Verificar se a resposta existe antes de acessar propriedades
       if (response && typeof response === 'object' && response.message) {

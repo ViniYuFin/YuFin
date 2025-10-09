@@ -180,7 +180,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        if (response.devMode) {
+        if (response && typeof response === 'object' && response.devMode === true) {
           // Atualizar usuário local com nova série
           const updatedUser = { ...user, gradeId: response.nextGrade };
           setUser(updatedUser);
@@ -214,8 +214,24 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       await loadGradeProgressionStatus(); // Recarregar status do backend
       
     } catch (error) {
-      console.error('Erro ao solicitar progressão:', error);
-      notificationService.error(error.message || 'Erro ao solicitar progressão');
+      console.error('❌ [DEBUG] Erro completo:', error);
+      console.error('❌ [DEBUG] Error response:', error.response);
+      console.error('❌ [DEBUG] Error message:', error.message);
+      console.error('❌ [DEBUG] Error stack:', error.stack);
+      
+      // Tratar diferentes tipos de erro
+      let errorMessage = 'Erro ao solicitar progressão';
+      if (error && typeof error === 'object') {
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+      }
+      
+      notificationService.error(errorMessage);
     } finally {
       setRequestingProgression(false);
     }
@@ -234,7 +250,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        if (response.devMode) {
+        if (response && typeof response === 'object' && response.devMode === true) {
           // Atualizar usuário local com série anterior
           const updatedUser = { ...user, gradeId: response.previousGrade };
           setUser(updatedUser);
@@ -273,8 +289,24 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       await loadGradeProgressionStatus();
       
     } catch (error) {
-      console.error('Erro ao voltar ao ano anterior:', error);
-      notificationService.error(error.message || 'Erro ao voltar ao ano anterior');
+      console.error('❌ [DEBUG] Erro completo:', error);
+      console.error('❌ [DEBUG] Error response:', error.response);
+      console.error('❌ [DEBUG] Error message:', error.message);
+      console.error('❌ [DEBUG] Error stack:', error.stack);
+      
+      // Tratar diferentes tipos de erro
+      let errorMessage = 'Erro ao voltar ao ano anterior';
+      if (error && typeof error === 'object') {
+        if (error.message) {
+          errorMessage = error.message;
+        } else if (error.error) {
+          errorMessage = error.error;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+      }
+      
+      notificationService.error(errorMessage);
     }
   };
 
