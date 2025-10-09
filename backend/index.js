@@ -26,8 +26,8 @@ app.use(cors({
     if (!origin) return callback(null, true);
     
     const allowedOrigins = [
-      'https://www.yufin.com.br',
       'https://yufin.com.br',
+      'https://www.yufin.com.br',
       'http://localhost:5173',
       'http://localhost:3000'
     ];
