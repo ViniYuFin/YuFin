@@ -186,8 +186,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        // Em modo dev, o backend sempre retorna devMode: true
-        if (response && response.devMode) {
+        // Verificar se a resposta existe e tem a propriedade devMode
+        if (response && typeof response === 'object' && response.devMode === true) {
           // Atualizar usuário local com nova série
           const updatedUser = { ...user, gradeId: response.nextGrade };
           setUser(updatedUser);
@@ -202,7 +202,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             devModeBypass: true
           }, user);
           
-          notificationService.success(response.message);
+          notificationService.success(response.message || 'Progressão realizada com sucesso');
         } else {
           console.warn('🔧 [DEV MODE] Resposta inesperada:', response);
           notificationService.error('Resposta inesperada do servidor');
@@ -222,8 +222,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       const response = await apiPost(`/users/${user.id}/request-grade-progression`);
       console.log('✅ [DEBUG] Resposta recebida:', response);
       
-      notificationService.success(response.message);
-      await loadGradeProgressionStatus(); // Recarregar status do backend
+      // Verificar se a resposta existe antes de acessar propriedades
+      if (response && typeof response === 'object' && response.message) {
+        notificationService.success(response.message);
+        await loadGradeProgressionStatus(); // Recarregar status do backend
+      } else {
+        console.warn('❌ [DEBUG] Resposta inválida:', response);
+        notificationService.error('Resposta inválida do servidor');
+      }
       
     } catch (error) {
       console.error('❌ [DEBUG] Erro completo:', error);
@@ -254,8 +260,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        // Em modo dev, o backend sempre retorna devMode: true
-        if (response && response.devMode) {
+        // Verificar se a resposta existe e tem a propriedade devMode
+        if (response && typeof response === 'object' && response.devMode === true) {
           // Atualizar usuário local com série anterior
           const updatedUser = { ...user, gradeId: response.previousGrade };
           setUser(updatedUser);
@@ -270,7 +276,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             devModeBypass: true
           }, user);
           
-          notificationService.success(response.message);
+          notificationService.success(response.message || 'Retorno realizado com sucesso');
         } else {
           console.warn('🔧 [DEV MODE] Resposta inesperada:', response);
           notificationService.error('Resposta inesperada do servidor');
@@ -285,16 +291,22 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     try {
       const response = await apiPost(`/users/${user.id}/return-to-previous-grade`);
       
-      notificationService.success(response.message);
-      
-      // Atualizar usuário local
-      const updatedUser = { ...user };
-      updatedUser.gradeId = response.previousGrade;
-      setUser(updatedUser);
-      
-      // Recarregar dados
-      await loadGradeProgress();
-      await loadGradeProgressionStatus();
+      // Verificar se a resposta existe antes de acessar propriedades
+      if (response && typeof response === 'object' && response.message) {
+        notificationService.success(response.message);
+        
+        // Atualizar usuário local
+        const updatedUser = { ...user };
+        updatedUser.gradeId = response.previousGrade;
+        setUser(updatedUser);
+        
+        // Recarregar dados
+        await loadGradeProgress();
+        await loadGradeProgressionStatus();
+      } else {
+        console.warn('❌ [DEBUG] Resposta inválida:', response);
+        notificationService.error('Resposta inválida do servidor');
+      }
       
     } catch (error) {
       console.error('Erro ao voltar ao ano anterior:', error);
