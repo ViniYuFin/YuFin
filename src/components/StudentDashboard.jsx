@@ -222,6 +222,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       console.log('🚀 [DEBUG] URL:', `/users/${user.id}/request-grade-progression`);
       console.log('🚀 [DEBUG] User ID:', user.id);
       console.log('🚀 [DEBUG] User email:', user.email);
+      console.log('🚀 [DEBUG] TESTE - Código atualizado em:', new Date().toISOString());
       
       const response = await apiPost(`/users/${user.id}/request-grade-progression`);
       console.log('✅ [DEBUG] Resposta recebida:', response);
