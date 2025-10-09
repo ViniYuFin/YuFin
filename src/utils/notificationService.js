@@ -162,9 +162,9 @@ class NotificationService {
     return this.achievement(message, 6000);
   }
 
-  // Notificação de streak
+  // Notificação de ofensiva
   showStreak(streak) {
-    const message = `🔥 Incrível! Streak de ${streak} dias!`;
+    const message = `🔥 Incrível! Ofensiva de ${streak} dias!`;
     return this.success(message, 5000);
   }
 }

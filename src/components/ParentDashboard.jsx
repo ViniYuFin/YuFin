@@ -296,7 +296,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                 <p className="text-2xl font-bold text-white">{selectedStudent.progress?.xp || 0}</p>
               </div>
               <div className="text-white p-4 rounded-lg shadow-lg" style={{ background: 'linear-gradient(to right, #8b5cf6, #7c3aed)' }}>
-                <h3 className="text-sm font-medium text-white">Streak</h3>
+                <h3 className="text-sm font-medium text-white">Ofensiva</h3>
                 <p className="text-2xl font-bold text-white">{trends.streak} 🔥</p>
               </div>
               <div className="text-white p-4 rounded-lg shadow-lg" style={{ background: 'linear-gradient(to right, #f97316, #ea580c)' }}>
@@ -604,7 +604,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                           <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>{student.progress?.xp || 0}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Streak:</span>
+                          <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Ofensiva:</span>
                           <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>🔥 {trends.streak}</span>
                         </div>
                         <div className="flex justify-between">

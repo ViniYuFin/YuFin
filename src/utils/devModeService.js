@@ -1,13 +1,14 @@
 /**
  * Serviço para gerenciar o Modo Dev
  * Permite acesso livre a todas as lições e séries para desenvolvimento/teste
+ * APENAS para usuários administradores autorizados
  */
 
 const DEV_MODE_KEY = 'yufin_dev_mode_enabled';
 
 class DevModeService {
   constructor() {
-    this.isEnabled = this.isDevModeEnabled();
+    this.isEnabled = false;
   }
 
   /**
@@ -16,14 +17,8 @@ class DevModeService {
   checkAdminStatus(user) {
     if (!user) return false;
     
-    // Lista de emails autorizados para Modo Dev
-    const adminEmails = [
-      'admin@yufin.com',
-      'dev@yufin.com',
-      'test@yufin.com'
-    ];
-    
-    return adminEmails.includes(user.email?.toLowerCase());
+    // APENAS admin@yufin.com tem acesso ao Modo Dev
+    return user.email?.toLowerCase() === 'admin@yufin.com';
   }
 
   /**
@@ -35,7 +30,8 @@ class DevModeService {
       return false;
     }
 
-    localStorage.setItem(DEV_MODE_KEY, 'true');
+    const userKey = `${DEV_MODE_KEY}_${user.id}`;
+    localStorage.setItem(userKey, 'true');
     this.isEnabled = true;
     
     console.log('🔧 Modo Dev ATIVADO para:', user.email);
@@ -48,7 +44,8 @@ class DevModeService {
    * Desativa o Modo Dev
    */
   disableDevMode(user) {
-    localStorage.setItem(DEV_MODE_KEY, 'false');
+    const userKey = `${DEV_MODE_KEY}_${user.id}`;
+    localStorage.setItem(userKey, 'false');
     this.isEnabled = false;
     
     console.log('🔧 Modo Dev DESATIVADO para:', user.email);
@@ -74,10 +71,23 @@ class DevModeService {
   }
 
   /**
-   * Verifica se o Modo Dev está ativo
+   * Verifica se o Modo Dev está ativo para um usuário específico
    */
-  isDevModeEnabled() {
-    const stored = localStorage.getItem(DEV_MODE_KEY);
+  isDevModeEnabled(user = null) {
+    // Se não há usuário, retorna false
+    if (!user) {
+      this.isEnabled = false;
+      return false;
+    }
+    
+    // Se o usuário não é admin, retorna false
+    if (!this.checkAdminStatus(user)) {
+      this.isEnabled = false;
+      return false;
+    }
+    
+    const userKey = `${DEV_MODE_KEY}_${user.id}`;
+    const stored = localStorage.getItem(userKey);
     const enabled = stored === 'true';
     this.isEnabled = enabled;
     return enabled;
@@ -129,7 +139,14 @@ class DevModeService {
    * Reseta completamente o Modo Dev
    */
   reset() {
-    localStorage.removeItem(DEV_MODE_KEY);
+    // Remove todas as chaves de devMode de todos os usuários
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.startsWith(DEV_MODE_KEY)) {
+        localStorage.removeItem(key);
+      }
+    });
+    
     this.clearLogs();
     this.isEnabled = false;
     console.log('🔧 Modo Dev resetado completamente');

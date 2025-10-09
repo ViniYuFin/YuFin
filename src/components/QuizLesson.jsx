@@ -32,21 +32,64 @@ const QuizLesson = ({ lesson, onComplete, onExit }) => {
   }, []);
 
 
+  // Função para randomizar array (algoritmo Fisher-Yates)
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  // Função para randomizar alternativas de uma pergunta
+  const randomizeQuestion = (question) => {
+    if (!question.options || question.options.length !== 4) {
+      return question;
+    }
+    
+    // Criar array com índices e valores
+    const optionsWithIndex = question.options.map((option, index) => ({ option, originalIndex: index }));
+    
+    // Randomizar as opções
+    const shuffledOptions = shuffleArray(optionsWithIndex);
+    
+    // Encontrar onde a resposta correta foi movida
+    const correctOriginalIndex = question.correctAnswer;
+    const newCorrectIndex = shuffledOptions.findIndex(item => item.originalIndex === correctOriginalIndex);
+    
+    // Retornar pergunta com alternativas randomizadas
+    return {
+      ...question,
+      options: shuffledOptions.map(item => item.option),
+      correctAnswer: newCorrectIndex
+    };
+  };
+
   // Normalizar o conteúdo da lição para suportar diferentes formatos
   const normalizedContent = React.useMemo(() => {
     // Formato novo (template quiz): questions array com múltiplas perguntas
     if (lesson.content.questions && lesson.content.questions.length > 0) {
       return {
-        questions: lesson.content.questions.map(q => ({
-          id: q.id,
-          category: q.category || 'geral',
-          difficulty: q.difficulty || 'medio',
-          question: q.question,
-          options: q.options,
-          correctAnswer: q.correctAnswer,
-          explanation: q.explanation,
-          points: q.points || 10
-        }))
+        questions: lesson.content.questions.map(q => {
+          const baseQuestion = {
+            id: q.id,
+            category: q.category || 'geral',
+            difficulty: q.difficulty || 'medio',
+            question: q.question,
+            options: q.options,
+            correctAnswer: q.correctAnswer,
+            explanation: q.explanation,
+            points: q.points || 10
+          };
+          
+          // Para lições "Revisão e Celebração", randomizar as alternativas
+          if (lesson.title && lesson.title.includes('Revisão e Celebração')) {
+            return randomizeQuestion(baseQuestion);
+          }
+          
+          return baseQuestion;
+        })
       };
     }
     

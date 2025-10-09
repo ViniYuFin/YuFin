@@ -477,7 +477,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
                       <span 
                         style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
                       >
-                        Streak:
+                        Ofensiva:
                       </span>
                       <span 
                         className="font-semibold ml-1"

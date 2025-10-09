@@ -110,7 +110,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       console.log('🔄 Carregando progresso da série...');
       
       // Verificar se modo dev está ativo
-      const devMode = devModeService.isDevModeEnabled();
+      const devMode = devModeService.isDevModeEnabled(user);
       const url = devMode 
         ? `/users/${user.id}/grade-progress?devMode=true`
         : `/users/${user.id}/grade-progress`;
@@ -168,7 +168,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
   const handleRequestGradeProgression = async () => {
     // Verificar se modo dev está ativo
-    const devMode = devModeService.isDevModeEnabled();
+    const devMode = devModeService.isDevModeEnabled(user);
     
     if (devMode) {
       // Em modo dev, usar rota real do backend
@@ -222,8 +222,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   };
 
   const handleReturnToPreviousGrade = async () => {
-    // Verificar se modo dev está ativo
-    const devMode = devModeService.isDevModeEnabled();
+    // Verificar se modo dev está ativo para este usuário específico
+    const devMode = devModeService.isDevModeEnabled(user);
     
     if (devMode) {
       // Em modo dev, usar rota real do backend
@@ -306,7 +306,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     console.log('  - Módulo:', lesson.module, 'Ordem:', lesson.order);
     
     // Verificar se modo dev está ativo
-    const devMode = devModeService.isDevModeEnabled();
+    const devMode = devModeService.isDevModeEnabled(user);
     
     // Log da ação se em modo dev
     if (devMode) {
@@ -816,7 +816,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       {/* Conteúdo Principal com Padding para Header Fixo */}
       <div className="pt-0">
         {/* Indicador de Modo Dev */}
-        {devModeService.isDevModeEnabled() && (
+        {devModeService.isDevModeEnabled(user) && (
           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-pulse">
             🔧 MODO DEV ATIVO - Todas as séries e lições liberadas
           </div>
@@ -950,10 +950,10 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             );
           })}
           
-          {/* Botão Próximo Ano */}
-          {(areAllModulesCompleted() || devModeService.isDevModeEnabled()) && (
+          {/* Botão Próximo Ano - Visível quando todos os módulos estão completos OU em devMode */}
+          {(areAllModulesCompleted() || devModeService.isDevModeEnabled(user)) && (
             <div className="flex-shrink-0">
-              {gradeProgression?.progression?.requested && !devModeService.isDevModeEnabled() ? (
+              {gradeProgression?.progression?.requested && !devModeService.isDevModeEnabled(user) ? (
                 <div className="px-6 py-4 rounded-xl bg-blue-100 border-2 border-blue-300 shadow-lg">
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-700">⏳</div>
@@ -966,14 +966,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                   onClick={handleRequestGradeProgression}
                   disabled={requestingProgression}
                   className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    devModeService.isDevModeEnabled() 
+                    devModeService.isDevModeEnabled(user) 
                       ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700'
                       : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark'
                   }`}
                 >
                   <div className="text-center">
                     <div className="text-lg font-bold">
-                      {devModeService.isDevModeEnabled() ? '🔧' : '🎓'}
+                      {devModeService.isDevModeEnabled(user) ? '🔧' : '🎓'}
                     </div>
                     <div className="text-sm">Próximo</div>
                     <div className="text-xs">Ano</div>
@@ -983,20 +983,20 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             </div>
           )}
 
-          {/* Botão Ano Anterior */}
-          {(user.gradeId !== '6º Ano' || devModeService.isDevModeEnabled()) && (
+          {/* Botão Ano Anterior - Visível para todos que não estão no 6º Ano OU admin em devMode */}
+          {(user.gradeId !== '6º Ano' || devModeService.isDevModeEnabled(user)) && (
             <div className="flex-shrink-0">
               <button
                 onClick={handleReturnToPreviousGrade}
                 className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105 ${
-                  devModeService.isDevModeEnabled() 
+                  devModeService.isDevModeEnabled(user) 
                     ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700'
                     : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark'
                 }`}
               >
                 <div className="text-center">
                   <div className="text-lg font-bold">
-                    {devModeService.isDevModeEnabled() ? '🔧' : '⬅️'}
+                    {devModeService.isDevModeEnabled(user) ? '🔧' : '⬅️'}
                   </div>
                   <div className="text-sm">Ano</div>
                   <div className="text-xs">Anterior</div>
@@ -1025,7 +1025,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           {/* Lições do Módulo */}
           {moduleProgress && moduleProgress.lessons ? moduleProgress.lessons.map((lesson, index) => {
             // Verificar se modo dev está ativo
-            const devModeActive = devModeService.isDevModeEnabled();
+            const devModeActive = devModeService.isDevModeEnabled(user);
             const canAccess = devModeActive || lesson.canAccess;
             
             console.log(`📋 Renderizando lição ${index + 1}:`, {

@@ -18,7 +18,7 @@ const Store = ({ user, setUser, setActiveScreen }) => {
     { id: 'clothes', name: 'Roupas', icon: '👕' },
     { id: 'accessories', name: 'Acessórios', icon: '🎩' },
     { id: 'effects', name: 'Efeitos', icon: '✨' },
-    { id: 'powerups', name: 'Power-ups', icon: '⚡' },
+    { id: 'powerups', name: 'Poderes', icon: '⚡' },
     { id: 'collectibles', name: 'Colecionáveis', icon: '🏆' }
   ];
 
@@ -43,7 +43,7 @@ const Store = ({ user, setUser, setActiveScreen }) => {
     // Power-ups
     { id: 'xp_boost', name: 'Boost de XP', cost: 25, category: 'powerups', rarity: 'common', icon: '⚡', description: 'Ganha 50% mais XP por 1 hora' },
     { id: 'coin_multiplier', name: 'Multiplicador de YüCoins', cost: 35, category: 'powerups', rarity: 'rare', icon: '💰', description: 'Ganha 2x YüCoins por 30 minutos' },
-    { id: 'streak_protector', name: 'Protetor de Streak', cost: 45, category: 'powerups', rarity: 'rare', icon: '🛡️', description: 'Protege seu streak por 1 dia' },
+    { id: 'streak_protector', name: 'Protetor de Ofensiva', cost: 45, category: 'powerups', rarity: 'rare', icon: '🛡️', description: 'Protege sua ofensiva por 1 dia' },
     { id: 'perfect_boost', name: 'Boost Perfeito', cost: 55, category: 'powerups', rarity: 'epic', icon: '⭐', description: 'Aumenta chance de lição perfeita' },
     
     // Colecionáveis
@@ -54,23 +54,43 @@ const Store = ({ user, setUser, setActiveScreen }) => {
   ];
 
   const getRarityColor = (rarity) => {
-    const colors = {
-      common: 'text-gray-600',
-      rare: 'text-blue-600',
-      epic: 'text-purple-600',
-      legendary: 'text-yellow-600'
-    };
-    return colors[rarity] || colors.common;
+    if (darkMode) {
+      const colors = {
+        common: 'text-gray-300',
+        rare: 'text-blue-300',
+        epic: 'text-purple-300',
+        legendary: 'text-yellow-300'
+      };
+      return colors[rarity] || colors.common;
+    } else {
+      const colors = {
+        common: 'text-gray-600',
+        rare: 'text-blue-600',
+        epic: 'text-purple-600',
+        legendary: 'text-yellow-600'
+      };
+      return colors[rarity] || colors.common;
+    }
   };
 
   const getRarityBackground = (rarity) => {
-    const backgrounds = {
-      common: 'bg-gray-100',
-      rare: 'bg-blue-100',
-      epic: 'bg-purple-100',
-      legendary: 'bg-yellow-100'
-    };
-    return backgrounds[rarity] || backgrounds.common;
+    if (darkMode) {
+      const backgrounds = {
+        common: 'bg-gray-700',
+        rare: 'bg-blue-800',
+        epic: 'bg-purple-800',
+        legendary: 'bg-yellow-800'
+      };
+      return backgrounds[rarity] || backgrounds.common;
+    } else {
+      const backgrounds = {
+        common: 'bg-gray-100',
+        rare: 'bg-blue-100',
+        epic: 'bg-purple-100',
+        legendary: 'bg-yellow-100'
+      };
+      return backgrounds[rarity] || backgrounds.common;
+    }
   };
 
   const filteredItems = items.filter(item => {
@@ -99,7 +119,7 @@ const Store = ({ user, setUser, setActiveScreen }) => {
       
       notificationService.success(`Parabéns! Você comprou ${item.name}!`);
       
-      // Se for um power-up, aplicar efeito
+      // Se for um poder, aplicar efeito
       if (item.category === 'powerups') {
         applyPowerUp(item);
       }
@@ -137,7 +157,7 @@ const Store = ({ user, setUser, setActiveScreen }) => {
       setUser(updatedUser);
       localStorage.setItem('yufinUser', JSON.stringify(updatedUser));
       
-      notificationService.success(`Power-up ${powerUp.name} ativado!`);
+      notificationService.success(`Poder ${powerUp.name} ativado!`);
     }
   };
 
@@ -179,22 +199,43 @@ const Store = ({ user, setUser, setActiveScreen }) => {
                 className="text-gray-600"
                 style={darkMode ? { color: '#e5e7eb' } : {}}
               >
-                Power-ups: {(user?.progress?.activeEffects?.length ?? 0)}
+                Poderes: {(user?.progress?.activeEffects?.length ?? 0)}
               </div>
             </div>
           </div>
           
           {/* Estatísticas compactas */}
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-blue-100 text-blue-800 p-3 rounded-lg text-center border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+            <div 
+              className="p-3 rounded-lg text-center border-2" 
+              style={{ 
+                borderColor: 'rgb(238, 145, 22)',
+                backgroundColor: darkMode ? '#1e40af' : '#dbeafe',
+                color: darkMode ? '#ffffff' : '#1e3a8a'
+              }}
+            >
               <div className="text-xs font-medium mb-1">Possuídos</div>
               <div className="text-lg font-bold">{ownedItems}/{totalItems}</div>
             </div>
-            <div className="bg-green-100 text-green-800 p-3 rounded-lg text-center border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+            <div 
+              className="p-3 rounded-lg text-center border-2" 
+              style={{ 
+                borderColor: 'rgb(238, 145, 22)',
+                backgroundColor: darkMode ? '#166534' : '#dcfce7',
+                color: darkMode ? '#ffffff' : '#166534'
+              }}
+            >
               <div className="text-xs font-medium mb-1">Ativos</div>
               <div className="text-lg font-bold">{(user?.progress?.activeEffects?.length ?? 0)}</div>
             </div>
-            <div className="bg-purple-100 text-purple-800 p-3 rounded-lg text-center border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+            <div 
+              className="p-3 rounded-lg text-center border-2" 
+              style={{ 
+                borderColor: 'rgb(238, 145, 22)',
+                backgroundColor: darkMode ? '#7c2d12' : '#fce7f3',
+                color: darkMode ? '#ffffff' : '#be185d'
+              }}
+            >
               <div className="text-xs font-medium mb-1">Raros</div>
               <div className="text-lg font-bold">{items.filter(item => item.rarity === 'legendary').length}</div>
             </div>
@@ -284,17 +325,34 @@ const Store = ({ user, setUser, setActiveScreen }) => {
                   <div 
                     key={item.id} 
                     className={`${getRarityBackground(item.rarity)} rounded-lg p-3 border-2 transition-all hover:scale-105 flex flex-col ${
-                      isOwned ? 'border-green-500' : 'border-gray-200'
+                      isOwned ? 'border-green-500' : (darkMode ? 'border-gray-600' : 'border-gray-200')
                     }`}
                   >
                     <div className="text-center mb-2 flex-1">
                       <div className="text-3xl mb-1">{item.icon}</div>
-                      <h3 className="font-bold text-gray-800 text-sm mb-1">{item.name}</h3>
+                      <h3 
+                        className="font-bold text-sm mb-1"
+                        style={darkMode ? { color: '#ffffff' } : { color: '#1f2937' }}
+                      >
+                        {item.name}
+                      </h3>
                       <p className={`text-xs font-medium ${getRarityColor(item.rarity)} mb-1`}>
-                        {item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}
+                        {item.rarity === 'common' ? 'Comum' : 
+                         item.rarity === 'rare' ? 'Raro' : 
+                         item.rarity === 'epic' ? 'Épico' : 
+                         item.rarity === 'legendary' ? 'Lendário' : 
+                         item.rarity.charAt(0).toUpperCase() + item.rarity.slice(1)}
                       </p>
-                      <p className="text-xs text-gray-600 mb-2">{item.description}</p>
-                      <div className="text-lg font-bold text-primary mb-2 flex items-center justify-center space-x-1">
+                      <p 
+                        className="text-xs mb-2"
+                        style={darkMode ? { color: '#d1d5db' } : { color: '#6b7280' }}
+                      >
+                        {item.description}
+                      </p>
+                      <div 
+                        className="text-lg font-bold mb-2 flex items-center justify-center space-x-1"
+                        style={darkMode ? { color: '#fb923c' } : { color: 'rgb(238, 145, 22)' }}
+                      >
                         <span>{item.cost}</span>
                         <span className="text-base">💰</span>
                       </div>

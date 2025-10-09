@@ -30,7 +30,7 @@ const onboardingSteps = {
     },
     {
       title: 'Configuração de Poupança',
-      description: 'Defina quanto cada lição, streak ou conquista vale em dinheiro real para incentivar o aprendizado.'
+      description: 'Defina quanto cada lição, ofensiva ou conquista vale em dinheiro real para incentivar o aprendizado.'
     },
     {
       title: 'Relatórios e Recomendações',

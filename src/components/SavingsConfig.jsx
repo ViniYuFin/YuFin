@@ -209,7 +209,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     className="block font-semibold mb-2"
                     style={{ color: darkMode ? '#ffffff' : '#374151' }}
                   >
-                    Por Streak Diário (R$)
+                    Por Ofensiva Diária (R$)
                   </label>
                   <input
                     type="number"
@@ -374,7 +374,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                         </div>
                         <div className="bg-purple-50 p-3 rounded-lg">
                           <div className="text-2xl font-bold text-purple-600">{stats.streak} 🔥</div>
-                          <div className="text-sm text-gray-600">Streak Atual</div>
+                          <div className="text-sm text-gray-600">Ofensiva Atual</div>
                         </div>
                         <div className="bg-orange-50 p-3 rounded-lg">
                           <div className="text-2xl font-bold text-orange-600">{stats.perfectLessons}</div>
@@ -403,7 +403,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                 </div>
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
                   <p className="text-blue-800 text-sm">
-                    <strong>Incentive consistência:</strong> Bônus por streak motiva hábitos diários
+                    <strong>Incentive consistência:</strong> Bônus por ofensiva motiva hábitos diários
                   </p>
                 </div>
                 <div className="bg-green-50 border-l-4 border-green-400 p-3">

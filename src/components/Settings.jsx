@@ -36,7 +36,7 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
 
     // Verificar status de admin e modo dev
     const adminStatus = devModeService.checkAdminStatus(user);
-    const devModeStatus = devModeService.isDevModeEnabled();
+    const devModeStatus = devModeService.isDevModeEnabled(user);
     
     setIsAdmin(adminStatus);
     setDevMode(devModeStatus);
@@ -87,7 +87,7 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
     const success = devModeService.toggleDevMode(user);
     
     if (success) {
-      const newDevMode = devModeService.isDevModeEnabled();
+      const newDevMode = devModeService.isDevModeEnabled(user);
       setDevMode(newDevMode);
       
       // Disparar evento customizado para notificar outros componentes

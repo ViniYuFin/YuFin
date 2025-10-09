@@ -19,7 +19,7 @@ class PushNotificationService {
     return new Promise((resolve) => {
       // Simular solicitação de permissão
       const userResponse = window.confirm(
-        'O YuFin gostaria de enviar notificações para te lembrar de estudar e não perder seu streak!'
+        'O YuFin gostaria de enviar notificações para te lembrar de estudar e não perder sua ofensiva!'
       );
       
       if (userResponse) {
@@ -40,7 +40,7 @@ class PushNotificationService {
   scheduleNotifications() {
     if (!this.isEnabled) return;
 
-    // Notificação diária de streak
+    // Notificação diária de ofensiva
     this.scheduleDailyStreakReminder();
     
     // Notificação de meta diária
@@ -53,7 +53,7 @@ class PushNotificationService {
     this.scheduleFriendActivity();
   }
 
-  // Lembrete de streak diário
+  // Lembrete de ofensiva diária
   scheduleDailyStreakReminder() {
     const now = new Date();
     const lastStreakCheck = localStorage.getItem('yufinLastStreakCheck');
@@ -110,7 +110,7 @@ class PushNotificationService {
            last.getFullYear() !== now.getFullYear();
   }
 
-  // Mostrar notificação de streak
+  // Mostrar notificação de ofensiva
   showStreakReminder() {
     if (!this.isEnabled) return;
     
@@ -119,12 +119,12 @@ class PushNotificationService {
     
     if (streak > 0) {
       const message = streak >= 7 
-        ? `🔥 Incrível! Mantenha seu streak de ${streak} dias! Complete uma lição hoje!`
-        : `🔥 Não quebre seu streak de ${streak} dias! Complete uma lição hoje!`;
+        ? `🔥 Incrível! Mantenha sua ofensiva de ${streak} dias! Complete uma lição hoje!`
+        : `🔥 Não quebre sua ofensiva de ${streak} dias! Complete uma lição hoje!`;
       
-      this.showNotification('Streak em Risco!', message, 'streak');
+      this.showNotification('Ofensiva em Risco!', message, 'streak');
     } else {
-      this.showNotification('Comece seu Streak!', 'Complete uma lição hoje para começar seu streak! 🔥', 'streak');
+      this.showNotification('Comece sua Ofensiva!', 'Complete uma lição hoje para começar sua ofensiva! 🔥', 'streak');
     }
   }
 
@@ -152,8 +152,8 @@ class PushNotificationService {
     
     const challenges = [
       'Complete 5 lições esta semana e ganhe 50 YüCoins! 🏆',
-      'Mantenha um streak de 7 dias e desbloqueie uma conquista especial! 🔥',
-      'Alcance 80% de pontuação média e ganhe um power-up! ⭐',
+      'Mantenha uma ofensiva de 7 dias e desbloqueie uma conquista especial! 🔥',
+      'Alcance 80% de pontuação média e ganhe um poder! ⭐',
       'Complete 3 lições perfeitas e ganhe um item raro! 💎'
     ];
     
@@ -214,7 +214,7 @@ class PushNotificationService {
     if (daysSinceLogin >= 3) {
       this.showNotification(
         'Sentimos sua falta!', 
-        'Você não está perdendo seu streak? Complete uma lição hoje! 🐷', 
+        'Você não está perdendo sua ofensiva? Complete uma lição hoje! 🐷', 
         'comeback'
       );
     } else if (daysSinceLogin >= 1) {

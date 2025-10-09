@@ -663,7 +663,7 @@ const Reports = ({ user, setActiveScreen }) => {
                     <span className="font-semibold">{user.progress?.yuCoins || 0} 💰</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Streak:</span>
+                    <span className="text-gray-600">Ofensiva:</span>
                     <span className="font-semibold">{report.progress.streak || user.progress?.streak || 0} 🔥</span>
                   </div>
                   <div className="flex justify-between">

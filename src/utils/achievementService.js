@@ -13,7 +13,7 @@ class AchievementService {
       {
         id: 'streak_3',
         title: 'Consistente',
-        description: 'Mantenha um streak de 3 dias',
+        description: 'Mantenha uma ofensiva de 3 dias',
         icon: '🔥',
         xpReward: 100,
         condition: (user) => user.progress?.streak >= 3
@@ -21,7 +21,7 @@ class AchievementService {
       {
         id: 'streak_7',
         title: 'Dedicado',
-        description: 'Mantenha um streak de 7 dias',
+        description: 'Mantenha uma ofensiva de 7 dias',
         icon: '🔥🔥',
         xpReward: 250,
         condition: (user) => user.progress?.streak >= 7
@@ -29,7 +29,7 @@ class AchievementService {
       {
         id: 'streak_30',
         title: 'Viciado',
-        description: 'Mantenha um streak de 30 dias',
+        description: 'Mantenha uma ofensiva de 30 dias',
         icon: '🔥🔥🔥',
         xpReward: 1000,
         condition: (user) => user.progress?.streak >= 30
