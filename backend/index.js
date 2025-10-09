@@ -19,9 +19,29 @@ const PORT = process.env.PORT || 3001;
 connectDB();
 
 // Middleware
+// Configuração CORS mais robusta
 app.use(cors({
-  origin: ['https://www.yufin.com.br', 'https://yufin.com.br', 'http://localhost:5173', 'http://localhost:3000'],
-  credentials: true
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'https://www.yufin.com.br',
+      'https://yufin.com.br',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked for origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
 app.use(bodyParser.json());
 
