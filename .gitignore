@@ -107,3 +107,6 @@ temp/
 .vercel
 
 .vercel
+
+.env*.local
+.vercel

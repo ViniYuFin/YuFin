@@ -19,7 +19,10 @@ const PORT = process.env.PORT || 3001;
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['https://www.yufin.com.br', 'https://yufin.com.br', 'http://localhost:5173', 'http://localhost:3000'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // Endpoint de teste
