@@ -186,7 +186,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        if (response.devMode) {
+        // Em modo dev, o backend sempre retorna devMode: true
+        if (response && response.devMode) {
           // Atualizar usuário local com nova série
           const updatedUser = { ...user, gradeId: response.nextGrade };
           setUser(updatedUser);
@@ -202,6 +203,9 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           }, user);
           
           notificationService.success(response.message);
+        } else {
+          console.warn('🔧 [DEV MODE] Resposta inesperada:', response);
+          notificationService.error('Resposta inesperada do servidor');
         }
       } catch (error) {
         console.error('Erro na progressão em modo dev:', error);
@@ -214,13 +218,17 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     
     try {
       setRequestingProgression(true);
+      console.log('🚀 [DEBUG] Fazendo POST para request-grade-progression...');
       const response = await apiPost(`/users/${user.id}/request-grade-progression`);
+      console.log('✅ [DEBUG] Resposta recebida:', response);
       
       notificationService.success(response.message);
       await loadGradeProgressionStatus(); // Recarregar status do backend
       
     } catch (error) {
-      console.error('Erro ao solicitar progressão:', error);
+      console.error('❌ [DEBUG] Erro completo:', error);
+      console.error('❌ [DEBUG] Error response:', error.response);
+      console.error('❌ [DEBUG] Error message:', error.message);
       notificationService.error(error.message || 'Erro ao solicitar progressão');
     } finally {
       setRequestingProgression(false);
@@ -246,7 +254,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           devMode: true
         });
         
-        if (response.devMode) {
+        // Em modo dev, o backend sempre retorna devMode: true
+        if (response && response.devMode) {
           // Atualizar usuário local com série anterior
           const updatedUser = { ...user, gradeId: response.previousGrade };
           setUser(updatedUser);
@@ -262,6 +271,9 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           }, user);
           
           notificationService.success(response.message);
+        } else {
+          console.warn('🔧 [DEV MODE] Resposta inesperada:', response);
+          notificationService.error('Resposta inesperada do servidor');
         }
       } catch (error) {
         console.error('Erro no retorno em modo dev:', error);

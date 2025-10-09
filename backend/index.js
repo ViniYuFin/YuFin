@@ -2179,8 +2179,13 @@ app.post('/users/:id/process-rewards', async (req, res) => {
 // Rota para solicitar progressão de série
 app.post('/users/:userId/request-grade-progression', async (req, res) => {
   try {
+    console.log('🚀 [BACKEND DEBUG] Iniciando request-grade-progression...');
+    console.log('🚀 [BACKEND DEBUG] userId:', req.params.userId);
+    console.log('🚀 [BACKEND DEBUG] body:', req.body);
+    
     // Verificar se modo dev está ativo PRIMEIRO
     const devMode = req.body.devMode === true;
+    console.log('🚀 [BACKEND DEBUG] devMode:', devMode);
     
     const student = await User.findById(req.params.userId);
     if (!student || student.role !== 'student') {
@@ -2306,6 +2311,8 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
     });
 
   } catch (error) {
+    console.error('❌ [BACKEND DEBUG] Erro em request-grade-progression:', error);
+    console.error('❌ [BACKEND DEBUG] Stack trace:', error.stack);
     res.status(500).json({ error: error.message });
   }
 });
