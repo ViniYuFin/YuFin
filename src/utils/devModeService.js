@@ -30,28 +30,50 @@ class DevModeService {
       return false;
     }
 
-    const userKey = `${DEV_MODE_KEY}_${user.id}`;
-    localStorage.setItem(userKey, 'true');
-    this.isEnabled = true;
-    
-    console.log('🔧 Modo Dev ATIVADO para:', user.email);
-    this.logAction('DEV_MODE_ENABLED', { userId: user.id, email: user.email }, user);
-    
-    return true;
+    try {
+      // Verificar se localStorage está disponível
+      if (typeof localStorage === 'undefined') {
+        console.warn('localStorage não disponível, não é possível ativar devMode');
+        return false;
+      }
+
+      const userKey = `${DEV_MODE_KEY}_${user.id}`;
+      localStorage.setItem(userKey, 'true');
+      this.isEnabled = true;
+      
+      console.log('🔧 Modo Dev ATIVADO para:', user.email);
+      this.logAction('DEV_MODE_ENABLED', { userId: user.id, email: user.email }, user);
+      
+      return true;
+    } catch (error) {
+      console.warn('Erro ao ativar devMode:', error);
+      return false;
+    }
   }
 
   /**
    * Desativa o Modo Dev
    */
   disableDevMode(user) {
-    const userKey = `${DEV_MODE_KEY}_${user.id}`;
-    localStorage.setItem(userKey, 'false');
-    this.isEnabled = false;
-    
-    console.log('🔧 Modo Dev DESATIVADO para:', user.email);
-    this.logAction('DEV_MODE_DISABLED', { userId: user.id, email: user.email }, user);
-    
-    return true;
+    try {
+      // Verificar se localStorage está disponível
+      if (typeof localStorage === 'undefined') {
+        console.warn('localStorage não disponível, não é possível desativar devMode');
+        return false;
+      }
+
+      const userKey = `${DEV_MODE_KEY}_${user.id}`;
+      localStorage.setItem(userKey, 'false');
+      this.isEnabled = false;
+      
+      console.log('🔧 Modo Dev DESATIVADO para:', user.email);
+      this.logAction('DEV_MODE_DISABLED', { userId: user.id, email: user.email }, user);
+      
+      return true;
+    } catch (error) {
+      console.warn('Erro ao desativar devMode:', error);
+      return false;
+    }
   }
 
   /**
@@ -74,23 +96,36 @@ class DevModeService {
    * Verifica se o Modo Dev está ativo para um usuário específico
    */
   isDevModeEnabled(user = null) {
-    // Se não há usuário, retorna false
-    if (!user) {
+    try {
+      // Se não há usuário, retorna false
+      if (!user) {
+        this.isEnabled = false;
+        return false;
+      }
+      
+      // Se o usuário não é admin, retorna false
+      if (!this.checkAdminStatus(user)) {
+        this.isEnabled = false;
+        return false;
+      }
+      
+      // Verificar se localStorage está disponível
+      if (typeof localStorage === 'undefined') {
+        console.warn('localStorage não disponível, devMode desabilitado');
+        this.isEnabled = false;
+        return false;
+      }
+      
+      const userKey = `${DEV_MODE_KEY}_${user.id}`;
+      const stored = localStorage.getItem(userKey);
+      const enabled = stored === 'true';
+      this.isEnabled = enabled;
+      return enabled;
+    } catch (error) {
+      console.warn('Erro ao verificar devMode:', error);
       this.isEnabled = false;
       return false;
     }
-    
-    // Se o usuário não é admin, retorna false
-    if (!this.checkAdminStatus(user)) {
-      this.isEnabled = false;
-      return false;
-    }
-    
-    const userKey = `${DEV_MODE_KEY}_${user.id}`;
-    const stored = localStorage.getItem(userKey);
-    const enabled = stored === 'true';
-    this.isEnabled = enabled;
-    return enabled;
   }
 
   /**

@@ -167,8 +167,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   };
 
   const handleRequestGradeProgression = async () => {
-    // Verificar se modo dev está ativo
-    const devMode = devModeService.isDevModeEnabled(user);
+    // Verificar se modo dev está ativo (com verificação de segurança)
+    let devMode = false;
+    try {
+      devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
+    } catch (error) {
+      console.warn('Erro ao verificar devMode:', error);
+      devMode = false;
+    }
     
     if (devMode) {
       // Em modo dev, usar rota real do backend
@@ -222,8 +228,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   };
 
   const handleReturnToPreviousGrade = async () => {
-    // Verificar se modo dev está ativo para este usuário específico
-    const devMode = devModeService.isDevModeEnabled(user);
+    // Verificar se modo dev está ativo para este usuário específico (com verificação de segurança)
+    let devMode = false;
+    try {
+      devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
+    } catch (error) {
+      console.warn('Erro ao verificar devMode:', error);
+      devMode = false;
+    }
     
     if (devMode) {
       // Em modo dev, usar rota real do backend
