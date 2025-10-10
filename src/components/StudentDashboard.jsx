@@ -109,8 +109,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       setLoading(true);
       console.log('🔄 Carregando progresso da série...');
       
-      // Verificar se modo dev está ativo (apenas para admins)
-      const devMode = user.role === 'admin' ? devModeService.isDevModeEnabled(user) : false;
+      // Verificar se modo dev está ativo
+      const devMode = devModeService.isDevModeEnabled(user);
       const url = devMode 
         ? `/users/${user.id}/grade-progress?devMode=true`
         : `/users/${user.id}/grade-progress`;
@@ -170,12 +170,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     // Verificar se modo dev está ativo (com verificação de segurança)
     let devMode = false;
     try {
-      // Só permitir devMode para administradores
-      if (user.role === 'admin') {
-        devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
-      } else {
-        devMode = false; // Força devMode como false para usuários não-admin
-      }
+      // Verificar se modo dev está ativo
+      devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
     } catch (error) {
       console.warn('Erro ao verificar devMode:', error);
       devMode = false;
@@ -281,12 +277,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     // Verificar se modo dev está ativo para este usuário específico (com verificação de segurança)
     let devMode = false;
     try {
-      // Só permitir devMode para administradores
-      if (user.role === 'admin') {
-        devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
-      } else {
-        devMode = false; // Força devMode como false para usuários não-admin
-      }
+      // Verificar se modo dev está ativo
+      devMode = devModeService && devModeService.isDevModeEnabled ? devModeService.isDevModeEnabled(user) : false;
     } catch (error) {
       console.warn('Erro ao verificar devMode:', error);
       devMode = false;
@@ -408,8 +400,8 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     console.log('  - isCompleted:', lesson.isCompleted);
     console.log('  - Módulo:', lesson.module, 'Ordem:', lesson.order);
     
-    // Verificar se modo dev está ativo (apenas para admins)
-    const devMode = user.role === 'admin' ? devModeService.isDevModeEnabled(user) : false;
+    // Verificar se modo dev está ativo
+    const devMode = devModeService.isDevModeEnabled(user);
     
     // Log da ação se em modo dev
     if (devMode) {
@@ -919,7 +911,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       {/* Conteúdo Principal com Padding para Header Fixo */}
       <div className="pt-0">
         {/* Indicador de Modo Dev */}
-        {user.role === 'admin' && devModeService.isDevModeEnabled(user) && (
+        {devModeService.isDevModeEnabled(user) && (
           <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-pulse">
             🔧 MODO DEV ATIVO - Todas as séries e lições liberadas
           </div>
@@ -1053,10 +1045,10 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             );
           })}
           
-          {/* Botão Próximo Ano - Visível quando todos os módulos estão completos OU em devMode (apenas para admins) */}
-          {(areAllModulesCompleted() || (user.role === 'admin' && devModeService.isDevModeEnabled(user))) && (
+          {/* Botão Próximo Ano - Visível quando todos os módulos estão completos OU em devMode */}
+          {(areAllModulesCompleted() || devModeService.isDevModeEnabled(user)) && (
             <div className="flex-shrink-0">
-              {gradeProgression?.progression?.requested && !(user.role === 'admin' && devModeService.isDevModeEnabled(user)) ? (
+              {gradeProgression?.progression?.requested && !devModeService.isDevModeEnabled(user) ? (
                 <div className="px-6 py-4 rounded-xl bg-blue-100 border-2 border-blue-300 shadow-lg">
                   <div className="text-center">
                     <div className="text-lg font-bold text-blue-700">⏳</div>
@@ -1069,14 +1061,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                   onClick={handleRequestGradeProgression}
                   disabled={requestingProgression}
                   className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    (user.role === 'admin' && devModeService.isDevModeEnabled(user)) 
+                    devModeService.isDevModeEnabled(user) 
                       ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700'
                       : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark'
                   }`}
                 >
                   <div className="text-center">
                     <div className="text-lg font-bold">
-                      {(user.role === 'admin' && devModeService.isDevModeEnabled(user)) ? '🔧' : '🎓'}
+                      {devModeService.isDevModeEnabled(user) ? '🔧' : '🎓'}
                     </div>
                     <div className="text-sm">Próximo</div>
                     <div className="text-xs">Ano</div>
@@ -1086,20 +1078,20 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             </div>
           )}
 
-          {/* Botão Ano Anterior - Visível para todos que não estão no 6º Ano OU admin em devMode */}
-          {(user.gradeId !== '6º Ano' || (user.role === 'admin' && devModeService.isDevModeEnabled(user))) && (
+          {/* Botão Ano Anterior - Visível para todos que não estão no 6º Ano OU em devMode */}
+          {(user.gradeId !== '6º Ano' || devModeService.isDevModeEnabled(user)) && (
             <div className="flex-shrink-0">
               <button
                 onClick={handleReturnToPreviousGrade}
                 className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105 ${
-                  (user.role === 'admin' && devModeService.isDevModeEnabled(user)) 
+                  devModeService.isDevModeEnabled(user) 
                     ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700'
                     : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark'
                 }`}
               >
                 <div className="text-center">
                   <div className="text-lg font-bold">
-                    {(user.role === 'admin' && devModeService.isDevModeEnabled(user)) ? '🔧' : '⬅️'}
+                    {devModeService.isDevModeEnabled(user) ? '🔧' : '⬅️'}
                   </div>
                   <div className="text-sm">Ano</div>
                   <div className="text-xs">Anterior</div>
