@@ -22,22 +22,31 @@ connectDB();
 // Configuração CORS mais robusta
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('🔍 CORS Request from origin:', origin);
+    
     // Permitir requisições sem origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('✅ CORS: Allowing request without origin');
+      return callback(null, true);
+    }
     
     const allowedOrigins = [
       'https://yufin.com.br',
       'https://www.yufin.com.br',
       'https://yufin-frontend.vercel.app',
       'https://yufin-backend.vercel.app',
+      'https://yufin-deploy.vercel.app',
       'http://localhost:5173',
       'http://localhost:3000'
     ];
     
+    console.log('📋 Allowed origins:', allowedOrigins);
+    
     if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log('✅ CORS: Origin allowed:', origin);
       callback(null, true);
     } else {
-      console.log('CORS blocked for origin:', origin);
+      console.log('❌ CORS blocked for origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
