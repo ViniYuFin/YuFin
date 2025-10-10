@@ -39,7 +39,7 @@ export const loginUser = async (email, password, role) => {
     throw new Error("Senha deve ter pelo menos 6 caracteres.");
   }
   // Chamada ao backend
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = 'https://yufin-backend.vercel.app';
   const response = await fetch(`${API_URL}/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@ export const registerUser = async (userData) => {
     throw new Error("Senha deve ter pelo menos 6 caracteres.");
   }
   // Chamada ao backend
-  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+  const API_URL = 'https://yufin-backend.vercel.app';
   const response = await fetch(`${API_URL}/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

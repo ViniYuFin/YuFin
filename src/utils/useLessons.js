@@ -7,7 +7,7 @@ export default function useLessons() {
 
   useEffect(() => {
     setLoading(true);
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+    const API_URL = 'https://yufin-backend.vercel.app';
     fetch(`${API_URL}/lessons`)
       .then(res => {
         if (!res.ok) throw new Error('Erro ao buscar lições');
