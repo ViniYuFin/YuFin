@@ -2220,8 +2220,13 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
     console.log('🚀 [BACKEND DEBUG] body:', req.body);
     
     // Verificar se modo dev está ativo PRIMEIRO
-    const devMode = req.body.devMode === true;
-    console.log('🚀 [BACKEND DEBUG] devMode:', devMode);
+    console.log('🚀 [BACKEND DEBUG] req.body:', JSON.stringify(req.body));
+    console.log('🚀 [BACKEND DEBUG] req.body type:', typeof req.body);
+    console.log('🚀 [BACKEND DEBUG] req.body.devMode:', req.body?.devMode);
+    console.log('🚀 [BACKEND DEBUG] req.body.devMode type:', typeof req.body?.devMode);
+    
+    const devMode = req.body?.devMode === true;
+    console.log('🚀 [BACKEND DEBUG] devMode final:', devMode);
     
     console.log('🔍 [BACKEND DEBUG] Buscando usuário no banco...');
     const student = await User.findById(req.params.userId);
@@ -2383,7 +2388,12 @@ app.post('/users/:userId/request-grade-progression', async (req, res) => {
 app.post('/users/:userId/return-to-previous-grade', async (req, res) => {
   try {
     // Verificar se modo dev está ativo PRIMEIRO
-    const devMode = req.body.devMode === true;
+    console.log('🚀 [BACKEND DEBUG] return-to-previous-grade - req.body:', JSON.stringify(req.body));
+    console.log('🚀 [BACKEND DEBUG] req.body type:', typeof req.body);
+    console.log('🚀 [BACKEND DEBUG] req.body.devMode:', req.body?.devMode);
+    
+    const devMode = req.body?.devMode === true;
+    console.log('🚀 [BACKEND DEBUG] devMode final:', devMode);
     
     const student = await User.findById(req.params.userId);
     if (!student || student.role !== 'student') {

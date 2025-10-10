@@ -217,7 +217,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         }
       } catch (error) {
         console.error('Erro na progressão em modo dev:', error);
-        notificationService.error('Erro ao navegar para próxima série');
+        console.error('Detalhes do erro:', error.message, error.response);
+        
+        // Se o erro é do backend, mostrar mensagem específica
+        if (error.message && error.message.includes('devMode')) {
+          notificationService.error('Erro de configuração do servidor. Tente novamente.');
+        } else {
+          notificationService.error('Erro ao navegar para próxima série');
+        }
       } finally {
         setRequestingProgression(false);
       }
@@ -320,7 +327,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         }
       } catch (error) {
         console.error('Erro no retorno em modo dev:', error);
-        notificationService.error('Erro ao retornar ao ano anterior');
+        console.error('Detalhes do erro:', error.message, error.response);
+        
+        // Se o erro é do backend, mostrar mensagem específica
+        if (error.message && error.message.includes('devMode')) {
+          notificationService.error('Erro de configuração do servidor. Tente novamente.');
+        } else {
+          notificationService.error('Erro ao retornar ao ano anterior');
+        }
       }
       return;
     }
