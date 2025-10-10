@@ -28,6 +28,8 @@ app.use(cors({
     const allowedOrigins = [
       'https://yufin.com.br',
       'https://www.yufin.com.br',
+      'https://yufin-frontend.vercel.app',
+      'https://yufin-backend.vercel.app',
       'http://localhost:5173',
       'http://localhost:3000'
     ];

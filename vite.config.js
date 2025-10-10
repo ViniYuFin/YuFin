@@ -9,5 +9,15 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom']
   },
-  base: './'
+  base: './',
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    sourcemap: false,
+    minify: 'terser'
+  },
+  server: {
+    port: 5173,
+    host: true
+  }
 });
