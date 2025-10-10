@@ -18,53 +18,43 @@ const PORT = process.env.PORT || 3001;
 // Conectar ao MongoDB
 connectDB();
 
-// Middleware
-// Configuração CORS mais robusta
-app.use(cors({
-  origin: function (origin, callback) {
-    console.log('🔍 CORS Request from origin:', origin);
-    
-    // Permitir requisições sem origin (mobile apps, Postman, etc.)
-    if (!origin) {
-      console.log('✅ CORS: Allowing request without origin');
-      return callback(null, true);
-    }
-    
-    const allowedOrigins = [
-      'https://yufin.com.br',
-      'https://www.yufin.com.br',
-      'https://yufin-frontend.vercel.app',
-      'https://yufin-backend.vercel.app',
-      'https://yufin-deploy.vercel.app',
-      'http://localhost:5173',
-      'http://localhost:3000'
-    ];
-    
-    console.log('📋 Allowed origins:', allowedOrigins);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      console.log('✅ CORS: Origin allowed:', origin);
-      callback(null, true);
-    } else {
-      console.log('❌ CORS blocked for origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  preflightContinue: false,
-  optionsSuccessStatus: 200
-}));
-
-// Middleware adicional para lidar com preflight OPTIONS
-app.options('*', (req, res) => {
-  console.log('🔍 OPTIONS preflight request for:', req.path);
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+// Middleware CORS simplificado
+app.use((req, res, next) => {
+  console.log('🔍 Request:', req.method, req.path, 'from origin:', req.headers.origin);
+  
+  const allowedOrigins = [
+    'https://yufin.com.br',
+    'https://www.yufin.com.br',
+    'https://yufin-frontend.vercel.app',
+    'https://yufin-backend.vercel.app',
+    'https://yufin-deploy.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000'
+  ];
+  
+  const origin = req.headers.origin;
+  
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    console.log('✅ CORS: Origin allowed:', origin);
+  } else if (!origin) {
+    res.header('Access-Control-Allow-Origin', '*');
+    console.log('✅ CORS: Allowing request without origin');
+  } else {
+    console.log('❌ CORS blocked for origin:', origin);
+  }
+  
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.status(200).end();
+  
+  // Responder imediatamente para OPTIONS
+  if (req.method === 'OPTIONS') {
+    console.log('🔍 OPTIONS preflight request - responding immediately');
+    return res.status(200).end();
+  }
+  
+  next();
 });
 app.use(bodyParser.json());
 
