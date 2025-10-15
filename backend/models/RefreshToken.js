@@ -91,3 +91,4 @@ refreshTokenSchema.statics.revokeAllUserTokens = async function(userId, reason =
 module.exports = mongoose.model('RefreshToken', refreshTokenSchema);
 
 
+
