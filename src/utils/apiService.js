@@ -1,7 +1,18 @@
-const API_URL = 'https://yufin-backend.vercel.app';
+import { getApiUrl } from '../config/environment';
+
+const API_URL = getApiUrl();
 
 export async function apiGet(path) {
-  const res = await fetch(`${API_URL}${path}`);
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
+  const res = await fetch(`${API_URL}${path}`, { headers });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({ error: 'Erro desconhecido' }));
     throw new Error(errorData.error || `Erro ${res.status}: ${res.statusText}`);
@@ -13,9 +24,18 @@ export async function apiPost(path, body) {
   console.log('🌐 [API DEBUG] Fazendo POST para:', `${API_URL}${path}`);
   console.log('🌐 [API DEBUG] Body:', body);
   
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
   const res = await fetch(`${API_URL}${path}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body)
   });
   
@@ -44,9 +64,18 @@ export async function apiPost(path, body) {
 }
 
 export async function apiPatch(path, body) {
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
   const res = await fetch(`${API_URL}${path}`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body)
   });
   if (!res.ok) {
@@ -57,9 +86,18 @@ export async function apiPatch(path, body) {
 }
 
 export async function apiPut(path, body) {
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
   const res = await fetch(`${API_URL}${path}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify(body)
   });
   if (!res.ok) {
@@ -70,9 +108,18 @@ export async function apiPut(path, body) {
 }
 
 export async function apiDelete(path) {
+  const token = localStorage.getItem('authToken');
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  
   const res = await fetch(`${API_URL}${path}`, {
     method: 'DELETE',
-    headers: { 'Content-Type': 'application/json' }
+    headers
   });
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({ error: 'Erro desconhecido' }));

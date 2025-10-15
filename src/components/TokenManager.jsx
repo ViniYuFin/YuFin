@@ -53,6 +53,7 @@ const TokenManager = ({ user }) => {
     try {
       const tokenData = {
         createdBy: user.id, // ID da escola que está criando o token
+        schoolId: user.id, // ID da escola (para vincular alunos automaticamente)
         type: newToken.type,
         maxUses: newToken.maxUses || null,
         expiresAt: newToken.expiresAt || null,

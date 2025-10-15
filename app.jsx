@@ -30,6 +30,8 @@ import performanceService from './src/utils/performanceService';
 import aiService from './src/utils/aiService';
 import advancedGamificationService from './src/utils/advancedGamificationService';
 import { apiPatch, apiPost, apiDelete } from './src/utils/apiService';
+// 🔐 Importar interceptor Axios (v2.0) - DEVE SER O PRIMEIRO
+import './src/utils/axiosInterceptor';
 
 function App() {
   const [activeScreen, setActiveScreen] = useState('welcome');

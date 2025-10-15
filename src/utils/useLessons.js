@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { getApiUrl } from '../config/environment';
 
 export default function useLessons() {
   const [lessons, setLessons] = useState([]);
@@ -7,7 +8,7 @@ export default function useLessons() {
 
   useEffect(() => {
     setLoading(true);
-    const API_URL = 'https://yufin-backend.vercel.app';
+    const API_URL = getApiUrl();
     fetch(`${API_URL}/lessons`)
       .then(res => {
         if (!res.ok) throw new Error('Erro ao buscar lições');

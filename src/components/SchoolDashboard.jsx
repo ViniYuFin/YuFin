@@ -180,7 +180,8 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
     // Filtrar apenas alunos vinculados às turmas
     const linkedStudents = schoolStudents.filter(student => linkedStudentIds.has(student.id));
     
-    const totalStudents = linkedStudents.length;
+    // Usar TODOS os alunos da escola, não apenas os vinculados às turmas
+    const totalStudents = schoolStudents.length;
     const totalXp = linkedStudents.reduce((sum, student) => sum + (student.progress?.xp || 0), 0);
     const totalLessons = linkedStudents.reduce((sum, student) => sum + (student.progress?.completedLessons?.length || 0), 0);
     const averageLevel = totalStudents > 0 ? linkedStudents.reduce((sum, student) => sum + (student.progress?.level || 1), 0) / totalStudents : 0;
