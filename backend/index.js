@@ -56,6 +56,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'https://yufin.com.br',
     'https://www.yufin.com.br',
+    'https://app.yufin.com.br',
     'https://yufin-frontend.vercel.app',
     'https://yufin-backend.vercel.app',
     'https://yufin-deploy.vercel.app',
