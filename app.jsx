@@ -61,21 +61,27 @@ function App() {
   // Efeito para carregar o usuário do localStorage ao iniciar o app
   useEffect(() => {
     const initializeApp = () => {
+      console.log('🔄 Inicializando app...');
       try {
         // Usar a nova função de carregamento com validação
         const savedUser = loadUserFromStorage();
+        console.log('👤 Usuário salvo encontrado:', savedUser ? savedUser.role : 'Nenhum');
         
         if (savedUser) {
           setUser(savedUser);
           advancedGamificationService.loadData();
           
           if (savedUser.role === 'student') {
+            console.log('🎯 Definindo tela para: home');
             setActiveScreen('home');
           } else if (savedUser.role === 'parent') {
+            console.log('🎯 Definindo tela para: parent-dashboard');
             setActiveScreen('parent-dashboard');
           } else if (savedUser.role === 'school') {
+            console.log('🎯 Definindo tela para: school-dashboard');
             setActiveScreen('school-dashboard');
           } else if (savedUser.role === 'admin') {
+            console.log('🎯 Definindo tela para: school-dashboard (admin)');
             setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
           }
         } else {
@@ -88,12 +94,14 @@ function App() {
           setActiveScreen('welcome');
         }
       } catch (error) {
+        console.error('❌ Erro na inicialização:', error);
         // Em caso de erro, limpar tudo e ir para welcome
         storageService.remove(STORAGE_KEYS.USER);
         storageService.remove(STORAGE_KEYS.SESSION);
         setUser(null);
         setActiveScreen('welcome');
       } finally {
+        console.log('✅ Inicialização concluída');
         setIsInitializing(false);
       }
     };
@@ -121,7 +129,7 @@ function App() {
       localStorage.removeItem('darkMode');
       // Remover classe dark do DOM
       document.documentElement.classList.remove('dark');
-      setActiveScreen('welcome');
+      setActiveScreen('landing'); // Mudança: usar landing em vez de welcome
     }
   }, [user, isInitializing]);
 
@@ -302,10 +310,13 @@ function App() {
     }
   };
 
+
   // Função para renderizar a tela atual com base no activeScreen e no usuário logado
   const getScreenName = (activeScreen) => typeof activeScreen === 'string' ? activeScreen : activeScreen?.screen;
   const renderScreen = () => {
     const screenName = getScreenName(activeScreen);
+    
+    
     // Telas que não requerem autenticação (usuário não logado)
     if (!user) {
       switch (screenName) {
