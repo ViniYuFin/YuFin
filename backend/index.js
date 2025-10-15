@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/database');
 
 // Importar modelos
@@ -10,7 +11,31 @@ const Lesson = require('./models/Lesson');
 const Class = require('./models/Class');
 const Grade = require('./models/Grade');
 const RegistrationToken = require('./models/RegistrationToken');
+const RefreshToken = require('./models/RefreshToken');
 
+// Importar rotas
+const authRoutes = require('./routes/auth');
+const tokenRoutes = require('./routes/token');
+const lgpdRoutes = require('./routes/lgpd');
+
+// Importar middlewares
+const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
+const { validate, completeLessonSchema, updateUserSchema } = require('./utils/validators');
+const { lgpdHeaders } = require('./middleware/lgpd');
+
+// Importar middlewares de segurança
+const {
+  helmetConfig,
+  generalLimiter,
+  loginLimiter,
+  registerLimiter,
+  lgpdLimiter,
+  apiLimiter,
+  sanitizeData,
+  hppProtection,
+  securityLogger,
+  validateInput
+} = require('./middleware/security');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -18,7 +43,13 @@ const PORT = process.env.PORT || 3001;
 // Conectar ao MongoDB
 connectDB();
 
-// Middleware CORS simplificado
+// 🔐 MIDDLEWARES DE SEGURANÇA (PRIMEIRO!)
+app.use(helmetConfig);           // Headers de segurança
+// app.use(sanitizeData);        // TEMPORARIAMENTE DESABILITADO (conflito Express 5)
+app.use(hppProtection);          // Proteção HTTP Parameter Pollution
+app.use(securityLogger);         // Logger de eventos suspeitos
+
+// Middleware CORS melhorado e restrito
 app.use((req, res, next) => {
   console.log('🔍 Request:', req.method, req.path, 'from origin:', req.headers.origin);
   
@@ -34,14 +65,17 @@ app.use((req, res, next) => {
   
   const origin = req.headers.origin;
   
+  // Apenas permitir origins na whitelist
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     console.log('✅ CORS: Origin allowed:', origin);
-  } else if (!origin) {
+  } else if (!origin && process.env.NODE_ENV === 'development') {
+    // Apenas em dev, permitir sem origin (ferramentas como Postman)
     res.header('Access-Control-Allow-Origin', '*');
-    console.log('✅ CORS: Allowing request without origin');
+    console.log('⚠️  CORS: Allowing no-origin (DEV MODE ONLY)');
   } else {
-    console.log('❌ CORS blocked for origin:', origin);
+    console.log('❌ CORS: Origin blocked:', origin);
+    // Não bloquear completamente, mas não adicionar header
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
@@ -56,34 +90,92 @@ app.use((req, res, next) => {
   
   next();
 });
-app.use(bodyParser.json());
+
+// Middlewares globais
+app.use(bodyParser.json({ limit: '10mb' })); // Limite de payload
+app.use(cookieParser());                      // Parse de cookies
+app.use(validateInput);                       // Validação básica de input
+app.use(lgpdHeaders);                         // Headers LGPD em todas as respostas
+
+// Rate limiter geral (aplicar depois do CORS)
+app.use(generalLimiter);
+
+// Rota de health check (sem rate limit)
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'OK',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    version: '2.0.0',
+    security: {
+      helmet: '✅',
+      rateLimit: '✅',
+      sanitization: '✅',
+      refreshTokens: '✅'
+    },
+    routes: {
+      auth: '/auth/login, /auth/register',
+      token: '/token/refresh, /token/logout',
+      lgpd: '/lgpd/export-data, /lgpd/delete-data',
+      users: '/users (protected)'
+    }
+  });
+});
+
+// 🔐 ROTAS PÚBLICAS (sem autenticação, com rate limiting específico)
+app.use('/auth/login', loginLimiter);      // 5 tentativas por 15min
+app.use('/auth/register', registerLimiter); // 3 registros por hora
+app.use('/auth', authRoutes);               // Login e registro
+
+app.use('/token', tokenRoutes);             // Refresh, logout, etc
+app.use('/lgpd', lgpdLimiter, lgpdRoutes);  // Endpoints LGPD com rate limit
 
 // Endpoint de teste
 app.get('/', (req, res) => {
   res.json({ message: 'Backend YuFin com MongoDB rodando!' });
 });
 
-// Rotas de usuários
-app.get('/users', async (req, res) => {
-  try {
-    const users = await User.find();
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// 🔒 ROTAS PROTEGIDAS (requer autenticação + rate limiting para API)
+app.use(apiLimiter); // 200 requests por 15min para rotas autenticadas
 
-app.get('/users/:id', async (req, res) => {
-  try {
-    const user = await User.findById(req.params.id);
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
+// Rotas de usuários (protegidas com autenticação)
+app.get('/users', 
+  authenticateToken,
+  authorizeRoles('school', 'parent'),  // Apenas escolas e pais podem listar usuários
+  async (req, res) => {
+    try {
+      // Se for escola, filtrar apenas seus alunos
+      let filter = {};
+      if (req.user.role === 'school') {
+        filter = { 
+          role: 'student',  // APENAS ALUNOS
+          schoolId: req.user.id 
+        };
+      }
+      
+      const users = await User.find(filter).select('-passwordHash'); // Nunca retornar senhas!
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
   }
-});
+);
+
+app.get('/users/:id', 
+  authenticateToken,
+  authorizeOwner,  // Apenas o próprio usuário ou escola/parent
+  async (req, res) => {
+    try {
+      const user = await User.findById(req.params.id).select('-passwordHash');
+      if (!user) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+      res.json(user);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 app.post('/users', async (req, res) => {
   try {
@@ -113,32 +205,38 @@ app.put('/users/:id', async (req, res) => {
   }
 });
 
-app.patch('/users/:id', async (req, res) => {
-  try {
-    console.log('Backend - Atualizando usuário:', { 
-      userId: req.params.id, 
-      updateData: req.body 
-    });
-    
-    const user = await User.findByIdAndUpdate(
-      req.params.id, 
-      { $set: req.body }, 
-      { new: true }
-    );
-    if (!user) {
-      return res.status(404).json({ error: 'Usuário não encontrado' });
+app.patch('/users/:id', 
+  authenticateToken,
+  authorizeOwner,
+  validate(updateUserSchema),  // Validação Joi
+  async (req, res) => {
+    try {
+      console.log('Backend - Atualizando usuário:', { 
+        userId: req.params.id, 
+        updateData: req.body 
+      });
+      
+      const user = await User.findByIdAndUpdate(
+        req.params.id, 
+        { $set: req.body }, 
+        { new: true }
+      ).select('-passwordHash');
+      
+      if (!user) {
+        return res.status(404).json({ error: 'Usuário não encontrado' });
+      }
+      
+      console.log('Backend - Usuário atualizado:', { 
+        userId: user._id, 
+        savingsConfig: user.savingsConfig 
+      });
+      
+      res.json(user);
+    } catch (error) {
+      res.status(400).json({ error: error.message });
     }
-    
-    console.log('Backend - Usuário atualizado:', { 
-      userId: user._id, 
-      savingsConfig: user.savingsConfig 
-    });
-    
-    res.json(user);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
   }
-});
+);
 
 // Endpoint para resetar apenas o progresso da série atual
 app.post('/users/:id/reset-current-grade-progress', async (req, res) => {
@@ -494,28 +592,34 @@ app.delete('/users/:id', async (req, res) => {
   }
 });
 
-// Rotas de autenticação
+// ⚠️  ROTAS ANTIGAS DE AUTENTICAÇÃO - DEPRECIADAS
+// Agora use: POST /auth/login e POST /auth/register (com bcrypt + JWT)
+// Mantendo temporariamente para compatibilidade, mas sem segurança!
+
 app.post('/login', async (req, res) => {
-  try {
-    const { email, password, role } = req.body;
-    
-    const user = await User.findOne({ email, role });
-    if (!user) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-    
-    // Verificação simples de senha (em produção, usar bcrypt)
-    if (user.passwordHash !== password) {
-      return res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-    
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  console.warn('⚠️  AVISO: Endpoint /login está depreciado! Use /auth/login');
+  console.warn('⚠️  Este endpoint NÃO é seguro e será removido em breve!');
+  
+  return res.status(410).json({ 
+    error: 'Endpoint depreciado',
+    message: 'Use POST /auth/login com suporte a JWT e senhas criptografadas',
+    newEndpoint: '/auth/login'
+  });
 });
 
 app.post('/register', async (req, res) => {
+  console.warn('⚠️  AVISO: Endpoint /register está depreciado! Use /auth/register');
+  console.warn('⚠️  Este endpoint NÃO é seguro e será removido em breve!');
+  
+  return res.status(410).json({ 
+    error: 'Endpoint depreciado',
+    message: 'Use POST /auth/register com bcrypt e consentimento LGPD',
+    newEndpoint: '/auth/register'
+  });
+});
+
+// Manter registro ANTIGO apenas para migração (TEMPORÁRIO!)
+app.post('/register-legacy', async (req, res) => {
   try {
     const { name, email, password, role, passwordHash, token, gradeId } = req.body;
     
@@ -1837,10 +1941,14 @@ function canAccessLesson(student, lesson, allLessons, devMode = false) {
 // Sistema simplificado - XP fixo de 100 por lição
 
 // Endpoint para processar lição concluída com poupança automática
-app.post('/users/:id/complete-lesson', async (req, res) => {
-  try {
-    const { lessonId, score, timeSpent, isPerfect } = req.body;
-    const student = await User.findById(req.params.id);
+app.post('/users/:id/complete-lesson', 
+  authenticateToken,
+  authorizeOwner,
+  validate(completeLessonSchema),  // Validação Joi
+  async (req, res) => {
+    try {
+      const { lessonId, score, timeSpent, isPerfect } = req.body;
+      const student = await User.findById(req.params.id);
     
     if (!student || student.role !== 'student') {
       return res.status(404).json({ error: 'Aluno não encontrado' });

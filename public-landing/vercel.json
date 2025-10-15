@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "name": "yufin-landing",
+  "builds": [
+    {
+      "src": "index-clean.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index-clean.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
