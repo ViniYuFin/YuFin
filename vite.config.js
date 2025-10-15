@@ -9,7 +9,7 @@ export default defineConfig({
   optimizeDeps: {
     include: ['react', 'react-dom']
   },
-  base: './',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
