@@ -1,16 +1,15 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import { simpleLandingPlugin } from './vite-landing-simple.js';
 
 export default defineConfig({
-  plugins: [react(), simpleLandingPlugin()],
+  plugins: [react()],
   resolve: {
     extensions: ['.js', '.jsx', '.ts', '.tsx']
   },
   optimizeDeps: {
     include: ['react', 'react-dom']
   },
-  base: '/app/',
+  base: '/',
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -21,7 +20,7 @@ export default defineConfig({
     port: 5173,
     host: true,
     fs: {
-      allow: ['..', './public-landing']
+      allow: ['..']
     },
     middlewareMode: false
   }
