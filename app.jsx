@@ -7,6 +7,8 @@ import Navigation from './src/components/Navigation';
 import Login from './src/components/Login';
 import Register from './src/components/Register';
 import RegisterWithToken from './src/components/RegisterWithToken';
+import RegisterGratuito from './src/components/RegisterGratuito';
+import ValidateParentConsent from './src/components/ValidateParentConsent';
 import StudentDashboard from './src/components/StudentDashboard';
 import Lesson from './src/components/Lesson';
 import Profile from './src/components/Profile';
@@ -16,6 +18,7 @@ import ParentDashboard from './src/components/ParentDashboard';
 import SavingsConfig from './src/components/SavingsConfig';
 import Achievements from './src/components/Achievements';
 import Ranking from './src/components/Ranking';
+import gratuitoProgressService from './src/services/GratuitoProgressService';
 import News from './src/components/News';
 import SchoolDashboard from './src/components/SchoolDashboard';
 import Reports from './src/components/Reports';
@@ -24,7 +27,7 @@ import Settings from './src/components/Settings';
 import Friends from './src/components/Friends';
 import IntelligentDashboard from './src/components/IntelligentDashboard';
 import Classes from './src/components/Classes';
-import { loginUser, registerUser, logoutUser, getCurrentSession, loadUserFromStorage } from './src/utils/authService';
+import { loginUser, loginUserGratuito, registerUser, registerUserGratuito, logoutUser, getCurrentSession, loadUserFromStorage } from './src/utils/authService';
 import { storageService, STORAGE_KEYS } from './src/utils/storageService';
 import notificationService from './src/utils/notificationService';
 import analyticsService from './src/utils/analyticsService';
@@ -40,6 +43,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
   const [currentLesson, setCurrentLesson] = useState(null);
+  const [familyPlanData, setFamilyPlanData] = useState(null);
   const [currentModule, setCurrentModule] = useState(() => {
     // Carregar módulo atual do localStorage ou usar 1 como padrão
     const savedModule = storageService.load(STORAGE_KEYS.CURRENT_MODULE);
@@ -48,65 +52,234 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [registrationToken, setRegistrationToken] = useState(null);
 
-  // Efeito para detectar token de registro na URL
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token');
-    if (token) {
-      setRegistrationToken(token);
-      setActiveScreen('register-with-token');
-    }
-  }, []);
-
   // Efeito para carregar o usuário do localStorage ao iniciar o app
   useEffect(() => {
     const initializeApp = () => {
-      console.log('🔄 Inicializando app...');
       try {
         // Usar a nova função de carregamento com validação
         const savedUser = loadUserFromStorage();
-        console.log('👤 Usuário salvo encontrado:', savedUser ? savedUser.role : 'Nenhum');
+        console.log('🔍 Usuário carregado do storage:', savedUser);
         
         if (savedUser) {
           setUser(savedUser);
+          console.log('✅ Usuário definido no estado:', savedUser);
           advancedGamificationService.loadData();
           
-          if (savedUser.role === 'student') {
-            console.log('🎯 Definindo tela para: home');
+          if (savedUser.role === 'student' || savedUser.role === 'student-gratuito') {
             setActiveScreen('home');
           } else if (savedUser.role === 'parent') {
-            console.log('🎯 Definindo tela para: parent-dashboard');
             setActiveScreen('parent-dashboard');
           } else if (savedUser.role === 'school') {
-            console.log('🎯 Definindo tela para: school-dashboard');
             setActiveScreen('school-dashboard');
           } else if (savedUser.role === 'admin') {
-            console.log('🎯 Definindo tela para: school-dashboard (admin)');
             setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
           }
         } else {
           // Limpar dados inválidos
+          console.log('❌ Nenhum usuário válido encontrado, limpando dados');
           storageService.remove(STORAGE_KEYS.USER);
           storageService.remove(STORAGE_KEYS.SESSION);
           localStorage.removeItem('darkMode');
           document.documentElement.classList.remove('dark');
           setUser(null);
-          setActiveScreen('welcome');
+          
+          // Verificar se é rota de registro gratuito ou validação
+          const path = window.location.pathname;
+          console.log('🔍 Path detectado:', path);
+          if (path === '/register-gratuito' || path.endsWith('/register-gratuito')) {
+            console.log('✅ Redirecionando para register-gratuito');
+            setActiveScreen('register-gratuito');
+          } else if (path === '/validate-parent-consent' || path.endsWith('/validate-parent-consent')) {
+            console.log('✅ Redirecionando para validate-parent-consent');
+            setActiveScreen('validate-parent-consent');
+          } else {
+            console.log('✅ Redirecionando para welcome');
+            setActiveScreen('welcome');
+          }
         }
       } catch (error) {
-        console.error('❌ Erro na inicialização:', error);
         // Em caso de erro, limpar tudo e ir para welcome
         storageService.remove(STORAGE_KEYS.USER);
         storageService.remove(STORAGE_KEYS.SESSION);
         setUser(null);
         setActiveScreen('welcome');
       } finally {
-        console.log('✅ Inicialização concluída');
         setIsInitializing(false);
       }
     };
     
     initializeApp();
+  }, []);
+
+  // 🎯 Interceptor global para usuários gratuitos - SOLUÇÃO HÍBRIDA DEFINITIVA
+  useEffect(() => {
+    if (!user) {
+      console.log('🎯 Interceptor: Nenhum usuário logado, interceptor não ativo');
+      return;
+    }
+
+    console.log('🎯 Interceptor: Usuário logado, configurando interceptor:', {
+      id: user.id,
+      role: user.role,
+      isGratuito: user.isGratuito
+    });
+
+    // Inicializar progresso para usuários gratuitos se não existir
+    if ((user.isGratuito || user.role === 'student-gratuito') && !gratuitoProgressService.getProgress(user.id)) {
+      console.log('🎯 Interceptor: Inicializando progresso para usuário gratuito:', user.id);
+      gratuitoProgressService.initializeProgress(user.id, user.gradeId);
+    }
+
+    const originalFetch = window.fetch;
+    
+    window.fetch = async (url, options = {}) => {
+      console.log('🌐 Interceptor: Chamada detectada:', { url, method: options.method, user: user?.role });
+      
+      // Verificar se é uma chamada de progresso para usuários gratuitos
+      // NOTA: /grade-progress NÃO é interceptado pois precisamos das lições do backend
+      const isGratuitoUser = user.isGratuito || user.role === 'student-gratuito';
+      const isProgressCall = url.includes('/complete-lesson') || 
+                            url.includes('/grade-progression-status') ||
+                            url.includes('/current-module');
+      
+      console.log('🔍 Interceptor: Verificando interceptação:', {
+        url,
+        isGratuitoUser,
+        userRole: user.role,
+        userIsGratuito: user.isGratuito,
+        isProgressCall
+      });
+      
+      if (typeof url === 'string' && isGratuitoUser && isProgressCall) {
+        console.log('🎯 Interceptor: Interceptando chamada para usuário gratuito:', url);
+        
+        // COMPLETAR LIÇÃO - Salvar localmente
+        if (url.includes('/complete-lesson')) {
+          try {
+            const lessonData = JSON.parse(options.body || '{}');
+            console.log('🎯 Interceptor: Completando lição para usuário gratuito:', lessonData);
+            
+            const updatedProgress = gratuitoProgressService.completeLesson(user.id, lessonData);
+            
+            if (updatedProgress) {
+              // Atualizar usuário no localStorage
+              const updatedUser = { ...user, progress: updatedProgress };
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+              
+              // Atualizar o estado do usuário no React de forma síncrona
+              setUser(updatedUser);
+              console.log('✅ Interceptor: Usuário atualizado síncronamente:', updatedUser);
+              
+              console.log('✅ Interceptor: Lição completada e usuário salvo no localStorage:', updatedUser);
+              
+              // Retornar resposta que simula uma resposta do Axios com estrutura esperada pelo Lesson.jsx
+              const responseData = {
+                student: updatedUser, // Estrutura esperada pelo Lesson.jsx
+                reward: 0, // Sem recompensa de poupança para usuários gratuitos
+                leveledUp: false,
+                moduleAchievements: [],
+                achievementRewards: [],
+                xpBreakdown: {
+                  baseXp: lessonData.score * 10,
+                  bonusXp: 0,
+                  totalXp: lessonData.score * 10
+                }
+              };
+              
+              const response = {
+                ok: true,
+                status: 200,
+                statusText: 'OK',
+                headers: {},
+                data: responseData,
+                json: async () => responseData
+              };
+              
+              console.log('✅ Interceptor: Retornando resposta simulada:', response);
+              return Promise.resolve(response);
+            } else {
+              console.error('❌ Interceptor: Falha ao completar lição - updatedProgress é null');
+              return Promise.reject({
+                ok: false,
+                status: 500,
+                statusText: 'Internal Server Error',
+                data: { error: 'Falha ao completar lição localmente' }
+              });
+            }
+          } catch (error) {
+            console.error('❌ Erro ao completar lição localmente:', error);
+            // Retornar erro simulado
+            return Promise.reject({
+              ok: false,
+              status: 500,
+              statusText: 'Internal Server Error',
+              data: { error: 'Erro ao completar lição localmente' }
+            });
+          }
+        }
+        
+        // STATUS DE PROGRESSÃO - Retornar dados locais
+        else if (url.includes('/grade-progression-status')) {
+          const status = gratuitoProgressService.getProgressionStatus(user.id);
+          return Promise.resolve({
+            ok: true,
+            status: 200,
+            json: async () => status
+          });
+        }
+        
+        
+        // ATUALIZAR MÓDULO ATUAL - Salvar localmente
+        else if (url.includes('/current-module')) {
+          try {
+            const moduleData = JSON.parse(options.body || '{}');
+            const updatedProgress = gratuitoProgressService.updateCurrentModule(user.id, moduleData.currentModule);
+            
+            if (updatedProgress) {
+              // Atualizar usuário no localStorage
+              const updatedUser = { ...user, currentModule: moduleData.currentModule };
+              localStorage.setItem('user', JSON.stringify(updatedUser));
+              
+              return Promise.resolve({
+                ok: true,
+                status: 200,
+                json: async () => ({ success: true })
+              });
+            }
+          } catch (error) {
+            console.error('Erro ao atualizar módulo localmente:', error);
+          }
+        }
+      }
+      
+      // Para todas as outras chamadas, usar fetch original
+      return originalFetch(url, options);
+    };
+
+    // Cleanup: restaurar fetch original quando usuário mudar ou componente for desmontado
+        return () => {
+          console.log('🎯 Interceptor: Restaurando fetch original');
+          window.fetch = originalFetch;
+        };
+      }, [user]);
+
+  // Efeito para detectar token de registro na URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const path = window.location.pathname;
+    
+    console.log('🔍 useEffect token - Path:', path, 'Token:', token);
+    
+    // Só processar token se NÃO for a rota de validação de pais
+    if (token && path !== '/validate-parent-consent' && !path.endsWith('/validate-parent-consent')) {
+      console.log('✅ Token de registro detectado, definindo register-with-token');
+      setRegistrationToken(token);
+      setActiveScreen('register-with-token');
+    } else if (token && (path === '/validate-parent-consent' || path.endsWith('/validate-parent-consent'))) {
+      console.log('✅ Token de validação de pais detectado, mantendo validate-parent-consent');
+      // Não alterar o activeScreen, já foi definido corretamente
+    }
   }, []);
 
   // Efeito para salvar/remover usuário no localStorage sempre que o estado 'user' muda
@@ -118,7 +291,7 @@ function App() {
       storageService.save(STORAGE_KEYS.USER, user);
       
       // Sincronizar módulo atual com o backend se o usuário for um estudante
-      if (user.role === 'student' && user.currentModule) {
+      if ((user.role === 'student' || user.role === 'student-gratuito') && user.currentModule) {
         setCurrentModule(user.currentModule);
         storageService.save(STORAGE_KEYS.CURRENT_MODULE, user.currentModule);
       }
@@ -129,7 +302,17 @@ function App() {
       localStorage.removeItem('darkMode');
       // Remover classe dark do DOM
       document.documentElement.classList.remove('dark');
-      setActiveScreen('landing'); // Mudança: usar landing em vez de welcome
+      
+      // Só definir welcome se não estiver em uma rota específica
+      const path = window.location.pathname;
+      console.log('🔍 Verificando rota no useEffect user:', path);
+      if (path !== '/register-gratuito' && !path.endsWith('/register-gratuito') && 
+          path !== '/validate-parent-consent' && !path.endsWith('/validate-parent-consent')) {
+        console.log('✅ Definindo welcome (não é rota específica)');
+        setActiveScreen('welcome');
+      } else {
+        console.log('✅ Mantendo rota específica');
+      }
     }
   }, [user, isInitializing]);
 
@@ -144,7 +327,13 @@ function App() {
       window.history.replaceState({}, '', url);
       
       notificationService.success('Registro realizado com sucesso!');
-      setActiveScreen('home');
+      if (userData.role === 'student' || userData.role === 'student-gratuito') {
+        setActiveScreen('home');
+      } else if (userData.role === 'parent') {
+        setActiveScreen('parent-dashboard');
+      } else if (userData.role === 'school') {
+        setActiveScreen('school-dashboard');
+      }
     } catch (error) {
       notificationService.error('Erro no registro: ' + error.message);
     }
@@ -165,6 +354,15 @@ function App() {
     try {
       const loggedInUser = await loginUser(email, password, role); // Usa o authService
       setUser(loggedInUser); // Atualiza o estado do usuário
+      
+      // Redirecionar para a tela apropriada
+      if (loggedInUser.role === 'student' || loggedInUser.role === 'student-gratuito') {
+        setActiveScreen('home');
+      } else if (loggedInUser.role === 'parent') {
+        setActiveScreen('parent-dashboard');
+      } else if (loggedInUser.role === 'school') {
+        setActiveScreen('school-dashboard');
+      }
       
       // Notificação de evento especial (após login)
       const events = Array.from(advancedGamificationService.seasonalEvents?.values?.() || []).filter(e => e.isActive);
@@ -192,15 +390,65 @@ function App() {
   // Função centralizada para lidar com o registro
   const handleRegister = async (userData) => {
     try {
-      let newUser;
+      let result;
       
-      // Usar o endpoint de registro unificado que já existe
-      newUser = await registerUser(userData);
-      
-      setUser(newUser); // Atualiza o estado do usuário
-      return { success: true }; // Retorna sucesso
+      // Se for registro gratuito, usar endpoint específico
+      if (userData.role === 'student-gratuito') {
+        result = await registerUserGratuito(userData);
+        
+        // Se requer validação por email, retornar sem criar usuário
+        if (result.requiresEmailValidation) {
+          return {
+            success: true,
+            requiresEmailValidation: true,
+            message: result.message,
+            parentEmail: result.parentEmail
+          };
+        }
+        
+        // Se chegou aqui, o usuário foi criado
+        setUser(result); // Atualiza o estado do usuário
+        setActiveScreen('home');
+        return { success: true };
+      } else {
+        // Usar o endpoint de registro unificado que já existe
+        result = await registerUser(userData);
+        setUser(result); // Atualiza o estado do usuário
+        
+        // Redirecionar para a tela apropriada baseada na role
+        if (result.role === 'student' || result.role === 'student-gratuito') {
+          setActiveScreen('home');
+        } else if (result.role === 'parent') {
+          setActiveScreen('parent-dashboard');
+        } else if (result.role === 'school') {
+          setActiveScreen('school-dashboard');
+        }
+        
+        return { success: true }; // Retorna sucesso
+      }
     } catch (error) {
       return { success: false, message: error.message }; // Retorna erro
+    }
+  };
+
+  // Função centralizada para lidar com o login gratuito
+  const handleLoginGratuito = async (cpf, password) => {
+    try {
+      const loggedInUser = await loginUserGratuito(cpf, password);
+      setUser(loggedInUser);
+      
+      // Redirecionar para a tela apropriada
+      if (loggedInUser.role === 'student' || loggedInUser.role === 'student-gratuito') {
+        setActiveScreen('home');
+      } else if (loggedInUser.role === 'parent') {
+        setActiveScreen('parent-dashboard');
+      } else if (loggedInUser.role === 'school') {
+        setActiveScreen('school-dashboard');
+      }
+      
+      return { success: true };
+    } catch (error) {
+      return { success: false, message: error.message };
     }
   };
 
@@ -218,8 +466,18 @@ function App() {
       // Remover classe dark do DOM
       document.documentElement.classList.remove('dark');
       
+      // Salvar o tipo de usuário antes de fazer logout
+      const userRole = user?.role;
+      
       logoutUser();
       setUser(null);
+      
+      // Redirecionar baseado no tipo de usuário
+      if (userRole === 'student-gratuito') {
+        setActiveScreen('register-gratuito');
+      } else {
+        setActiveScreen('welcome');
+      }
     }
   };
 
@@ -228,7 +486,30 @@ function App() {
     if (!user) return;
     
     try {
-      // Usar o endpoint de reset radical que volta ao 6º ano
+      // Para usuários gratuitos, usar serviço local
+      if (user.isGratuito || user.role === 'student-gratuito') {
+        console.log('🔄 Resetando progresso para usuário gratuito:', user.id);
+        
+        // Resetar progresso local usando GratuitoProgressService
+        const resetProgress = gratuitoProgressService.resetProgress(user.id, user.gradeId);
+        
+        if (resetProgress) {
+          // Atualizar usuário com progresso resetado
+          const updatedUser = { ...user, progress: resetProgress };
+          setUser(updatedUser);
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+          
+          notificationService.success(`Progresso da série ${user.gradeId} resetado com sucesso!`);
+          setTimeout(() => {
+            setActiveScreen('home');
+          }, 1000);
+        } else {
+          notificationService.error('Erro ao resetar progresso local');
+        }
+        return;
+      }
+      
+      // Para usuários normais, usar endpoint do backend
       const response = await apiPost(`/users/${user.id}/reset-radical`);
       const { user: updatedUser, resetInfo } = response;
       
@@ -254,12 +535,12 @@ function App() {
       
       notificationService.success(`Progresso completamente resetado! Voltando ao ${resetInfo.newGrade}.`);
       setTimeout(() => {
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           setActiveScreen('home');
         }
       }, 1000);
     } catch (err) {
-      notificationService.error('Erro ao zerar progresso no backend: ' + err.message);
+      notificationService.error('Erro ao zerar progresso: ' + err.message);
     }
   };
 
@@ -300,7 +581,7 @@ function App() {
       }
       
       // Voltar para o dashboard no módulo correto
-      setActiveScreen('dashboard');
+      setActiveScreen('home');
       setCurrentLesson(null);
       // O módulo atual será usado pelo StudentDashboard para mostrar o módulo correto
       
@@ -310,44 +591,63 @@ function App() {
     }
   };
 
-
   // Função para renderizar a tela atual com base no activeScreen e no usuário logado
   const getScreenName = (activeScreen) => typeof activeScreen === 'string' ? activeScreen : activeScreen?.screen;
   const renderScreen = () => {
     const screenName = getScreenName(activeScreen);
-    
+    console.log('🖥️ Renderizando tela:', screenName, 'Usuário logado:', !!user);
+    console.log('🔍 activeScreen completo:', activeScreen);
+    console.log('🔍 screenName extraído:', screenName);
     
     // Telas que não requerem autenticação (usuário não logado)
     if (!user) {
+      console.log('👤 Usuário não logado, verificando switch case...');
       switch (screenName) {
         case 'welcome':
+          console.log('📱 Caso: welcome');
           return <Welcome setActiveScreen={setActiveScreen} />;
         case 'login-student':
+          console.log('📱 Caso: login-student');
           return <Login handleLogin={handleLogin} setActiveScreen={setActiveScreen} role="student" />;
         case 'login-parent':
+          console.log('📱 Caso: login-parent');
           return <Login handleLogin={handleLogin} setActiveScreen={setActiveScreen} role="parent" />;
         case 'login-school':
+          console.log('📱 Caso: login-school');
           return <Login handleLogin={handleLogin} setActiveScreen={setActiveScreen} role="school" />;
         case 'register-student':
+          console.log('📱 Caso: register-student');
           return <Register handleRegister={handleRegister} setActiveScreen={setActiveScreen} role="student" />;
         case 'register-parent':
-          return <Register handleRegister={handleRegister} setActiveScreen={setActiveScreen} role="parent" />;
+          console.log('📱 Caso: register-parent');
+          return <Register handleRegister={handleRegister} setActiveScreen={setActiveScreen} role="parent" familyPlanData={familyPlanData} />;
         case 'register-school':
+          console.log('📱 Caso: register-school');
           return <Register handleRegister={handleRegister} setActiveScreen={setActiveScreen} role="school" />;
         case 'register-with-token':
+          console.log('📱 Caso: register-with-token');
           return <RegisterWithToken 
             token={registrationToken} 
             onSuccess={handleRegisterWithToken} 
             onCancel={handleCancelTokenRegistration} 
           />;
+        case 'register-gratuito':
+          console.log('🎯 Caso: register-gratuito - Renderizando RegisterGratuito!');
+          const registerGratuitoComponent = <RegisterGratuito handleRegister={handleRegister} handleLoginGratuito={handleLoginGratuito} setActiveScreen={setActiveScreen} />;
+          console.log('🎯 Componente RegisterGratuito criado:', registerGratuitoComponent);
+          return registerGratuitoComponent;
+        case 'validate-parent-consent':
+          console.log('✅ Caso: validate-parent-consent - Renderizando ValidateParentConsent!');
+          return <ValidateParentConsent setActiveScreen={setActiveScreen} />;
         default:
+          console.log('📱 Caso: default - Renderizando Welcome');
           return <Welcome setActiveScreen={setActiveScreen} />;
       }
     }
     // Telas que requerem autenticação (usuário logado)
     switch (true) {
       case screenName === 'home':
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <StudentDashboard user={user} setUser={setUser} onNavigate={handleNavigate} currentModule={currentModule} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
@@ -357,32 +657,32 @@ function App() {
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
       case screenName === 'lesson':
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <Lesson lessonId={currentLesson} user={user} setUser={setUser} setActiveScreen={setActiveScreen} onComplete={handleLessonComplete} onNavigate={handleNavigate} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta lição.</p>;
       case screenName && screenName.startsWith('lesson-'):
         const lessonId = screenName.split('-')[1];
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <Lesson lessonId={lessonId} user={user} setUser={setUser} setActiveScreen={setActiveScreen} reviewMode={activeScreen.reviewMode} activeScreen={activeScreen} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta lição.</p>;
       case screenName === 'profile':
         return <Profile user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
       case screenName === 'wallet':
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <Wallet user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
       case screenName === 'store':
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <Store user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
       case screenName === 'challenges':
         return <Challenges user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
       case screenName === 'friends':
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <Friends user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
@@ -420,7 +720,7 @@ function App() {
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
       default:
-        if (user.role === 'student') {
+        if (user.role === 'student' || user.role === 'student-gratuito') {
           return <StudentDashboard user={user} setUser={setUser} onNavigate={handleNavigate} currentModule={currentModule} />;
         }
         if (user.role === 'parent') {
@@ -439,7 +739,7 @@ function App() {
     !isInitializing &&
     screenName && 
     !screenName.startsWith('lesson-') && 
-    !['welcome', 'login-student', 'login-parent', 'login-school', 'register-student', 'register-parent', 'register-school'].includes(screenName);
+    !['welcome', 'login-student', 'login-parent', 'login-school', 'register-student', 'register-parent', 'register-school', 'register-gratuito'].includes(screenName);
 
   if (isInitializing) return null;
 

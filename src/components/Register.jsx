@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { apiGet } from '../utils/apiService';
+import { getApiUrl } from '../config/environment';
+import FamilyPlanModal from './FamilyPlanModal';
 
-const Register = ({ handleRegister, setActiveScreen, role }) => {
+const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initialFamilyPlanData }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,6 +14,8 @@ const Register = ({ handleRegister, setActiveScreen, role }) => {
   const [validatingToken, setValidatingToken] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showFamilyModal, setShowFamilyModal] = useState(false);
+  const [familyPlanData, setFamilyPlanData] = useState(null);
 
   // Lista de séries disponíveis
   const availableGrades = [
@@ -39,6 +43,71 @@ const Register = ({ handleRegister, setActiveScreen, role }) => {
       setError('Por favor, selecione sua série.');
       setLoading(false);
       return;
+    }
+
+    // Para pais/responsáveis, verificar se tem licença validada
+    if (role === 'parent') {
+      if (initialFamilyPlanData) {
+        // Tem licença validada, processar registro
+        setLoading(true);
+        try {
+          // Usar licença individual
+          const licenseResponse = await fetch(`${getApiUrl()}/api/family-license/use`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              licenseCode: initialFamilyPlanData,
+              userData: {
+                name,
+                email
+              }
+            })
+          });
+          
+          const licenseResult = await licenseResponse.json();
+          
+          if (!licenseResult.success) {
+            setError(licenseResult.error || 'Erro ao validar licença.');
+            setLoading(false);
+            return;
+          }
+          
+          // Registrar usuário normalmente
+          const result = await handleRegister({
+            name,
+            email,
+            password,
+            confirmPassword,
+            role: 'parent',
+            familyLicense: {
+              code: initialFamilyPlanData,
+              individualCode: licenseResult.individualLicenseCode
+            }
+          });
+          
+          if (!result.success) {
+            setError(result.message);
+          } else {
+            setActiveScreen('home');
+          }
+        } catch (err) {
+          setError("Ocorreu um erro inesperado. Tente novamente.");
+          console.error("Erro no registro:", err);
+        } finally {
+          setLoading(false);
+        }
+        return;
+      } else {
+        // Não tem licença, redirecionar para Welcome
+        setLoading(false);
+        setError('Você precisa de uma licença válida para se registrar como pai/responsável.');
+        setTimeout(() => {
+          setActiveScreen('welcome');
+        }, 2000);
+        return;
+      }
     }
 
     // Validação de token apenas para alunos
@@ -131,6 +200,40 @@ const Register = ({ handleRegister, setActiveScreen, role }) => {
     if (token.trim()) {
       validateToken(token);
     }
+  };
+
+  const handleFamilyPlanConfirm = async (planData) => {
+    setFamilyPlanData(planData);
+    setShowFamilyModal(false);
+    
+    // Agora processar o registro com os dados do plano família
+    setLoading(true);
+    try {
+      const result = await handleRegister({
+        name,
+        email,
+        password,
+        confirmPassword,
+        role: 'parent',
+        familyPlan: planData
+      });
+      
+      if (!result.success) {
+        setError(result.message);
+      } else {
+        setActiveScreen('home');
+      }
+    } catch (err) {
+      setError("Ocorreu um erro inesperado. Tente novamente.");
+      console.error("Erro no registro:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFamilyPlanCancel = () => {
+    setShowFamilyModal(false);
+    setFamilyPlanData(null);
   };
 
   const getRoleDisplayName = (role) => {
@@ -298,6 +401,13 @@ const Register = ({ handleRegister, setActiveScreen, role }) => {
       >
         Já tem conta? Faça login aqui!
       </button>
+      
+      {/* Modal do Plano Família */}
+      <FamilyPlanModal
+        isOpen={showFamilyModal}
+        onClose={handleFamilyPlanCancel}
+        onConfirm={handleFamilyPlanConfirm}
+      />
     </div>
   );
 };

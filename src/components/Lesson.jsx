@@ -54,7 +54,8 @@ const Lesson = (props) => {
         lessonId: lessonId,
         score: results.score,
         timeSpent: results.timeSpent,
-        isPerfect: results.isPerfect
+        isPerfect: results.isPerfect,
+        module: currentLesson?.module // Adicionar módulo da lição
       });
       
       const { student: updatedUser, reward, leveledUp, moduleAchievements, achievementRewards, xpBreakdown } = response;

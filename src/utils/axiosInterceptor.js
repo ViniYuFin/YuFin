@@ -129,6 +129,13 @@ axios.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    // Verificar se é usuário gratuito - não fazer logout automático
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.isGratuito || user.role === 'student-gratuito') {
+      console.log('🎯 Usuário gratuito detectado, não fazendo logout automático por erro 401');
+      return Promise.reject(error);
+    }
+
     // Se não é erro 401 ou já tentou renovar, rejeita
     if (error.response?.status !== 401 || originalRequest._retry) {
       return Promise.reject(error);

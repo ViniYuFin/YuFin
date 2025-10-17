@@ -301,7 +301,12 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
               <p><strong>Nome:</strong> {user.name}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Tipo:</strong> {user.role === 'student' ? 'Estudante' : user.role === 'parent' ? 'Responsável' : 'Escola'}</p>
+              <p><strong>Tipo:</strong> {
+                user.role === 'student' ? 'Estudante' : 
+                user.role === 'student-gratuito' ? 'Estudante Gratuito' : 
+                user.role === 'parent' ? 'Responsável' : 
+                'Escola'
+              }</p>
             </div>
           </div>
 
@@ -315,11 +320,15 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
             Sair da Conta
           </button>
 
-          {/* Botão de Zerar Progresso - Apenas para Estudantes */}
-          {user.role === 'student' && (
+          {/* Botão de Zerar Progresso - Para Estudantes e Estudantes Gratuitos */}
+          {(user.role === 'student' || user.role === 'student-gratuito') && (
             <button
               onClick={() => {
-                if (window.confirm('Tem certeza que deseja zerar o progresso da série atual? O progresso de outras séries será mantido. Esta ação não pode ser desfeita!')) {
+                const message = user.role === 'student-gratuito' 
+                  ? 'Tem certeza que deseja zerar o progresso da série atual? Todas as lições completadas serão perdidas. Esta ação não pode ser desfeita!'
+                  : 'Tem certeza que deseja zerar o progresso da série atual? O progresso de outras séries será mantido. Esta ação não pode ser desfeita!';
+                
+                if (window.confirm(message)) {
                   if (typeof onResetProgress === 'function') onResetProgress();
                 }
               }}

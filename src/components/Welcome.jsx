@@ -1,8 +1,22 @@
 import React, { useState } from 'react';
+import LicenseCodeModal from './LicenseCodeModal';
 
 const Welcome = ({ setActiveScreen }) => {
+  console.log('🏠 Welcome component renderizado!');
+  
   const [showLoginOptions, setShowLoginOptions] = useState(false);
   const [showRegisterOptions, setShowRegisterOptions] = useState(false);
+  const [showLicenseModal, setShowLicenseModal] = useState(false);
+
+  const handleLicenseConfirm = (licenseCode) => {
+    // Aqui seria validada a licença e depois redirecionado para registro
+    setShowLicenseModal(false);
+    setActiveScreen('register-parent');
+  };
+
+  const handleLicenseCancel = () => {
+    setShowLicenseModal(false);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen auth-background p-4 animate-fadeIn">
@@ -67,7 +81,7 @@ const Welcome = ({ setActiveScreen }) => {
                 Sou Aluno
               </button>
               <button
-                onClick={() => { setActiveScreen('register-parent'); setShowRegisterOptions(false); }}
+                onClick={() => { setShowLicenseModal(true); setShowRegisterOptions(false); }}
                 className="w-full bg-white text-teal border-2 text-sm py-2 rounded-lg shadow-sm hover:bg-teal hover:text-white transition-colors duration-200 hover-lift"
                 style={{ borderColor: 'rgb(238, 145, 22)' }}
               >
@@ -84,6 +98,13 @@ const Welcome = ({ setActiveScreen }) => {
           )}
         </div>
       </div>
+      
+      {/* Modal de Código de Licença */}
+      <LicenseCodeModal
+        isOpen={showLicenseModal}
+        onClose={handleLicenseCancel}
+        onConfirm={handleLicenseConfirm}
+      />
     </div>
   );
 };

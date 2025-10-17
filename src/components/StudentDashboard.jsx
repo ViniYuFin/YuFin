@@ -4,6 +4,7 @@ import { apiGet, apiPost, apiPatch } from '../utils/apiService';
 import notificationService from '../utils/notificationService';
 import { storageService, STORAGE_KEYS } from '../utils/storageService';
 import devModeService from '../utils/devModeService';
+import gratuitoProgressService from '../services/GratuitoProgressService';
 
 const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const [gradeProgress, setGradeProgress] = useState(null);
@@ -109,7 +110,103 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       setLoading(true);
       console.log('🔄 Carregando progresso da série...');
       
-      // Verificar se modo dev está ativo
+      // Para usuários gratuitos, carregar TUDO do backend, apenas progresso será local
+      if (user.isGratuito || user.role === 'student-gratuito') {
+        // Carregar lições e estrutura do backend (igual usuários normais)
+        const devMode = devModeService.isDevModeEnabled(user);
+        const url = devMode 
+          ? `/users/${user.id}/grade-progress?devMode=true`
+          : `/users/${user.id}/grade-progress`;
+        
+        const backendProgress = await apiGet(url);
+        console.log('📊 Dados carregados do backend para usuário gratuito:', backendProgress);
+        
+        // Inicializar progresso local se não existir
+        if (!gratuitoProgressService.getProgress(user.id)) {
+          gratuitoProgressService.initializeProgress(user.id, user.gradeId);
+        }
+        
+        // Combinar dados do backend (lições) com progresso local
+        const localProgress = gratuitoProgressService.getFormattedProgress(user.id);
+        console.log('📊 Progresso local formatado:', localProgress);
+        
+        if (localProgress) {
+          // Marcar lições como completadas baseado no progresso local
+          const completedLessonIds = localProgress.progress.completedLessons.map(lesson => lesson.lessonId);
+          console.log('🔍 DEBUG - completedLessonIds:', completedLessonIds);
+          
+          // Atualizar lições para marcar como completadas
+          const updatedModules = { ...backendProgress.progress.byModule };
+          Object.keys(updatedModules).forEach(moduleKey => {
+            if (updatedModules[moduleKey] && updatedModules[moduleKey].lessons) {
+              updatedModules[moduleKey].lessons = updatedModules[moduleKey].lessons.map(lesson => {
+                const isCompleted = completedLessonIds.includes(lesson.id);
+                console.log(`🔍 DEBUG - Lição ${lesson.title}: id=${lesson.id}, isCompleted=${isCompleted}`);
+                return {
+                  ...lesson,
+                  isCompleted: isCompleted
+                };
+              });
+              
+              // Atualizar contadores do módulo com dados locais
+              if (localProgress.progress.byModule[moduleKey]) {
+                updatedModules[moduleKey].completed = localProgress.progress.byModule[moduleKey].completed;
+                console.log(`🔍 DEBUG - Módulo ${moduleKey}: total=${updatedModules[moduleKey].total}, completed=${updatedModules[moduleKey].completed}`);
+              }
+            }
+          });
+          
+          // Sincronizar total de lições por módulo do backend com progresso local
+          Object.keys(updatedModules).forEach(moduleKey => {
+            if (updatedModules[moduleKey] && localProgress.progress.byModule[moduleKey]) {
+              // Atualizar total do backend para o progresso local
+              localProgress.progress.byModule[moduleKey].total = updatedModules[moduleKey].total;
+            }
+          });
+
+          // Salvar progresso local atualizado
+          gratuitoProgressService.saveProgress(localProgress.progress);
+
+          // Usar dados locais para progresso, mas manter estrutura do backend para lições
+          const progressWithLocalData = {
+            ...backendProgress,
+            progress: {
+              ...backendProgress.progress,
+              // Sobrescrever com dados locais
+              xp: localProgress.progress.xp,
+              level: localProgress.progress.level,
+              maxXp: localProgress.progress.maxXp,
+              yuCoins: localProgress.progress.yuCoins,
+              streak: localProgress.progress.streak,
+              hearts: localProgress.progress.hearts,
+              maxHearts: localProgress.progress.maxHearts,
+              completedLessons: localProgress.progress.completedLessons,
+              currentModule: localProgress.progress.currentModule,
+              byModule: updatedModules, // Usar módulos atualizados com lições marcadas
+              hasContent: true,
+              // Calcular totalCompleted e totalLessons baseado no progresso local
+              totalCompleted: localProgress.progress.completedLessons.length,
+              totalLessons: 12, // Total de lições disponíveis
+              progressPercentage: Math.round((localProgress.progress.completedLessons.length / 12) * 100)
+            },
+            isGratuito: true,
+            maxModules: 3
+          };
+          
+          setGradeProgress(progressWithLocalData);
+        } else {
+          // Fallback se não houver progresso local
+          const progressWithGratuitoFlag = {
+            ...backendProgress,
+            isGratuito: true,
+            maxModules: 3
+          };
+          setGradeProgress(progressWithGratuitoFlag);
+        }
+        return;
+      }
+      
+      // Para usuários normais, usar API
       const devMode = devModeService.isDevModeEnabled(user);
       const url = devMode 
         ? `/users/${user.id}/grade-progress?devMode=true`
@@ -134,7 +231,10 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       setGradeProgress(progress);
     } catch (error) {
       console.error('Erro ao carregar progresso:', error);
-      notificationService.error('Erro ao carregar progresso da série');
+      // Para usuários gratuitos, não mostrar erro
+      if (!(user.isGratuito || user.role === 'student-gratuito')) {
+        notificationService.error('Erro ao carregar progresso da série');
+      }
     } finally {
       setLoading(false);
     }
@@ -159,10 +259,26 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
   const loadGradeProgressionStatus = async () => {
     try {
+      // Para usuários gratuitos, usar dados locais
+      if (user.isGratuito || user.role === 'student-gratuito') {
+        const localStatus = gratuitoProgressService.getProgressionStatus(user.id);
+        setGradeProgression(localStatus);
+        return;
+      }
+      
+      // Para usuários normais, usar API
       const status = await apiGet(`/users/${user.id}/grade-progression-status`);
       setGradeProgression(status);
     } catch (error) {
       console.error('Erro ao carregar status da progressão:', error);
+      // Para usuários gratuitos, definir status padrão
+      if (user.isGratuito || user.role === 'student-gratuito') {
+        setGradeProgression({
+          canProgress: false,
+          isGratuito: true,
+          maxModules: 3
+        });
+      }
     }
   };
 
@@ -375,7 +491,20 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
   const handleModuleChange = async (moduleNum) => {
     try {
-      // Atualizar módulo no backend
+      // Para usuários gratuitos, usar serviço local
+      if (user.isGratuito || user.role === 'student-gratuito') {
+        const updatedProgress = gratuitoProgressService.updateCurrentModule(user.id, moduleNum);
+        
+        if (updatedProgress) {
+          setSelectedModule(moduleNum);
+          storageService.save(STORAGE_KEYS.CURRENT_MODULE, moduleNum);
+          const updatedUser = { ...user, currentModule: moduleNum };
+          setUser(updatedUser);
+        }
+        return;
+      }
+      
+      // Atualizar módulo no backend para usuários normais
       await apiPatch(`/users/${user.id}/current-module`, { currentModule: moduleNum });
       
       // Atualizar estado local
@@ -396,12 +525,88 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
   const handleLessonClick = (lesson) => {
     console.log('🎯 Clique na lição:', lesson.title);
-    console.log('  - canAccess:', lesson.canAccess);
+    console.log('  - canAccess (backend):', lesson.canAccess);
     console.log('  - isCompleted:', lesson.isCompleted);
     console.log('  - Módulo:', lesson.module, 'Ordem:', lesson.order);
     
     // Verificar se modo dev está ativo
     const devMode = devModeService.isDevModeEnabled(user);
+    
+    // Para usuários gratuitos, calcular canAccess localmente
+    let canAccess = devMode || lesson.canAccess;
+    
+    if ((user.isGratuito || user.role === 'student-gratuito') && !devMode) {
+      console.log(`🔍 DEBUG CLICK GRATUITO - Analisando clique na lição: ${lesson.title}`, {
+        module: lesson.module,
+        order: lesson.order,
+        isGratuito: user.isGratuito,
+        role: user.role,
+        devMode: devMode
+      });
+      
+      // Usuários gratuitos: liberar lições sequencialmente dentro dos módulos 1-3
+      if (lesson.module <= 3) {
+        // Verificar se é a primeira lição do módulo baseado na ordem global
+        const isFirstLessonOfModule = (lesson.module === 1 && lesson.order === 1) || 
+                                    (lesson.module === 2 && lesson.order === 4) || 
+                                    (lesson.module === 3 && lesson.order === 7);
+        
+        if (isFirstLessonOfModule) {
+          // Primeira lição de cada módulo: verificar se módulo anterior foi completado
+          if (lesson.module === 1) {
+            // Módulo 1: primeira lição sempre acessível
+            canAccess = true;
+            console.log(`✅ DEBUG CLICK GRATUITO - Módulo 1, primeira lição sempre acessível: ${lesson.title}`);
+          } else {
+            // Módulos 2 e 3: verificar se módulo anterior foi completado
+            const previousModule = lesson.module - 1;
+            const previousModuleProgress = gradeProgress?.progress?.byModule?.[previousModule];
+            const isPreviousModuleComplete = previousModuleProgress && previousModuleProgress.completed >= 3;
+            
+            console.log(`🔍 DEBUG CLICK GRATUITO - Verificando módulo anterior para ${lesson.title}:`, {
+              currentModule: lesson.module,
+              previousModule: previousModule,
+              previousModuleProgress: previousModuleProgress,
+              previousModuleCompleted: previousModuleProgress?.completed,
+              isPreviousModuleComplete: isPreviousModuleComplete,
+              gradeProgress: gradeProgress,
+              progressByModule: gradeProgress?.progress?.byModule
+            });
+            
+            canAccess = isPreviousModuleComplete;
+            console.log(`🔍 DEBUG CLICK GRATUITO - Resultado para ${lesson.title}: canAccess = ${canAccess}`);
+          }
+        } else {
+          // Lições subsequentes: verificar se a lição anterior foi completada
+          const moduleProgress = gradeProgress?.progress?.byModule?.[selectedModule];
+          if (moduleProgress && moduleProgress.lessons) {
+            const previousLesson = moduleProgress.lessons.find(l => l.order === lesson.order - 1);
+            console.log(`🔍 DEBUG CLICK GRATUITO - Verificando lição anterior para ${lesson.title}:`, {
+              previousLesson: previousLesson ? previousLesson.title : 'não encontrada',
+              isCompleted: previousLesson ? previousLesson.isCompleted : false,
+              order: lesson.order,
+              moduleProgress: moduleProgress
+            });
+            
+            if (previousLesson && previousLesson.isCompleted) {
+              canAccess = true;
+            } else {
+              canAccess = false;
+            }
+            console.log(`🔍 DEBUG CLICK GRATUITO - Resultado para ${lesson.title}: canAccess = ${canAccess}`);
+          } else {
+            canAccess = false;
+            console.log(`❌ DEBUG CLICK GRATUITO - moduleProgress não encontrado para ${lesson.title}`);
+          }
+        }
+      } else {
+        // Módulos 4+ bloqueados para usuários gratuitos
+        canAccess = false;
+        console.log(`❌ DEBUG CLICK GRATUITO - Módulo ${lesson.module} bloqueado para usuários gratuitos: ${lesson.title}`);
+      }
+    }
+    
+    console.log('  - canAccess (calculado):', canAccess);
     
     // Log da ação se em modo dev
     if (devMode) {
@@ -410,14 +615,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         lessonTitle: lesson.title,
         module: lesson.module,
         order: lesson.order,
-        canAccess: lesson.canAccess,
+        canAccess: canAccess,
         isCompleted: lesson.isCompleted,
         devModeBypass: true
       }, user);
     }
     
-    // Em modo dev, sempre permitir acesso
-    if (!devMode && !lesson.canAccess) {
+    // Verificar acesso baseado no canAccess calculado
+    if (!devMode && !canAccess) {
       console.log('❌ Lição bloqueada!');
       notificationService.warning('Complete as lições anteriores primeiro!');
       return;
@@ -837,6 +1042,15 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const { grade, progress } = gradeProgress;
   const achievementCard = getAchievementCard(selectedModule);
   const moduleProgress = progress.byModule[selectedModule];
+  
+  // Debug para usuários gratuitos
+  if (user.isGratuito || user.role === 'student-gratuito') {
+    console.log('🔍 DEBUG GRATUITO - gradeProgress:', gradeProgress);
+    console.log('🔍 DEBUG GRATUITO - progress:', progress);
+    console.log('🔍 DEBUG GRATUITO - progress.byModule:', progress.byModule);
+    console.log('🔍 DEBUG GRATUITO - selectedModule:', selectedModule);
+    console.log('🔍 DEBUG GRATUITO - moduleProgress:', moduleProgress);
+  }
   const isModuleCompleted = moduleProgress && moduleProgress.completed === moduleProgress.total && moduleProgress.total > 0;
   
   // Verificar se a conquista do módulo foi desbloqueada
@@ -864,9 +1078,9 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                     className="text-xs"
                     style={darkMode ? { color: '#ffffff' } : { color: '#6b7280' }}
                   >
-                    {window.innerWidth < 640 ? `N${user.progress?.level || 1}` : `Nível ${user.progress?.level || 1}`}
+                    {window.innerWidth < 640 ? `N${progress?.level || 1}` : `Nível ${progress?.level || 1}`}
                   </span>
-                  <span className="text-xs text-primary font-medium">• {user.progress?.totalXp || user.progress?.xp || 0}/{user.progress?.xpToNextLevel || 100} XP</span>
+                  <span className="text-xs text-primary font-medium">• {progress?.xp || 0}/{progress?.maxXp || 100} XP</span>
                 </div>
               </div>
           </div>
@@ -878,7 +1092,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
               <div className="flex items-center space-x-2">
                 <span className="text-lg">💰</span>
                 <div className="text-center">
-                  <div className="text-sm font-bold" style={{ color: '#EE9116' }}>{user.progress?.yuCoins || 0}</div>
+                  <div className="text-sm font-bold" style={{ color: '#EE9116' }}>{progress?.yuCoins || 0}</div>
                   <div 
                     className="text-xs"
                     style={darkMode ? { color: '#ffffff' } : { color: '#6b7280' }}
@@ -894,7 +1108,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
               <div className="flex items-center space-x-2">
                 <span className="text-lg">🔥</span>
                 <div className="text-center">
-                  <div className="text-sm font-bold" style={{ color: '#EE9116' }}>{user.progress?.streak || 0}</div>
+                  <div className="text-sm font-bold" style={{ color: '#EE9116' }}>{progress?.streak || 0}</div>
                   <div 
                     className="text-xs"
                     style={darkMode ? { color: '#ffffff' } : { color: '#6b7280' }}
@@ -1083,15 +1297,23 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             <div className="flex-shrink-0">
               <button
                 onClick={handleReturnToPreviousGrade}
-                className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform hover:scale-105 ${
-                  devModeService.isDevModeEnabled(user) 
-                    ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700'
-                    : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark'
+                disabled={user.isGratuito && !devModeService.isDevModeEnabled(user)}
+                className={`px-6 py-4 rounded-xl font-semibold transition-all shadow-lg transform ${
+                  user.isGratuito && !devModeService.isDevModeEnabled(user)
+                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60' // Desabilitado para usuários gratuitos
+                    : devModeService.isDevModeEnabled(user) 
+                      ? 'bg-gradient-to-b from-purple-500 to-purple-600 text-white hover:from-purple-600 hover:to-purple-700 hover:scale-105'
+                      : 'bg-gradient-to-b from-primary to-secondary text-white hover:from-primary-dark hover:to-secondary-dark hover:scale-105'
                 }`}
               >
                 <div className="text-center">
                   <div className="text-lg font-bold">
-                    {devModeService.isDevModeEnabled(user) ? '🔧' : '⬅️'}
+                    {user.isGratuito && !devModeService.isDevModeEnabled(user) 
+                      ? '🔒' // Ícone de bloqueado para usuários gratuitos
+                      : devModeService.isDevModeEnabled(user) 
+                        ? '🔧' 
+                        : '⬅️'
+                    }
                   </div>
                   <div className="text-sm">Ano</div>
                   <div className="text-xs">Anterior</div>
@@ -1121,7 +1343,74 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           {moduleProgress && moduleProgress.lessons ? moduleProgress.lessons.map((lesson, index) => {
             // Verificar se modo dev está ativo
             const devModeActive = devModeService.isDevModeEnabled(user);
-            const canAccess = devModeActive || lesson.canAccess;
+            
+            // Para usuários gratuitos, implementar lógica de liberação baseada no progresso local
+            let canAccess = devModeActive || lesson.canAccess;
+            
+            if ((user.isGratuito || user.role === 'student-gratuito') && !devModeActive) {
+              console.log(`🔍 DEBUG GRATUITO - Analisando lição: ${lesson.title}`, {
+                module: lesson.module,
+                order: lesson.order,
+                isGratuito: user.isGratuito,
+                role: user.role,
+                devModeActive: devModeActive
+              });
+              
+              // Usuários gratuitos: liberar lições sequencialmente dentro dos módulos 1-3
+              if (lesson.module <= 3) {
+                // Verificar se é a primeira lição do módulo baseado na ordem global
+                const isFirstLessonOfModule = (lesson.module === 1 && lesson.order === 1) || 
+                                            (lesson.module === 2 && lesson.order === 4) || 
+                                            (lesson.module === 3 && lesson.order === 7);
+                
+                if (isFirstLessonOfModule) {
+                  // Primeira lição de cada módulo: verificar se módulo anterior foi completado
+                  if (lesson.module === 1) {
+                    // Módulo 1: primeira lição sempre acessível
+                    canAccess = true;
+                    console.log(`✅ DEBUG GRATUITO - Módulo 1, primeira lição sempre acessível: ${lesson.title}`);
+                  } else {
+                    // Módulos 2 e 3: verificar se módulo anterior foi completado
+                    const previousModule = lesson.module - 1;
+                    const previousModuleProgress = gradeProgress?.progress?.byModule?.[previousModule];
+                    const isPreviousModuleComplete = previousModuleProgress && previousModuleProgress.completed >= 3;
+                    
+                    console.log(`🔍 DEBUG GRATUITO - Verificando módulo anterior para ${lesson.title}:`, {
+                      currentModule: lesson.module,
+                      previousModule: previousModule,
+                      previousModuleProgress: previousModuleProgress,
+                      previousModuleCompleted: previousModuleProgress?.completed,
+                      isPreviousModuleComplete: isPreviousModuleComplete,
+                      gradeProgress: gradeProgress,
+                      progressByModule: gradeProgress?.progress?.byModule
+                    });
+                    
+                    canAccess = isPreviousModuleComplete;
+                    console.log(`🔍 DEBUG GRATUITO - Resultado para ${lesson.title}: canAccess = ${canAccess}`);
+                  }
+                } else {
+                  // Lições subsequentes: verificar se a lição anterior foi completada
+                  const previousLesson = moduleProgress.lessons.find(l => l.order === lesson.order - 1);
+                  console.log(`🔍 DEBUG GRATUITO - Verificando lição anterior para ${lesson.title}:`, {
+                    previousLesson: previousLesson ? previousLesson.title : 'não encontrada',
+                    isCompleted: previousLesson ? previousLesson.isCompleted : false,
+                    order: lesson.order,
+                    moduleProgress: moduleProgress
+                  });
+                  
+                  if (previousLesson && previousLesson.isCompleted) {
+                    canAccess = true;
+                  } else {
+                    canAccess = false;
+                  }
+                  console.log(`🔍 DEBUG GRATUITO - Resultado para ${lesson.title}: canAccess = ${canAccess}`);
+                }
+              } else {
+                // Módulos 4+ bloqueados para usuários gratuitos
+                canAccess = false;
+                console.log(`❌ DEBUG GRATUITO - Módulo ${lesson.module} bloqueado para usuários gratuitos: ${lesson.title}`);
+              }
+            }
             
             console.log(`📋 Renderizando lição ${index + 1}:`, {
               title: lesson.title,
