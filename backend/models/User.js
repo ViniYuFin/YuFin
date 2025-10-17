@@ -1,14 +1,16 @@
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
+  name: { type: String, required: false }, // Opcional para plano gratuito
+  email: { type: String, required: false, unique: true, sparse: true }, // Opcional para plano gratuito - sparse permite null
+  cpf: { type: String, required: false, unique: true, sparse: true }, // Para plano gratuito
   passwordHash: { type: String, required: true },
   role: { 
     type: String, 
     required: true,
-    enum: ["student", "parent", "school"]
+    enum: ["student", "parent", "school", "student-gratuito"]
   },
+  isGratuito: { type: Boolean, default: false }, // Flag para identificar usuários do plano gratuito
   schoolId: { type: String }, // ID da escola (para isolamento)
   gradeId: { type: String }, // série do aluno (apenas para estudantes)
   classId: { type: String }, // ID da turma atual do aluno
@@ -102,6 +104,12 @@ const userSchema = new mongoose.Schema({
     sound: { type: Boolean, default: true },
     language: { type: String, default: 'pt-BR' },
     theme: { type: String, default: 'light' }
+  },
+  parentConsent: {
+    given: { type: Boolean, default: false },
+    date: { type: Date },
+    type: { type: String, enum: ['normal', 'gratuito'], default: 'normal' },
+    parentEmail: { type: String }
   }
 }, {
   timestamps: true

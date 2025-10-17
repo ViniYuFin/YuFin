@@ -12,11 +12,14 @@ const Class = require('./models/Class');
 const Grade = require('./models/Grade');
 const RegistrationToken = require('./models/RegistrationToken');
 const RefreshToken = require('./models/RefreshToken');
+const ParentValidationToken = require('./models/ParentValidationToken');
 
 // Importar rotas
 const authRoutes = require('./routes/auth');
 const tokenRoutes = require('./routes/token');
 const lgpdRoutes = require('./routes/lgpd');
+const familyLicenseRoutes = require('./routes/familyLicense');
+const gratuitoRoutes = require('./routes/gratuito');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -49,48 +52,43 @@ app.use(helmetConfig);           // Headers de segurança
 app.use(hppProtection);          // Proteção HTTP Parameter Pollution
 app.use(securityLogger);         // Logger de eventos suspeitos
 
-// Middleware CORS melhorado e restrito
-app.use((req, res, next) => {
-  console.log('🔍 Request:', req.method, req.path, 'from origin:', req.headers.origin);
-  
-  const allowedOrigins = [
-    'https://yufin.com.br',
-    'https://www.yufin.com.br',
-    'https://app.yufin.com.br',
-    'https://yufin-frontend.vercel.app',
-    'https://yufin-backend.vercel.app',
-    'https://yufin-deploy.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000'
-  ];
-  
-  const origin = req.headers.origin;
-  
-  // Apenas permitir origins na whitelist
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-    console.log('✅ CORS: Origin allowed:', origin);
-  } else if (!origin && process.env.NODE_ENV === 'development') {
-    // Apenas em dev, permitir sem origin (ferramentas como Postman)
-    res.header('Access-Control-Allow-Origin', '*');
-    console.log('⚠️  CORS: Allowing no-origin (DEV MODE ONLY)');
-  } else {
-    console.log('❌ CORS: Origin blocked:', origin);
-    // Não bloquear completamente, mas não adicionar header
-  }
-  
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  
-  // Responder imediatamente para OPTIONS
-  if (req.method === 'OPTIONS') {
-    console.log('🔍 OPTIONS preflight request - responding immediately');
-    return res.status(200).end();
-  }
-  
-  next();
-});
+// Configuração CORS robusta para produção
+const corsOptions = {
+  origin: function (origin, callback) {
+    console.log('🔍 CORS - Origin recebida:', origin);
+    
+    const allowedOrigins = [
+      'https://yufin.com.br',
+      'https://www.yufin.com.br',
+      'https://app.yufin.com.br',
+      'https://yufin-frontend.vercel.app',
+      'https://yufin-backend.vercel.app',
+      'https://yufin-deploy.vercel.app',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    
+    // Permitir requests sem origin (mobile apps, Postman, etc.)
+    if (!origin) {
+      console.log('⚠️  CORS: No origin - allowing');
+      return callback(null, true);
+    }
+    
+    if (allowedOrigins.includes(origin)) {
+      console.log('✅ CORS: Origin allowed:', origin);
+      callback(null, true);
+    } else {
+      console.log('❌ CORS: Origin blocked:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Para suportar navegadores legados
+};
+
+app.use(cors(corsOptions));
 
 // Middlewares globais
 app.use(bodyParser.json({ limit: '10mb' })); // Limite de payload
@@ -130,6 +128,8 @@ app.use('/auth', authRoutes);               // Login e registro
 
 app.use('/token', tokenRoutes);             // Refresh, logout, etc
 app.use('/lgpd', lgpdLimiter, lgpdRoutes);  // Endpoints LGPD com rate limit
+app.use('/api/family-license', familyLicenseRoutes); // Licenças família
+app.use('/gratuito', gratuitoRoutes);       // Endpoints para usuários gratuitos
 
 // Endpoint de teste
 app.get('/', (req, res) => {
@@ -1087,7 +1087,7 @@ app.delete('/grades/:id', async (req, res) => {
 app.get('/users/:userId/challenges', async (req, res) => {
   try {
     const student = await User.findById(req.params.userId);
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 
@@ -1155,7 +1155,7 @@ app.post('/users/:userId/challenges/:challengeId/start', async (req, res) => {
     const student = await User.findById(req.params.userId);
     const challenge = await Challenge.findById(req.params.challengeId);
 
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 
@@ -1553,7 +1553,7 @@ app.get('/schools/:schoolId/pending-validations', async (req, res) => {
 app.delete('/users/:userId/challenge-progress', async (req, res) => {
   try {
     const student = await User.findById(req.params.userId);
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 
@@ -1576,7 +1576,7 @@ app.post('/users/:userId/challenges/:challengeId/restart', async (req, res) => {
     const student = await User.findById(req.params.userId);
     const challenge = await Challenge.findById(req.params.challengeId);
 
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 
@@ -1697,7 +1697,7 @@ function canAccessLesson(student, lesson, allLessons, devMode = false) {
 app.get('/users/:userId/grade-progress', async (req, res) => {
   try {
     const student = await User.findById(req.params.userId);
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 
@@ -1951,7 +1951,7 @@ app.post('/users/:id/complete-lesson',
       const { lessonId, score, timeSpent, isPerfect } = req.body;
       const student = await User.findById(req.params.id);
     
-    if (!student || student.role !== 'student') {
+    if (!student || (student.role !== 'student' && student.role !== 'student-gratuito')) {
       return res.status(404).json({ error: 'Aluno não encontrado' });
     }
 

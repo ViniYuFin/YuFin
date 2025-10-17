@@ -29,6 +29,7 @@
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.17.1",
+    "nodemailer": "^7.0.9",
     "xss-clean": "^0.1.4"
   },
   "description": "Backend do YuFin com MongoDB - Sistema de educação financeira",
