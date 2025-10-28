@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Licenças - YüFin</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/auth-modals.css">
+    <style>
+        /* ===== PÁGINA DE LICENÇAS - DESIGN SYSTEM YÜFIN ===== */
+        
+        /* Main Content */
+        .licenses-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 2rem 0;
+        }
+
+        .licenses-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .licenses-content {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        /* Header do Card */
+        .licenses-header {
+            background: var(--yufin-gradient);
+            padding: 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .licenses-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Content */
+        .licenses-content .licenses-list {
+            padding: 2.5rem;
+        }
+
+        /* License Cards */
+        .licenses-list {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .license-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius-md);
+            padding: 2rem;
+            transition: var(--transition-fast);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .license-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--yufin-gradient);
+            transform: scaleY(0);
+            transition: var(--transition-fast);
+        }
+
+        .license-card:hover {
+            border-color: var(--yufin-primary);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .license-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .license-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .license-header h3 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 1.4rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .license-header h3::before {
+            content: '🔑';
+            font-size: 1.2rem;
+        }
+
+        .license-status {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .license-status.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .license-status.used {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .license-status.expired {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .license-status.paid {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* License Details Grid */
+        .license-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .license-detail {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            background: white;
+            border-radius: var(--border-radius-sm);
+            border: 1px solid #e2e8f0;
+        }
+
+        .license-detail-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .license-detail-value {
+            font-weight: 700;
+            color: #1e293b;
+            font-size: 1.1rem;
+        }
+
+        /* Actions */
+        .license-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-copy {
+            padding: 0.75rem 1.5rem;
+            background: var(--yufin-gradient);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--yufin-gradient-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-copy::before {
+            content: '📋';
+        }
+
+        .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary::before {
+            content: '👁️';
+        }
+
+        .btn-danger {
+            padding: 0.75rem 1.5rem;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            border-radius: var(--border-radius-sm);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover {
+            background: #fecaca;
+            transform: translateY(-1px);
+        }
+
+        .btn-danger::before {
+            content: '🗑️';
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state h3 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+            color: #374151;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .empty-state::before {
+            content: '📋';
+            font-size: 4rem;
+            display: block;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .btn-primary {
+            background: var(--yufin-gradient);
+            color: white;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: var(--border-radius-sm);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:hover {
+            background: var(--yufin-gradient-dark);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-primary::before {
+            content: '🚀';
+        }
+
+        /* Loading & Error States */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #64748b;
+        }
+
+        .loading::before {
+            content: '⏳';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            text-align: center;
+            padding: 4rem;
+            color: var(--yufin-danger);
+        }
+
+        .error::before {
+            content: '⚠️';
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .licenses-header h1 {
+                font-size: 2rem;
+            }
+
+            .licenses-header {
+                padding: 1.5rem;
+            }
+
+            .license-details {
+                grid-template-columns: 1fr;
+            }
+
+            .license-actions {
+                flex-direction: column;
+            }
+
+            .btn-copy, .btn-secondary, .btn-danger {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .licenses-content .licenses-list {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .licenses-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .licenses-header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <button class="sidebar-toggle" aria-label="Menu Lateral" onclick="window.landingAuth.openSidebar()" style="display: none;">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            
+            <div class="navbar-menu">
+                <a href="index-clean.html" class="navbar-link">Início</a>
+                <a href="planos.html" class="navbar-link">Planos</a>
+                <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+            </div>
+            
+            <div class="navbar-logo">
+                <a href="index-clean.html">
+                    <img src="images/yufin-logo.png" alt="YüFin" class="logo-img">
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <main class="licenses-page">
+        <div class="licenses-container">
+            <div class="licenses-content">
+                <div class="licenses-header">
+                    <h1>Minhas Licenças</h1>
+                </div>
+                <div id="licensesList" class="licenses-list">
+                    <div class="loading">Carregando licenças...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/auth-system.js"></script>
+    <script>
+        // Verificar autenticação
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!window.landingAuth || !window.landingAuth.isLoggedIn) {
+                console.log('❌ Usuário não logado, redirecionando...');
+                window.location.href = 'index-clean.html';
+                return;
+            }
+
+            console.log('✅ Usuário logado, carregando licenças...');
+            loadLicenses();
+        });
+
+        // Carregar licenças
+        async function loadLicenses() {
+            const licensesList = document.getElementById('licensesList');
+            licensesList.innerHTML = '<div class="loading">Carregando licenças...</div>';
+
+            try {
+                const data = await window.landingAuth.getLicenseHistory();
+                
+                if (data.success && data.licenses && data.licenses.length > 0) {
+                    renderLicenses(data.licenses);
+                } else {
+                    licensesList.innerHTML = `
+                        <div class="empty-state">
+                            <h3>Nenhuma licença encontrada</h3>
+                            <p>Você ainda não possui licenças cadastradas.</p>
+                            <a href="planos.html" class="btn-primary">Ver Planos</a>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('❌ Erro ao carregar licenças:', error);
+                licensesList.innerHTML = '<div class="error">Erro ao carregar licenças</div>';
+            }
+        }
+
+
+        // Renderizar licenças
+        function renderLicenses(licenses) {
+            const licensesList = document.getElementById('licensesList');
+            
+            const html = licenses.map(license => `
+                <div class="license-card">
+                    <div class="license-header">
+                        <h3>${license.planType === 'family' ? 'Plano Família' : 'Plano Escola'}</h3>
+                        <span class="license-status ${license.status}">${getStatusText(license.status)}</span>
+                    </div>
+                    
+                    <div class="license-details">
+                        <div class="license-detail">
+                            <span class="license-detail-label">Código da Licença</span>
+                            <span class="license-detail-value">${license.licenseCode || license.code}</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Data de Criação</span>
+                            <span class="license-detail-value">${formatDate(license.createdAt)}</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Valor Total</span>
+                            <span class="license-detail-value">${formatCurrency(license.totalPrice || license.planData?.totalPrice)}</span>
+                        </div>
+                        <div class="license-detail">
+                            <span class="license-detail-label">Status</span>
+                            <span class="license-detail-value">${getStatusText(license.status)}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="license-actions">
+                        <button class="btn-copy" onclick="copyLicenseCode('${license.licenseCode || license.code}')">
+                            Copiar Código
+                        </button>
+                        <button class="btn-secondary" onclick="viewLicenseDetails('${license.licenseCode || license.code}')">
+                            Ver Detalhes
+                        </button>
+                        <button class="btn-danger" onclick="deleteLicense('${license.licenseCode || license.code}', '${license.planType}')">
+                            Excluir Licença
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            licensesList.innerHTML = html;
+        }
+
+
+        // Funções auxiliares
+        function getStatusText(status) {
+            const statusMap = {
+                'active': 'Ativa',
+                'used': 'Usada',
+                'expired': 'Expirada',
+                'cancelled': 'Cancelada',
+                'paid': 'Paga',
+                'completed': 'Concluído',
+                'pending': 'Pendente',
+                'failed': 'Falhou'
+            };
+            return statusMap[status] || status;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(amount);
+        }
+
+        function copyLicenseCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Código copiado para a área de transferência!');
+            }).catch(() => {
+                alert('Erro ao copiar código');
+            });
+        }
+
+        function viewLicenseDetails(code) {
+            alert(`Detalhes da licença: ${code}`);
+        }
+
+        // Função para excluir licença
+        async function deleteLicense(licenseCode, planType) {
+            if (!confirm(`Tem certeza que deseja excluir a licença ${licenseCode}?\n\nEsta ação não pode ser desfeita.`)) {
+                return;
+            }
+
+            try {
+                const apiUrl = window.landingAuth.getApiUrl();
+                const endpoint = planType === 'family' ? 'family-license' : 'school-license';
+                
+                const response = await fetch(`${apiUrl}/api/${endpoint}/${licenseCode}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${window.landingAuth.currentUser.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    alert('✅ Licença excluída com sucesso!');
+                    // Recarregar a lista de licenças
+                    loadLicenses();
+                } else {
+                    const errorData = await response.json();
+                    alert(`❌ Erro ao excluir licença: ${errorData.error || 'Erro desconhecido'}`);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao excluir licença:', error);
+                alert('❌ Erro de conexão. Tente novamente.');
+            }
+        }
+    </script>
+</body>
+</html>

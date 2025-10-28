@@ -1,0 +1,18 @@
+{
+  "name": "yufin-landing",
+  "version": "1.0.0",
+  "description": "YüFin Landing Page",
+  "main": "index-clean.html",
+  "scripts": {
+    "build": "echo 'Landing page build complete'",
+    "dev": "echo 'Use a simple HTTP server for development'"
+  },
+  "keywords": [
+    "landing",
+    "yufin",
+    "education",
+    "finance"
+  ],
+  "author": "YüFin Team",
+  "license": "MIT"
+}

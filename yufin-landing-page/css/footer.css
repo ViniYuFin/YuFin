@@ -1,0 +1,134 @@
+/**
+ * YüFin - Estilos do Footer
+ */
+
+/* ===== FOOTER ===== */
+.footer {
+  background: #1a1a1a;
+  color: white;
+  padding: 4rem 0 2rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-column h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.footer-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: white !important;
+}
+
+.footer-link {
+  display: block;
+  color: #b0b0b0;
+  text-decoration: none;
+  margin-bottom: 0.5rem;
+  transition: var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: var(--yufin-primary);
+}
+
+.footer-description {
+  color: #b0b0b0;
+  margin: 1rem 0;
+  line-height: 1.5;
+  word-wrap: break-word;
+  hyphens: auto;
+}
+
+.footer-bottom {
+  border-top: 1px solid #333;
+  padding-top: 2rem;
+  text-align: center;
+}
+
+/* ===== RESPONSIVIDADE MOBILE ===== */
+@media (max-width: 767px) {
+  .footer {
+    padding: 2rem 0 1rem;
+  }
+  
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-column {
+    text-align: center;
+  }
+  
+  .footer-column h3,
+  .footer-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .footer-link {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .footer-bottom {
+    padding-top: 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .footer-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin: 1rem 0;
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .footer {
+    padding: 1.5rem 0 1rem;
+  }
+  
+  .footer-grid {
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .footer-column h3,
+  .footer-title {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .footer-link {
+    font-size: 0.85rem;
+    margin-bottom: 0.3rem;
+  }
+  
+  .footer-bottom {
+    padding-top: 1rem;
+    font-size: 0.8rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
+  .footer-description {
+    font-size: 0.85rem;
+    padding: 0 0.25rem;
+  }
+}

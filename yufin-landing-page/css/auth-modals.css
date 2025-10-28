@@ -1,0 +1,753 @@
+/* Estilos para Modais de Autenticação */
+
+/* Garantir que os botões dos modais usem o gradiente correto */
+.auth-modal .btn-primary {
+  background: var(--yufin-gradient) !important;
+  color: white !important;
+}
+
+.auth-modal .btn-primary:hover {
+  background: var(--yufin-gradient-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
+}
+
+/* Garantir que o header dos modais use o gradiente correto */
+.auth-modal .auth-modal-header {
+  background: var(--yufin-gradient) !important;
+}
+
+/* Reset para garantir que modais não apareçam na página */
+.auth-modal {
+  display: none !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  z-index: 999999 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  border: none !important;
+  outline: none !important;
+}
+
+.auth-modal.show {
+  display: flex !important;
+}
+
+/* Garantir que modais não sejam afetados por outros estilos */
+.auth-modal * {
+  box-sizing: border-box !important;
+}
+
+/* Esconder modais quando não estão sendo exibidos */
+.auth-modal:not(.show) {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+.auth-modal-content {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header do modal */
+.auth-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 32px 24px; /* Aumentado de 24px para 32px vertical, mantendo 24px horizontal */
+  border-bottom: 1px solid #e5e7eb;
+  background: var(--yufin-gradient) !important;
+  color: white;
+  border-radius: 16px 16px 0 0;
+  position: relative;
+  flex-shrink: 0; /* Header fixo */
+}
+
+.auth-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  flex: 1;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Corpo do modal com scroll customizado */
+.auth-modal-body {
+  padding: 24px;
+  flex: 1;
+  overflow-y: auto;
+  /* Scrollbar customizada mais discreta */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 140, 66, 0.3) transparent;
+}
+
+/* Webkit scrollbar customizada para o body */
+.auth-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auth-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auth-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 140, 66, 0.3);
+  border-radius: 3px;
+}
+
+.auth-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 140, 66, 0.5);
+}
+
+/* Formulário */
+.auth-form {
+  padding: 0;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ff8c42;
+  box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--yufin-gradient) !important;
+  color: white !important;
+}
+
+.btn-primary:hover {
+  background: var(--yufin-gradient-dark) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 140, 66, 0.3);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 2px solid #e5e7eb;
+}
+
+.btn-secondary:hover {
+  background: #e5e7eb;
+}
+
+.form-links {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.form-links a {
+  color: #ff8c42;
+  text-decoration: none;
+  font-size: 0.9rem;
+}
+
+.form-links a:hover {
+  text-decoration: underline;
+}
+
+/* Menu do usuário */
+.user-menu {
+  position: relative;
+}
+
+.user-dropdown {
+  position: relative;
+}
+
+.user-btn {
+  background: var(--yufin-gradient);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  transition: all 0.2s;
+}
+
+.user-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3);
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.user-email {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.8rem;
+}
+
+.user-dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  z-index: 1000;
+  margin-top: 4px;
+}
+
+.user-dropdown-content a {
+  display: block;
+  padding: 12px 16px;
+  color: #374151;
+  text-decoration: none;
+  transition: background-color 0.2s;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.user-dropdown-content a:hover {
+  background: #f9fafb;
+}
+
+.user-dropdown-content a:last-child {
+  border-bottom: none;
+}
+
+.user-dropdown-content hr {
+  margin: 8px 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+.logout-btn {
+  color: #dc2626 !important;
+}
+
+/* Área do cliente */
+.client-area-modal .auth-modal-content {
+  max-width: 900px;
+  max-height: 80vh;
+}
+
+.client-area-tabs {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  background: #f9fafb;
+  border-radius: 16px 16px 0 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 16px 24px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s;
+  border-bottom: 3px solid transparent;
+}
+
+.tab-btn:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.tab-btn.active {
+  color: #ff8c42;
+  border-bottom-color: #ff8c42;
+  background: white;
+}
+
+.tab-content {
+  display: none;
+  padding: 24px;
+}
+
+.tab-content.active {
+  display: block !important;
+}
+
+/* Forçar visibilidade do tab de licenças */
+#licensesTab {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Forçar visibilidade do container principal */
+.client-area-content {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Cards de licenças e pagamentos */
+.licenses-header,
+.payments-header,
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.licenses-header h3,
+.payments-header h3,
+.profile-header h3 {
+  margin: 0;
+  color: #374151;
+}
+
+.license-card,
+.payment-card,
+.profile-card {
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s;
+}
+
+.license-card:hover,
+.payment-card:hover,
+.profile-card:hover {
+  border-color: #ff8c42;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.1);
+}
+
+.license-header,
+.payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.license-header h4,
+.payment-header h4 {
+  margin: 0;
+  color: #374151;
+}
+
+.license-status,
+.payment-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.license-status.active,
+.payment-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.license-status.used,
+.payment-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.license-status.expired,
+.payment-status.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.license-details,
+.payment-details,
+.profile-details {
+  margin-bottom: 16px;
+}
+
+.license-details p,
+.payment-details p,
+.profile-details p {
+  margin: 4px 0;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.license-details code,
+.payment-details code {
+  background: #e5e7eb;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.8rem;
+}
+
+.license-actions,
+.payment-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  color: #374151;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-small:hover {
+  border-color: #ff8c42;
+  color: #ff8c42;
+  transform: translateY(-1px);
+}
+
+/* Estados de carregamento e vazio */
+.loading,
+.empty,
+.error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.error {
+  color: #dc2626;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .auth-modal-content {
+    margin: 10px;
+    max-height: 95vh;
+  }
+  
+  .client-area-tabs {
+    flex-direction: column;
+  }
+  
+  .tab-btn {
+    text-align: center;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .license-actions,
+  .payment-actions {
+    flex-direction: column;
+  }
+  
+  .btn-small {
+    width: 100%;
+  }
+}
+
+/* ===== CAMPOS DE SENHA COM ÍCONE DE OLHO ===== */
+.password-input-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-input-container input {
+  width: 100%;
+  padding-right: 40px; /* Espaço para o botão */
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.password-toggle:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.password-icon {
+  font-size: 16px;
+  user-select: none;
+}
+
+/* ===== MODAIS DE LICENÇAS E PAGAMENTOS ===== */
+
+/* Lista de licenças */
+.licenses-list, .payments-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 0;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.license-card, .payment-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.license-card:hover, .payment-card:hover {
+  border-color: #ff8c42;
+  box-shadow: 0 4px 12px rgba(255, 140, 66, 0.1);
+}
+
+.license-header, .payment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.license-header h4, .payment-header h4 {
+  margin: 0;
+  color: #1e293b;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.license-status, .payment-status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.license-status.active, .payment-status.completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.license-status.used, .payment-status.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.license-status.expired, .payment-status.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.license-details, .payment-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.license-details p, .payment-details p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.license-details strong, .payment-details strong {
+  color: #374151;
+}
+
+.license-actions, .payment-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  background: var(--yufin-gradient);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-small:hover {
+  background: var(--yufin-gradient-dark);
+  transform: translateY(-1px);
+}
+
+.btn-small.secondary {
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+.btn-small.secondary:hover {
+  background: #e2e8f0;
+  transform: none;
+}
+
+/* Estados vazios */
+.empty {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #64748b;
+  font-size: 1rem;
+}
+
+.error {
+  text-align: center;
+  padding: 40px 20px;
+  color: #dc2626;
+  font-size: 1rem;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .license-details, .payment-details {
+    grid-template-columns: 1fr;
+  }
+  
+  .license-actions, .payment-actions {
+    flex-direction: column;
+  }
+  
+  .btn-small {
+    width: 100%;
+    text-align: center;
+  }
+}

@@ -1,0 +1,194 @@
+/**
+ * YüFin - Estilos do FAQ
+ */
+
+/* ===== FAQ PERSONALIZADO ===== */
+.faq-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.faq-item {
+  border: 1px solid rgba(255, 140, 66, 0.15);
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 1rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.6) 0%, rgba(255, 255, 255, 0.8) 100%);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.faq-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.02) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.faq-item:hover::before {
+  opacity: 1;
+}
+
+.faq-item:hover {
+  border-color: rgba(255, 140, 66, 0.3);
+  box-shadow: 0 8px 32px rgba(255, 140, 66, 0.1);
+  transform: translateY(-2px);
+}
+
+.faq-item.active {
+  border-color: rgba(255, 140, 66, 0.4);
+  box-shadow: 0 12px 40px rgba(255, 140, 66, 0.15);
+  transform: translateY(-4px);
+}
+
+.faq-question {
+  width: 100%;
+  padding: 1.5rem;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.faq-question:hover {
+  color: #ff8c42;
+}
+
+.faq-icon {
+  margin-left: auto;
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: #ff8c42;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 140, 66, 0.1);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.faq-item.active .faq-icon {
+  transform: rotate(45deg);
+  background: rgba(255, 140, 66, 0.2);
+}
+
+.faq-answer {
+  max-height: 0 !important;
+  overflow: hidden !important;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: linear-gradient(135deg, rgba(255, 140, 66, 0.05) 0%, rgba(255, 248, 240, 0.3) 100%) !important;
+  position: relative !important;
+  opacity: 0 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+.faq-item.active .faq-answer {
+  max-height: 300px !important;
+  opacity: 1 !important;
+  padding: 1rem 0 !important;
+  display: block !important;
+  visibility: visible !important;
+}
+
+/* Forçar opacity máxima para FAQ ativo */
+.faq-item.active .faq-answer,
+.faq-item.active .faq-answer * {
+  opacity: 1 !important;
+}
+
+/* Garantir que a resposta do FAQ ativo seja totalmente visível */
+.faq-item.active .faq-answer {
+  opacity: 1 !important;
+}
+
+.faq-item.active .faq-answer p {
+  opacity: 1 !important;
+}
+
+.faq-answer p {
+  padding: 1rem 1.5rem 1.5rem;
+  margin: 0;
+  color: #5a6c7d;
+  line-height: 1.7;
+  font-size: 1rem;
+  position: relative;
+  z-index: 2;
+}
+
+/* ===== ANIMAÇÕES FAQ ===== */
+.faq-item {
+  animation: faqItemFadeIn 0.6s ease forwards;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Garantir que apenas o container do FAQ tenha opacity 1, não os filhos */
+.faq-item > * {
+  opacity: initial;
+}
+
+.faq-item:nth-child(1) { animation-delay: 0.1s; }
+.faq-item:nth-child(2) { animation-delay: 0.2s; }
+.faq-item:nth-child(3) { animation-delay: 0.3s; }
+.faq-item:nth-child(4) { animation-delay: 0.4s; }
+
+@keyframes faqItemFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== HOVER EFFECTS FAQ ===== */
+.faq-question::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 1.5rem;
+  right: 1.5rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 140, 66, 0.3), transparent);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.faq-item:hover .faq-question::after {
+  transform: scaleX(1);
+}
+
+/* ===== RESPONSIVIDADE FAQ ===== */
+@media (max-width: 768px) {
+  .faq-question {
+    padding: 1.2rem;
+    font-size: 1rem;
+  }
+  
+  .faq-answer p {
+    padding: 0 1.2rem 1.2rem;
+    font-size: 0.95rem;
+  }
+  
+  .faq-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1.3rem;
+  }
+}
+
