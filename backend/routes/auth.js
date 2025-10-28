@@ -4,6 +4,7 @@ const User = require('../models/User');
 const RegistrationToken = require('../models/RegistrationToken');
 const RefreshToken = require('../models/RefreshToken');
 const ParentValidationToken = require('../models/ParentValidationToken');
+const UniversalLicense = require('../models/UniversalLicense');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { generateTokenPair } = require('../utils/jwt');
 const { validate, loginSchema, registerSchema } = require('../utils/validators');
@@ -87,7 +88,14 @@ router.post('/register',
   checkParentConsent,
   async (req, res) => {
     try {
-      const { name, email, password, role, token, gradeId } = req.body;
+      const { name, email, password, role, token, gradeId, familyPlanData, schoolPlanData, familyLicense, schoolLicense } = req.body;
+    
+    console.log('🔍 DEBUG: Dados recebidos no req.body:', {
+      familyPlanData: req.body.familyPlanData,
+      schoolPlanData: req.body.schoolPlanData,
+      familyLicense: req.body.familyLicense,
+      schoolLicense: req.body.schoolLicense
+    });
       
       // Verificar se o email já existe
       const existingUser = await User.findOne({ email });
@@ -204,6 +212,29 @@ router.post('/register',
         userData.completedLessonsCount = 0;
       }
       
+      // Adicionar dados do plano família se fornecido
+      if (familyPlanData) {
+        userData.familyPlanData = familyPlanData;
+        console.log('📋 Dados do plano família adicionados:', familyPlanData);
+      }
+      
+      // Adicionar dados do plano escola se fornecido
+      if (schoolPlanData) {
+        userData.schoolPlanData = schoolPlanData;
+        console.log('📋 Dados do plano escola adicionados:', schoolPlanData);
+      }
+      
+      // Adicionar informações de licença se fornecidas
+      if (familyLicense) {
+        userData.familyLicense = familyLicense;
+        console.log('🔑 Licença família adicionada:', familyLicense);
+      }
+      
+      if (schoolLicense) {
+        userData.schoolLicense = schoolLicense;
+        console.log('🔑 Licença escola adicionada:', schoolLicense);
+      }
+      
       // Criar usuário
       const user = new User(userData);
       await user.save();
@@ -242,13 +273,23 @@ router.post('/register',
         await tokenInfo.save();
         
         // Se token é de responsável, vincular automaticamente
-        if (tokenInfo.creatorRole === 'parent') {
+        if (tokenInfo.type === 'parent') {
           const parent = await User.findById(tokenInfo.createdBy);
-          if (parent) {
+          if (parent && parent.role === 'parent') {
             if (!parent.linkedStudents) parent.linkedStudents = [];
             parent.linkedStudents.push(user._id.toString());
             await parent.save();
-            console.log('👨‍👩‍👧 Estudante vinculado automaticamente ao responsável');
+            
+            // Atualizar o usuário com a informação de vínculo
+            user.parentId = parent._id.toString();
+            await user.save();
+            
+            console.log('👨‍👩‍👧‍👦 Estudante vinculado automaticamente ao responsável:', {
+              studentId: user._id.toString(),
+              studentName: user.name,
+              parentId: parent._id.toString(),
+              parentName: parent.name
+            });
           }
         }
       }
@@ -275,7 +316,43 @@ router.post('/register',
       const userResponse = user.toObject();
       delete userResponse.passwordHash;
       
+      // Marcar uso da licença se for um registro com licença família
+      if (familyLicense && familyLicense.code) {
+        try {
+          const FamilyLicense = require('../models/FamilyLicense');
+          const licenseDoc = await FamilyLicense.findOne({ 
+            licenseCode: familyLicense.code 
+          });
+          
+          if (licenseDoc) {
+            // Adicionar usuário à lista de usuários que usaram a licença
+            // (O contador já foi incrementado na rota /api/family-license/use)
+            licenseDoc.usedBy.push({
+              userId: user._id,
+              usedAt: new Date(),
+              canGenerateTokens: licenseDoc.usedBy.length === 0 // Apenas o primeiro usuário pode gerar tokens
+            });
+            
+            await licenseDoc.save();
+            console.log('✅ Usuário adicionado à lista de uso da licença:', {
+              licenseCode: familyLicense.code,
+              usageCount: licenseDoc.usageCount,
+              maxUsages: licenseDoc.maxUsages,
+              canGenerateTokens: licenseDoc.usedBy[licenseDoc.usedBy.length - 1].canGenerateTokens
+            });
+          }
+        } catch (licenseError) {
+          console.error('⚠️ Erro ao registrar uso da licença:', licenseError);
+          // Não falhar o registro por causa disso
+        }
+      }
+      
       console.log(`✅ Cadastro realizado: ${user.email} (${user.role})`);
+      console.log('🔍 DEBUG: Verificando dados do usuário...');
+      console.log('🔍 familyPlanData:', userResponse.familyPlanData);
+      console.log('🔍 schoolPlanData:', userResponse.schoolPlanData);
+      console.log('🔍 familyLicense:', userResponse.familyLicense);
+      console.log('🔍 schoolLicense:', userResponse.schoolLicense);
       
       res.status(201).json({
         message: 'Cadastro realizado com sucesso',
@@ -509,7 +586,7 @@ router.post('/register-gratuito', async (req, res) => {
     
     // Sempre continuar, mesmo se o email falhar
     console.log('🔑 Token gerado:', validationToken);
-    console.log('🔗 Link de validação:', `${process.env.FRONTEND_URL || 'http://localhost:5173'}/validate-parent-consent?token=${validationToken}`);
+    console.log('🔗 Link de validação:', `${process.env.FRONTEND_URL || 'https://app.yufin.com.br'}/validate-parent-consent?token=${validationToken}`);
     
     res.status(201).json({
       message: 'Email de validação enviado! Verifique sua caixa de entrada e clique no link para confirmar o cadastro.',
@@ -540,9 +617,6 @@ router.post('/register-gratuito', async (req, res) => {
  */
 router.post('/login-gratuito', async (req, res) => {
   try {
-    console.log('🔍 LOGIN-GRATUITO - Iniciando login gratuito');
-    console.log('🔍 LOGIN-GRATUITO - Body recebido:', req.body);
-    
     const { cpf, password } = req.body;
     
     if (!cpf || !password) {
@@ -554,16 +628,9 @@ router.post('/login-gratuito', async (req, res) => {
     
     // Limpar CPF
     const cleanCPF = cpf.replace(/[^\d]/g, '');
-    console.log('🔍 LOGIN-GRATUITO - CPF limpo:', cleanCPF);
-    
-    // Verificar conexão com MongoDB
-    console.log('🔍 LOGIN-GRATUITO - Verificando conexão MongoDB...');
-    console.log('🔍 LOGIN-GRATUITO - Mongoose connection state:', require('mongoose').connection.readyState);
     
     // Buscar usuário por CPF
-    console.log('🔍 LOGIN-GRATUITO - Buscando usuário...');
     const user = await User.findOne({ cpf: cleanCPF, role: 'student-gratuito' });
-    console.log('🔍 LOGIN-GRATUITO - Usuário encontrado:', !!user);
     if (!user) {
       return res.status(401).json({ 
         error: 'CPF ou senha inválidos',
@@ -627,12 +694,8 @@ router.post('/login-gratuito', async (req, res) => {
  */
 router.get('/check-cpf/:cpf', async (req, res) => {
   try {
-    console.log('🔍 CHECK-CPF - Iniciando verificação de CPF');
-    console.log('🔍 CHECK-CPF - CPF recebido:', req.params.cpf);
-    
     const { cpf } = req.params;
     const cleanCPF = cpf.replace(/[^\d]/g, '');
-    console.log('🔍 CHECK-CPF - CPF limpo:', cleanCPF);
     
     if (!validateCPF(cleanCPF)) {
       return res.status(400).json({
@@ -641,13 +704,7 @@ router.get('/check-cpf/:cpf', async (req, res) => {
       });
     }
     
-    // Verificar conexão com MongoDB
-    console.log('🔍 CHECK-CPF - Verificando conexão MongoDB...');
-    console.log('🔍 CHECK-CPF - Mongoose connection state:', require('mongoose').connection.readyState);
-    
-    console.log('🔍 CHECK-CPF - Buscando usuário...');
     const user = await User.findOne({ cpf: cleanCPF });
-    console.log('🔍 CHECK-CPF - Usuário encontrado:', !!user);
     
     res.json({
       exists: !!user,
@@ -746,7 +803,57 @@ router.post('/register-with-token', async (req, res) => {
     
     // Marcar token como usado
     registrationToken.usedCount += 1;
+    registrationToken.usedBy.push({
+      studentId: newUser._id.toString(),
+      studentName: newUser.name,
+      usedAt: new Date()
+    });
+    
+    // Desativar se atingiu o limite
+    if (registrationToken.maxUses && registrationToken.usedCount >= registrationToken.maxUses) {
+      registrationToken.isActive = false;
+    }
+    
     await registrationToken.save();
+    
+    // Se token é de responsável, vincular automaticamente
+    if (registrationToken.type === 'parent') {
+      const parent = await User.findById(registrationToken.createdBy);
+      if (parent && parent.role === 'parent') {
+        if (!parent.linkedStudents) parent.linkedStudents = [];
+        parent.linkedStudents.push(newUser._id.toString());
+        await parent.save();
+        
+        // Atualizar o usuário com a informação de vínculo
+        newUser.parentId = parent._id.toString();
+        await newUser.save();
+        
+        console.log('👨‍👩‍👧‍👦 Estudante vinculado automaticamente ao responsável:', {
+          studentId: newUser._id.toString(),
+          studentName: newUser.name,
+          parentId: parent._id.toString(),
+          parentName: parent.name
+        });
+      }
+    }
+    
+    // Se token é de escola, associar o aluno à escola
+    if (registrationToken.type === 'school') {
+      console.log('🏫 Associando aluno à escola:', {
+        studentId: newUser._id.toString(),
+        studentName: newUser.name,
+        schoolId: registrationToken.createdBy,
+        tokenType: registrationToken.type
+      });
+      
+      newUser.schoolId = registrationToken.createdBy;
+      await newUser.save();
+      
+      console.log('✅ Aluno associado à escola com sucesso:', {
+        studentId: newUser._id.toString(),
+        schoolId: newUser.schoolId
+      });
+    }
     
     // Gerar token JWT
     const jwtToken = generateToken(newUser);
@@ -923,20 +1030,10 @@ router.post('/validate-parent-consent', async (req, res) => {
  */
 console.log('📝 Registrando rota: GET /auth/check-cpf/:cpf');
 router.get('/check-cpf/:cpf', async (req, res) => {
-  console.log('🚀 ROTA CHECK-CPF CHAMADA!');
-  console.log('📋 Headers recebidos:', req.headers);
-  console.log('📋 Origin:', req.headers.origin);
-  console.log('📋 User-Agent:', req.headers['user-agent']);
-  console.log('🔍 CHECK-CPF - Iniciando verificação');
-  console.log('📋 Parâmetros recebidos:', req.params);
-  console.log('📋 Headers:', req.headers);
-  console.log('📋 CPF recebido:', req.params.cpf);
+  console.log('🔍 CHECK-CPF - Verificando CPF:', req.params.cpf);
   
   try {
     const { cpf } = req.params;
-    console.log('🔍 CPF extraído:', cpf);
-    console.log('🔍 Tipo do CPF:', typeof cpf);
-    console.log('🔍 Tamanho do CPF:', cpf ? cpf.length : 'undefined');
     
     if (!cpf || cpf.length !== 11) {
       console.log('❌ CPF inválido:', cpf);
@@ -946,36 +1043,82 @@ router.get('/check-cpf/:cpf', async (req, res) => {
       });
     }
     
-    console.log('🔍 Conectando ao banco de dados...');
     // Buscar usuário pelo CPF
     const user = await User.findOne({ cpf });
-    console.log('🔍 Query executada com sucesso');
     console.log('🔍 Usuário encontrado:', !!user);
-    console.log('🔍 Detalhes do usuário:', user ? {
-      id: user._id,
-      cpf: user.cpf,
-      role: user.role,
-      isGratuito: user.isGratuito
-    } : 'null');
     
-    const response = {
+    res.json({
       exists: !!user,
       cpf: cpf
-    };
-    
-    console.log('✅ Resposta preparada:', response);
-    res.json(response);
+    });
     
   } catch (error) {
     console.error('❌ Erro ao verificar CPF:', error);
-    console.error('❌ Stack trace:', error.stack);
-    console.error('❌ Tipo do erro:', typeof error);
-    console.error('❌ Propriedades do erro:', Object.keys(error));
-    
     res.status(500).json({
       error: 'Erro interno do servidor',
-      code: 'INTERNAL_ERROR',
-      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      code: 'INTERNAL_ERROR'
+    });
+  }
+});
+
+/**
+ * GET /auth/validate-universal-license/:code
+ * Valida uma licença universal administrativa
+ */
+console.log('📝 Registrando rota: GET /auth/validate-universal-license/:code');
+router.get('/validate-universal-license/:code', async (req, res) => {
+  console.log('🔍 VALIDATE-UNIVERSAL-LICENSE - Verificando código:', req.params.code);
+  
+  try {
+    const { code } = req.params;
+    
+    if (!code) {
+      console.log('❌ Código não fornecido');
+      return res.status(400).json({
+        error: 'Código de licença é obrigatório',
+        code: 'MISSING_LICENSE_CODE'
+      });
+    }
+    
+    // Buscar licença universal
+    const license = await UniversalLicense.findOne({ code });
+    console.log('🔍 Licença universal encontrada:', !!license);
+    
+    if (!license) {
+      console.log('❌ Licença universal não encontrada');
+      return res.status(404).json({
+        error: 'Licença não encontrada',
+        code: 'LICENSE_NOT_FOUND'
+      });
+    }
+    
+    if (!license.isValid()) {
+      console.log('❌ Licença universal inválida ou expirada');
+      return res.status(400).json({
+        error: 'Licença inválida ou expirada',
+        code: 'LICENSE_INVALID'
+      });
+    }
+    
+    console.log('✅ Licença universal válida:', license.code);
+    
+    res.json({
+      success: true,
+      valid: true,
+      license: {
+        code: license.code,
+        name: license.name,
+        planTypes: license.planTypes,
+        isUniversal: license.isUniversal,
+        neverExpires: license.neverExpires
+      }
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao validar licença universal:', error);
+    res.status(500).json({
+      error: 'Erro interno do servidor',
+      code: 'INTERNAL_ERROR'
     });
   }
 });
@@ -1096,6 +1239,72 @@ router.get('/validate-parent-consent/:token', async (req, res) => {
       success: false,
       error: 'Erro interno do servidor ao validar cadastro',
       code: 'INTERNAL_ERROR'
+    });
+  }
+});
+
+/**
+ * GET /auth/validate-universal-license/:code
+ * Valida licença universal (endpoint para compatibilidade com frontend)
+ */
+router.get('/validate-universal-license/:code', async (req, res) => {
+  try {
+    const { code } = req.params;
+    
+    // Redirecionar para o endpoint correto da licença universal
+    const UniversalLicense = require('../models/UniversalLicense');
+    
+    // 🔧 MODO DESENVOLVIMENTO: Aceitar códigos simulados
+    if (code.startsWith('FAM-')) {
+      console.log('🔧 MODO DESENVOLVIMENTO: Aceitando código simulado universal via auth:', code);
+      return res.json({
+        success: true,
+        valid: true,
+        license: {
+          code: code,
+          name: 'Licença Simulada',
+          planTypes: ['family', 'school'],
+          isUniversal: true,
+          neverExpires: true,
+          isSimulated: true
+        }
+      });
+    }
+    
+    const license = await UniversalLicense.findOne({ code });
+    
+    if (!license) {
+      return res.status(404).json({
+        success: false,
+        error: 'Licença não encontrada',
+        code: 'LICENSE_NOT_FOUND'
+      });
+    }
+    
+    if (!license.isValid()) {
+      return res.status(400).json({
+        success: false,
+        error: 'Licença inválida ou expirada',
+        code: 'LICENSE_INVALID'
+      });
+    }
+    
+    res.json({
+      success: true,
+      valid: true,
+      license: {
+        code: license.code,
+        name: license.name,
+        planTypes: license.planTypes,
+        isUniversal: license.isUniversal,
+        neverExpires: license.neverExpires
+      }
+    });
+  } catch (error) {
+    console.error('Erro ao validar licença universal via auth:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro interno do servidor'
     });
   }
 });

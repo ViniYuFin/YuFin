@@ -43,7 +43,38 @@ const registerSchema = Joi.object({
   }).messages({
     'any.only': 'Consentimento dos pais é obrigatório para estudantes',
     'any.required': 'Consentimento dos pais é obrigatório'
-  })
+  }),
+  
+  // Dados do plano família
+  familyPlanData: Joi.object({
+    numParents: Joi.number().optional(),
+    numStudents: Joi.number().optional(),
+    totalPrice: Joi.number().optional()
+  }).optional(),
+  
+  // Dados do plano escola
+  schoolPlanData: Joi.object({
+    numStudents: Joi.number().optional(),
+    userType: Joi.string().optional(),
+    pricePerStudent: Joi.number().optional(),
+    totalPrice: Joi.number().optional()
+  }).optional(),
+  
+  // Licença família
+  familyLicense: Joi.object({
+    code: Joi.string().optional(),
+    individualCode: Joi.string().optional()
+  }).optional(),
+  
+  // Licença escola
+  schoolLicense: Joi.object({
+    code: Joi.string().optional(),
+    individualCode: Joi.string().optional()
+  }).optional(),
+  
+  // Campos adicionais opcionais
+  birthDate: Joi.date().optional(),
+  parentEmail: Joi.string().email().optional()
 });
 
 /**

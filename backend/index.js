@@ -19,7 +19,13 @@ const authRoutes = require('./routes/auth');
 const tokenRoutes = require('./routes/token');
 const lgpdRoutes = require('./routes/lgpd');
 const familyLicenseRoutes = require('./routes/familyLicense');
+const schoolLicenseRoutes = require('./routes/schoolLicense');
+const landingAuthRoutes = require('./routes/landingAuth');
 const gratuitoRoutes = require('./routes/gratuito');
+const universalLicenseRoutes = require('./routes/universalLicense');
+const mercadoPagoRoutes = require('./routes/mercado-pago');
+const processPaymentRoutes = require('./routes/process-payment');
+const testDbRoutes = require('./routes/test-db');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -43,8 +49,30 @@ const {
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Conectar ao MongoDB
-connectDB();
+// Configurar trust proxy para Vercel
+app.set('trust proxy', 1);
+
+// Conectar ao MongoDB (AGUARDAR conexão antes de iniciar servidor)
+const startServer = async () => {
+  try {
+    await connectDB();
+    console.log('✅ MongoDB conectado, iniciando servidor...');
+    
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error('❌ Erro ao conectar MongoDB:', error);
+    process.exit(1);
+  }
+};
+
+// Iniciar servidor apenas após conectar MongoDB
+startServer();
+
+// Configurar Mercado Pago
+const { configureMercadoPago } = require('./config/mercado-pago');
+configureMercadoPago();
 
 // 🔐 MIDDLEWARES DE SEGURANÇA (PRIMEIRO!)
 app.use(helmetConfig);           // Headers de segurança
@@ -52,43 +80,60 @@ app.use(helmetConfig);           // Headers de segurança
 app.use(hppProtection);          // Proteção HTTP Parameter Pollution
 app.use(securityLogger);         // Logger de eventos suspeitos
 
-// Configuração CORS robusta para produção
-const corsOptions = {
-  origin: function (origin, callback) {
-    console.log('🔍 CORS - Origin recebida:', origin);
-    
-    const allowedOrigins = [
-      'https://yufin.com.br',
-      'https://www.yufin.com.br',
-      'https://app.yufin.com.br',
-      'https://yufin-frontend.vercel.app',
-      'https://yufin-backend.vercel.app',
-      'https://yufin-deploy.vercel.app',
-      'http://localhost:5173',
-      'http://localhost:3000'
-    ];
-    
-    // Permitir requests sem origin (mobile apps, Postman, etc.)
-    if (!origin) {
-      console.log('⚠️  CORS: No origin - allowing');
-      return callback(null, true);
-    }
-    
-    if (allowedOrigins.includes(origin)) {
-      console.log('✅ CORS: Origin allowed:', origin);
-      callback(null, true);
-    } else {
-      console.log('❌ CORS: Origin blocked:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200 // Para suportar navegadores legados
-};
-
-app.use(cors(corsOptions));
+// Middleware CORS melhorado e restrito
+app.use((req, res, next) => {
+  console.log('🔍 Request:', req.method, req.path, 'from origin:', req.headers.origin);
+  
+  const allowedOrigins = [
+    'https://yufin.com.br',
+    'https://www.yufin.com.br',
+    'https://app.yufin.com.br',
+    'https://yufin-frontend.vercel.app',
+    'https://yufin-backend.vercel.app',
+    'https://yufin-deploy.vercel.app',
+  'https://yufin-landing.vercel.app',
+  'https://yufin-landing-bbaweogrp-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+  'https://yufin-landing-856q5gemc-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    'https://yufin-deploy-hngkufy5x-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    // Adicionar domínios temporários do Vercel que aparecem nos logs
+    'https://yufin-backend-705bjj13-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    'https://yufin-backend-1tgubu2id-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    // MERCADO PAGO - Webhooks
+    'https://api.mercadopago.com',
+    'https://mercadopago.com',
+    'https://www.mercadopago.com',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'http://localhost:3001'
+  ];
+  
+  const origin = req.headers.origin;
+  
+  // Apenas permitir origins na whitelist
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    console.log('✅ CORS: Origin allowed:', origin);
+  } else if ((!origin || origin === 'null') && (process.env.NODE_ENV === 'development' || process.env.NODE_ENV !== 'production')) {
+    // Permitir origin null/undefined em desenvolvimento (arquivos locais, file://)
+    res.header('Access-Control-Allow-Origin', '*');
+    console.log('⚠️  CORS: Allowing null/undefined origin (DEV MODE) - Origin:', origin);
+  } else {
+    console.log('❌ CORS: Origin blocked:', origin);
+    // Não bloquear completamente, mas não adicionar header
+  }
+  
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Responder imediatamente para OPTIONS
+  if (req.method === 'OPTIONS') {
+    console.log('🔍 OPTIONS preflight request - responding immediately');
+    return res.status(200).end();
+  }
+  
+  next();
+});
 
 // Middlewares globais
 app.use(bodyParser.json({ limit: '10mb' })); // Limite de payload
@@ -129,7 +174,13 @@ app.use('/auth', authRoutes);               // Login e registro
 app.use('/token', tokenRoutes);             // Refresh, logout, etc
 app.use('/lgpd', lgpdLimiter, lgpdRoutes);  // Endpoints LGPD com rate limit
 app.use('/api/family-license', familyLicenseRoutes); // Licenças família
+app.use('/api/school-license', schoolLicenseRoutes); // Licenças escola
+app.use('/api/landing', landingAuthRoutes); // Autenticação landing page
 app.use('/gratuito', gratuitoRoutes);       // Endpoints para usuários gratuitos
+app.use('/api/universal-license', universalLicenseRoutes); // Licenças universais administrativas
+app.use('/api/mercado-pago', mercadoPagoRoutes); // Pagamentos Mercado Pago
+app.use('/api/mercado-pago', processPaymentRoutes); // Processamento de pagamentos CardForm
+app.use('/api', testDbRoutes); // Teste de conexão MongoDB
 
 // Endpoint de teste
 app.get('/', (req, res) => {
@@ -2913,10 +2964,20 @@ app.get('/registration-tokens', async (req, res) => {
 // Deletar token
 app.delete('/registration-tokens/:id', async (req, res) => {
   try {
-    const token = await RegistrationToken.findByIdAndDelete(req.params.id);
+    const token = await RegistrationToken.findById(req.params.id);
     if (!token) {
       return res.status(404).json({ error: 'Token não encontrado' });
     }
+    
+    // Verificar se o token foi utilizado
+    if (token.usedCount > 0) {
+      return res.status(400).json({ 
+        error: 'Token já foi utilizado e não pode ser excluído',
+        code: 'TOKEN_USED'
+      });
+    }
+    
+    await RegistrationToken.findByIdAndDelete(req.params.id);
     res.json({ message: 'Token deletado com sucesso' });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -3541,6 +3602,4 @@ app.patch('/users/:id/desvincular-filho', async (req, res) => {
   }
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Backend YuFin com MongoDB rodando na porta ${PORT}`);
-});
+// Servidor já iniciado na função startServer() acima

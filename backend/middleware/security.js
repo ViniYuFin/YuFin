@@ -10,6 +10,7 @@
  */
 
 const rateLimit = require('express-rate-limit');
+const { ipKeyGenerator } = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const hpp = require('hpp');
@@ -58,6 +59,14 @@ const generalLimiter = rateLimit({
   },
   standardHeaders: true, // Retorna info no headers `RateLimit-*`
   legacyHeaders: false, // Desabilita headers `X-RateLimit-*`
+  // Configuração para Vercel com suporte IPv6
+  keyGenerator: (req) => {
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = forwarded ? forwarded.split(',')[0].trim() : req.ip;
+    
+    // Usar função auxiliar para IPv6
+    return ipKeyGenerator(req, ip);
+  },
   handler: (req, res) => {
     console.log(`⚠️ Rate limit atingido: ${req.ip}`);
     res.status(429).json({
@@ -73,6 +82,14 @@ const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
   max: 5, // apenas 5 tentativas
   skipSuccessfulRequests: true, // Não conta requests bem-sucedidos
+  // Configuração para Vercel com suporte IPv6
+  keyGenerator: (req) => {
+    const forwarded = req.headers['x-forwarded-for'];
+    const ip = forwarded ? forwarded.split(',')[0].trim() : req.ip;
+    
+    // Usar função auxiliar para IPv6
+    return ipKeyGenerator(req, ip);
+  },
   message: {
     error: 'Muitas tentativas de login. Tente novamente em 15 minutos',
     code: 'LOGIN_RATE_LIMIT_EXCEEDED'

@@ -16,7 +16,12 @@ async function fixPesquisaPrecosProblema4() {
     console.log('🔧 CORRIGINDO PESQUISA DE PREÇOS - PROBLEMA 4');
     console.log('═'.repeat(60));
     
-    const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://Vinicius:081023%40Jeova@cluster0.ow4ruvq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+    const MONGODB_URI = process.env.MONGODB_URI;
+    
+    if (!MONGODB_URI) {
+      console.error('❌ MONGODB_URI não encontrada no arquivo .env');
+      process.exit(1);
+    }
     
     await mongoose.connect(MONGODB_URI);
     console.log('✅ Conectado ao MongoDB\n');

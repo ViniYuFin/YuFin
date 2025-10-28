@@ -33,3 +33,4 @@ http://localhost:5173/validate-parent-consent?token=...
 - Reinicie o backend após a alteração
 - Teste novamente o cadastro gratuito
 
+

@@ -14,7 +14,7 @@ const createTransporter = () => {
 
 // Template do email para validação dos pais
 const createParentValidationEmail = (parentEmail, studentCPF, validationToken) => {
-  const validationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/validate-parent-consent?token=${validationToken}`;
+  const validationUrl = `${process.env.FRONTEND_URL || 'https://app.yufin.com.br'}/validate-parent-consent?token=${validationToken}`;
   
   return {
     from: process.env.EMAIL_USER || 'contato.yufin@gmail.com',
@@ -104,7 +104,7 @@ const sendParentValidationEmail = async (parentEmail, studentCPF, validationToke
       console.log('⚠️ [DEV MODE] Configurações de email não encontradas, simulando envio');
       console.log('📧 Para:', parentEmail);
       console.log('🔑 Token:', validationToken);
-      console.log('🔗 Link de validação:', `${process.env.FRONTEND_URL || 'http://localhost:5173'}/validate-parent-consent?token=${validationToken}`);
+      console.log('🔗 Link de validação:', `${process.env.FRONTEND_URL || 'https://app.yufin.com.br'}/validate-parent-consent?token=${validationToken}`);
       return { success: true, messageId: 'dev-simulation' };
     }
     
@@ -203,7 +203,226 @@ const sendRegistrationConfirmationEmail = async (parentEmail, studentCPF) => {
   }
 };
 
+// Template do email de confirmação de licença
+const createLicenseConfirmationEmail = (licenseData) => {
+  const { type, code, planData, individualLicenses, availableTokens } = licenseData;
+  
+  return {
+    subject: 'Bem-vindo ao YüFin! Seu acesso está liberado 🎉',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Bem-vindo ao YüFin!</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            line-height: 1.6; 
+            color: #333; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f8f9fa;
+          }
+          .container { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 20px; 
+          }
+          .header { 
+            background: linear-gradient(135deg, #EE9116 0%, #FFB84D 100%); 
+            color: white; 
+            padding: 30px; 
+            text-align: center; 
+            border-radius: 15px 15px 0 0; 
+            margin-bottom: 0;
+          }
+          .content { 
+            background: white; 
+            padding: 30px; 
+            border-radius: 0 0 15px 15px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+          }
+          .license-box { 
+            background: #f0f8ff; 
+            border: 2px solid #EE9116; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 10px; 
+            text-align: center;
+          }
+          .license-code { 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #EE9116; 
+            text-align: center; 
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+          }
+          .steps { 
+            background: #e8f5e8; 
+            padding: 20px; 
+            margin: 20px 0; 
+            border-radius: 10px; 
+            border-left: 4px solid #28a745;
+          }
+          .button { 
+            background: linear-gradient(135deg, #EE9116 0%, #FFB84D 100%); 
+            color: white; 
+            padding: 15px 30px; 
+            text-decoration: none; 
+            border-radius: 25px; 
+            display: inline-block; 
+            margin: 10px 5px; 
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(238, 145, 22, 0.3);
+          }
+          .button:hover { 
+            background: linear-gradient(135deg, #d17a0a 0%, #e6a63a 100%); 
+          }
+          .yufin-link {
+            color: #EE9116;
+            font-weight: bold;
+            text-decoration: none;
+            border-bottom: 2px solid #EE9116;
+            padding-bottom: 1px;
+            transition: all 0.3s ease;
+          }
+          .yufin-link:hover {
+            color: #d17a0a;
+            border-bottom-color: #d17a0a;
+          }
+          .footer { 
+            text-align: center; 
+            margin-top: 30px; 
+            color: #666; 
+            font-size: 14px; 
+            padding: 20px;
+            border-top: 1px solid #eee;
+          }
+          .highlight {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+            margin: 15px 0;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1 style="margin: 0; font-size: 32px;">
+              <a href="https://app.yufin.com.br" style="color: white; text-decoration: none;">🧡 YüFin</a>
+            </h1>
+            <p style="margin: 10px 0 0 0; font-size: 18px;">Educação financeira é uma decisão e ela começa em você.</p>
+          </div>
+          
+          <div class="content">
+            <h2 style="color: #333; margin-top: 0;">Olá,</h2>
+            
+            <p style="color: #555; line-height: 1.6; font-size: 16px;">
+              É um prazer ter você conosco na <strong>YüFin</strong>, a plataforma que transforma educação financeira 
+              em uma experiência divertida, interativa e cheia de conquistas!
+            </p>
+            
+            <p style="color: #555; line-height: 1.6; font-size: 16px;">
+              Você já pode começar a explorar todas as funcionalidades do seu plano.<br>
+              Para ativar seu acesso, utilize o código de licença abaixo:
+            </p>
+            
+            <div class="license-box">
+              <h3 style="color: #333; margin-top: 0;">Seu código de licença:</h3>
+              <div class="license-code">${code}</div>
+              <p style="color: #666; font-size: 14px; margin: 10px 0 0 0;">
+                Basta inseri-lo na tela de login do YüFin para liberar o cadastramento e todos os recursos disponíveis!
+              </p>
+            </div>
+            
+            <div class="steps">
+              <h3 style="color: #155724; margin-top: 0;">💡 Dicas para começar bem:</h3>
+              <ol style="color: #155724; line-height: 1.8;">
+                <li>Acesse o portal: <a href="https://app.yufin.com.br" class="yufin-link">YüFin</a></li>
+                <li>Crie sua conta clicando em <strong>Registrar</strong></li>
+                <li>Insira o código de licença acima</li>
+                <li>Conclua o cadastro</li>
+                <li><strong>Pronto! Sua jornada financeira começa agora</strong></li>
+              </ol>
+            </div>
+            
+            <div class="highlight">
+              <p style="color: #856404; margin: 0; font-size: 14px;">
+                <strong>📋 Resumo do seu plano:</strong><br>
+                ${type === 'family' 
+                  ? `Plano Família - ${planData.numParents} responsável(is) + ${planData.numStudents} aluno(s)`
+                  : `Plano Escola - ${planData.numStudents} aluno(s)`
+                }<br>
+                <strong>Valor pago:</strong> R$ ${planData.totalPrice.toFixed(2)}
+              </p>
+            </div>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="https://app.yufin.com.br" class="button">🚀 Acessar YüFin</a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; line-height: 1.6;">
+              Em caso de dúvidas, nossa equipe de suporte está sempre à disposição em 
+              <a href="mailto:contato.yufin@gmail.com" style="color: #EE9116; font-weight: bold;">contato.yufin@gmail.com</a>.
+            </p>
+          </div>
+          
+          <div class="footer">
+            <p style="margin: 0; color: #888;">
+              <strong>Com gratidão,</strong><br>
+              Equipe YüFin 🧡<br>
+              Educação financeira é uma decisão e ela começa em você.
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  };
+};
+
+// Função para enviar email de confirmação de licença
+const sendLicenseConfirmationEmail = async (email, licenseData) => {
+  try {
+    console.log('📧 Enviando email de confirmação de licença para:', email);
+    
+    // Verificar se as configurações de email estão disponíveis
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log('⚠️ [DEV MODE] Configurações de email não encontradas, simulando envio');
+      console.log('📧 Para:', email);
+      console.log('📧 Código da licença:', licenseData.code);
+      console.log('📧 Tipo:', licenseData.type);
+      return { success: true, messageId: 'dev-simulation' };
+    }
+    
+    const emailTemplate = createLicenseConfirmationEmail(licenseData);
+    const transporter = createTransporter();
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: emailTemplate.subject,
+      html: emailTemplate.html
+    };
+    
+    console.log('📤 Enviando email de confirmação...');
+    const result = await transporter.sendMail(mailOptions);
+    console.log('✅ Email de confirmação enviado com sucesso:', result.messageId);
+    return { success: true, messageId: result.messageId };
+    
+  } catch (error) {
+    console.error('❌ Erro ao enviar email de confirmação:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   sendParentValidationEmail,
-  sendRegistrationConfirmationEmail
+  sendRegistrationConfirmationEmail,
+  sendLicenseConfirmationEmail
 };

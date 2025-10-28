@@ -86,6 +86,34 @@ const familyLicenseSchema = new mongoose.Schema({
     }
   }],
   
+  // Controle de uso da licença
+  usageCount: {
+    type: Number,
+    default: 0
+  },
+  
+  // Limite de usos baseado no número de responsáveis
+  maxUsages: {
+    type: Number,
+    default: 1
+  },
+  
+  // Usuários que já usaram esta licença
+  usedBy: [{
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    usedAt: {
+      type: Date,
+      default: Date.now
+    },
+    canGenerateTokens: {
+      type: Boolean,
+      default: false
+    }
+  }],
+  
   // Datas importantes
   expiresAt: {
     type: Date,
@@ -112,6 +140,17 @@ familyLicenseSchema.index({ 'purchaser.email': 1 });
 // Método para verificar se a licença é válida
 familyLicenseSchema.methods.isValid = function() {
   return this.status === 'active' && this.expiresAt > new Date();
+};
+
+// Método para verificar se a licença pode ser usada
+familyLicenseSchema.methods.canBeUsed = function() {
+  return this.usageCount < this.maxUsages;
+};
+
+// Método para verificar se um usuário pode gerar tokens
+familyLicenseSchema.methods.canUserGenerateTokens = function(userId) {
+  const userUsage = this.usedBy.find(usage => usage.userId.toString() === userId.toString());
+  return userUsage ? userUsage.canGenerateTokens : false;
 };
 
 // Método para gerar código único da licença

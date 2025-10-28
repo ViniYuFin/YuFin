@@ -110,6 +110,29 @@ const userSchema = new mongoose.Schema({
     date: { type: Date },
     type: { type: String, enum: ['normal', 'gratuito'], default: 'normal' },
     parentEmail: { type: String }
+  },
+  // Dados do plano família
+  familyPlanData: {
+    numParents: { type: Number },
+    numStudents: { type: Number },
+    totalPrice: { type: Number }
+  },
+  // Dados do plano escola
+  schoolPlanData: {
+    numStudents: { type: Number },
+    userType: { type: String },
+    pricePerStudent: { type: Number },
+    totalPrice: { type: Number }
+  },
+  // Licença família
+  familyLicense: {
+    code: { type: String },
+    individualCode: { type: String }
+  },
+  // Licença escola
+  schoolLicense: {
+    code: { type: String },
+    individualCode: { type: String }
   }
 }, {
   timestamps: true

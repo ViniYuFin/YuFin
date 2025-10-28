@@ -27,8 +27,8 @@ const refreshTokenSchema = new mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    required: true,
-    index: true // Para limpeza automática
+    required: true
+    // Índice será criado explicitamente abaixo
   },
   createdAt: {
     type: Date,
