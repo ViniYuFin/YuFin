@@ -1,19 +1,17 @@
 import React, { useState, useEffect } from 'react';
 // import { users as mockUsersData } from '../utils/users';
 import { lessons } from '../utils/lessons';
-import OnboardingModal from './OnboardingModal';
-import Modal from './OnboardingModal';
+import InteractiveTour from './InteractiveTour';
+import { parentTourSteps, shouldShowTour, markTourCompleted, handleMobileTourSkip, isMobileDevice } from '../utils/tourConfigs';
 import { apiPatch, apiGet, apiPost } from '../utils/apiService';
 import ParentTokenManager from './ParentTokenManager';
 import notificationService from '../utils/notificationService';
-
-const ONBOARDING_KEY = 'onboarding_parent_seen';
 
 const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [timeRange, setTimeRange] = useState('7d');
   const [showDetailedView, setShowDetailedView] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const [showLinkChildModal, setShowLinkChildModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [allStudents, setAllStudents] = useState([]);
@@ -24,8 +22,12 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(ONBOARDING_KEY)) {
-      setShowOnboarding(true);
+    // Verificar se deve mostrar o tour (desabilitado em mobile)
+    if (shouldShowTour('parent')) {
+      setShowTour(true);
+    } else {
+      // Se for mobile, marcar como completado automaticamente
+      handleMobileTourSkip('parent');
     }
     
     // Carregar preferência do modo escuro
@@ -101,9 +103,15 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   });
   const firstAvailableStudent = availableStudents[0] || null;
 
-  const handleFinishOnboarding = () => {
-    setShowOnboarding(false);
-    localStorage.setItem(ONBOARDING_KEY, '1');
+  // Função para finalizar o tour
+  const handleFinishTour = () => {
+    setShowTour(false);
+    markTourCompleted('parent');
+  };
+
+  // Função para iniciar o tour manualmente
+  const handleStartTour = () => {
+    setShowTour(true);
   };
 
   // Filtra os alunos vinculados com base nos IDs em user.linkedStudents, usando apenas dados do backend
@@ -208,13 +216,6 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
 
   const handleLinkChild = async () => {
     if (!firstAvailableStudent) return;
-    
-    console.log('Debug - Vincular filho:', {
-      userId: user.id,
-      user_id: user._id,
-      studentId: firstAvailableStudent.id,
-      student_id: firstAvailableStudent._id
-    });
     
     try {
       // Verificar se o aluno foi registrado com token da escola
@@ -425,8 +426,15 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   // Visão geral da família
   return (
     <div className="min-h-screen bg-interface p-4 pb-20">
-      {showOnboarding && (
-        <OnboardingModal profile="parent" onFinish={handleFinishOnboarding} />
+      {/* Tour Interativo */}
+      {showTour && (
+        <InteractiveTour
+          isActive={showTour}
+          onFinish={handleFinishTour}
+          steps={parentTourSteps}
+          profile="parent"
+          darkMode={darkMode}
+        />
       )}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -438,7 +446,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           }}
         >
           <h1 
-            className="text-4xl font-yufin mb-4"
+            className="text-4xl font-yufin mb-4 tour-header"
             style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
           >
             👨‍👩‍👧‍👦 Dashboard da Família
@@ -450,10 +458,10 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           </p>
           
           {/* Abas */}
-          <div className="flex space-x-2 mt-6">
+          <div className="flex flex-wrap gap-2 mt-6">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-overview ${
                 activeTab === 'overview'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
                   : darkMode 
@@ -466,7 +474,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
 
             <button
               onClick={() => setActiveTab('tokens')}
-              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-tokens ${
                 activeTab === 'tokens'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
                   : darkMode 
@@ -476,6 +484,29 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             >
               🔑 Tokens para Filhos
             </button>
+            
+            {/* Botão de Tour - Oculto em mobile */}
+            {!isMobileDevice() && (
+              <button
+                onClick={handleStartTour}
+                className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+                  darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                }`}
+              >
+                <span 
+                  style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+                >
+                  💡 Tutorial
+                </span>
+                <span 
+                  style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+                >
+                  💡 Ver Tutorial
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -485,7 +516,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             {/* Estatísticas Gerais da Família */}
             {familyStats && (
           <div 
-            className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+            className="rounded-xl shadow-lg p-6 mb-6 border-2 tour-section-summary" 
             style={{ 
               backgroundColor: darkMode ? '#374151' : '#ffffff',
               borderColor: 'rgb(238, 145, 22)' 
@@ -532,14 +563,14 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 
-              className="text-2xl font-bold"
+              className="text-2xl font-bold tour-section-children"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               👶 Seus Filhos
             </h2>
             <button
               onClick={() => setShowLinkChildModal(true)}
-              className="bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition"
+              className="bg-primary text-white px-6 py-2 rounded-lg font-semibold hover:bg-primary-dark transition tour-link-child-button"
             >
               Vincular Filho
             </button>
@@ -645,9 +676,27 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           )}
           {/* Modal de Vinculação de Filho */}
           {showLinkChildModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-              <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Vincular Filho</h2>
+            <div 
+              className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50"
+              style={{ 
+                backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(0, 0, 0, 0.3)' 
+              }}
+              onClick={() => setShowLinkChildModal(false)}
+            >
+              <div 
+                className="rounded-xl shadow-lg p-8 max-w-md w-full border-2" 
+                style={{ 
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: 'rgb(238, 145, 22)' 
+                }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h2 
+                  className="text-xl font-bold mb-4"
+                  style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                >
+                  Vincular Filho
+                </h2>
                 
                 {/* Informação sobre tipos de busca */}
                 <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
@@ -659,21 +708,40 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                 
                 <input
                   type="text"
-                  className="w-full p-3 border border-gray-300 rounded-md mb-4"
+                  className="w-full p-3 border rounded-md mb-4"
+                  style={{
+                    backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                    borderColor: darkMode ? '#6b7280' : '#d1d5db',
+                    color: darkMode ? '#ffffff' : '#1f2937'
+                  }}
                   placeholder="Digite o ID de jogador (ex: YUF123)..."
                   value={searchTerm}
                   onChange={e => setSearchTerm(e.target.value)}
                 />
                 {loadingStudents && (
-                  <p className="text-gray-600 mb-4">Carregando alunos...</p>
+                  <p 
+                    className="mb-4"
+                    style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}
+                  >
+                    Carregando alunos...
+                  </p>
                 )}
                 {!loadingStudents && searchTerm && firstAvailableStudent && (
-                  <div className="mb-4 p-3 bg-gray-100 rounded text-gray-800">
+                  <div 
+                    className="mb-4 p-3 rounded"
+                    style={{
+                      backgroundColor: darkMode ? '#4b5563' : '#f3f4f6',
+                      color: darkMode ? '#ffffff' : '#1f2937'
+                    }}
+                  >
                     <div className="text-center">
                       <span className="font-semibold">Aluno encontrado:</span>
                       <div className="mt-2">
                         <p className="font-bold text-lg">{firstAvailableStudent.name}</p>
-                        <p className="text-sm text-gray-600">
+                        <p 
+                          className="text-sm"
+                          style={{ color: darkMode ? '#9ca3af' : '#6b7280' }}
+                        >
                           🎮 ID: {firstAvailableStudent.playerId}
                         </p>
                       </div>
@@ -681,8 +749,15 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                   </div>
                 )}
                 {!loadingStudents && searchTerm && availableStudents.length === 0 && (
-                  <div className="mb-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                    <p className="text-sm text-yellow-800">
+                  <div 
+                    className="mb-4 p-3 rounded-lg border"
+                    style={{
+                      backgroundColor: darkMode ? '#451a03' : '#fef3c7',
+                      borderColor: darkMode ? '#92400e' : '#f59e0b',
+                      color: darkMode ? '#fbbf24' : '#92400e'
+                    }}
+                  >
+                    <p className="text-sm">
                       Nenhum aluno encontrado com esse ID de jogador. Verifique se o ID está correto e se o aluno está desvinculado.
                     </p>
                   </div>
@@ -690,13 +765,23 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                 <div className="flex justify-end space-x-2">
                   <button
                     onClick={() => setShowLinkChildModal(false)}
-                    className="px-4 py-2 rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300"
+                    className="px-4 py-2 rounded-lg font-semibold transition"
+                    style={{
+                      backgroundColor: darkMode ? '#6b7280' : '#e5e7eb',
+                      color: darkMode ? '#ffffff' : '#374151'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#4b5563' : '#d1d5db';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = darkMode ? '#6b7280' : '#e5e7eb';
+                    }}
                   >
                     Cancelar
                   </button>
                   <button
                     onClick={handleLinkChild}
-                    className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-dark"
+                    className="px-4 py-2 rounded-lg bg-primary text-white font-semibold hover:bg-primary-dark transition"
                     disabled={!firstAvailableStudent}
                   >
                     Vincular
@@ -710,7 +795,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
         {/* Ações Rápidas */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div 
-            className="rounded-xl shadow-lg p-6 border-2" 
+            className="rounded-xl shadow-lg p-6 border-2 tour-section-savings"
             style={{ 
               backgroundColor: darkMode ? '#374151' : '#ffffff',
               borderColor: 'rgb(238, 145, 22)' 
@@ -737,7 +822,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           </div>
 
           <div 
-            className="rounded-xl shadow-lg p-6 border-2" 
+            className="rounded-xl shadow-lg p-6 border-2 tour-section-reports"
             style={{ 
               backgroundColor: darkMode ? '#374151' : '#ffffff',
               borderColor: 'rgb(238, 145, 22)' 

@@ -389,6 +389,16 @@ function App() {
 
   // Função centralizada para lidar com o registro
   const handleRegister = async (userData) => {
+    console.log('🔍 App: Dados recebidos no handleRegister:', {
+      name: userData.name,
+      email: userData.email,
+      role: userData.role,
+      familyPlanData: userData.familyPlanData,
+      schoolPlanData: userData.schoolPlanData,
+      familyLicense: userData.familyLicense,
+      schoolLicense: userData.schoolLicense
+    });
+    
     try {
       let result;
       
@@ -408,7 +418,16 @@ function App() {
         
         // Se chegou aqui, o usuário foi criado
         setUser(result); // Atualiza o estado do usuário
-        setActiveScreen('home');
+        
+        // Redirecionar para a tela apropriada baseada na role
+        if (result.role === 'student' || result.role === 'student-gratuito') {
+          setActiveScreen('home');
+        } else if (result.role === 'parent') {
+          setActiveScreen('parent-dashboard');
+        } else if (result.role === 'school') {
+          setActiveScreen('school-dashboard');
+        }
+        
         return { success: true };
       } else {
         // Usar o endpoint de registro unificado que já existe
@@ -471,6 +490,12 @@ function App() {
       
       logoutUser();
       setUser(null);
+      
+      // Limpar parâmetros de licença da URL para evitar redirecionamento incorreto
+      const url = new URL(window.location);
+      url.searchParams.delete('license');
+      url.searchParams.delete('type');
+      window.history.replaceState({}, '', url.toString());
       
       // Redirecionar baseado no tipo de usuário
       if (userRole === 'student-gratuito') {
@@ -713,6 +738,7 @@ function App() {
         }
         return <p className="text-center text-red-500 mt-20">Acesso negado para esta tela.</p>;
       case screenName === 'settings':
+        console.log('🔍 App.jsx - Renderizando Settings com user:', user);
         return <Settings user={user} handleLogout={handleLogout} setActiveScreen={setActiveScreen} onResetProgress={handleResetProgress} />;
       case screenName === 'classes':
         if (user.role === 'school') {

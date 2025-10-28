@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { lessons } from '../utils/lessons';
-import OnboardingModal from './OnboardingModal';
+import InteractiveTour from './InteractiveTour';
+import { schoolTourSteps, shouldShowTour, markTourCompleted, handleMobileTourSkip, isMobileDevice } from '../utils/tourConfigs';
 import { apiGet, apiPost } from '../utils/apiService';
 import notificationService from '../utils/notificationService';
 import TokenManager from './TokenManager';
-
-const ONBOARDING_KEY = 'onboarding_school_seen';
 
 const SchoolDashboard = ({ user, setActiveScreen }) => {
   const [selectedClass, setSelectedClass] = useState(null);
   const [timeRange, setTimeRange] = useState('30d');
   const [showDetailedView, setShowDetailedView] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showTour, setShowTour] = useState(false);
   const [schoolStudents, setSchoolStudents] = useState([]);
   const [loadingStudents, setLoadingStudents] = useState(true);
   const [classes, setClasses] = useState([]);
@@ -24,8 +23,12 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
   const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    if (!localStorage.getItem(ONBOARDING_KEY)) {
-      setShowOnboarding(true);
+    // Verificar se deve mostrar o tour (desabilitado em mobile)
+    if (shouldShowTour('school')) {
+      setShowTour(true);
+    } else {
+      // Se for mobile, marcar como completado automaticamente
+      handleMobileTourSkip('school');
     }
     
     // Carregar preferência do modo escuro
@@ -44,6 +47,8 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
       window.removeEventListener('darkModeChanged', handleDarkModeChange);
     };
   }, []);
+
+
 
   useEffect(() => {
     apiGet('/users')
@@ -160,9 +165,15 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
     }
   };
 
-  const handleFinishOnboarding = () => {
-    setShowOnboarding(false);
-    localStorage.setItem(ONBOARDING_KEY, '1');
+  // Função para finalizar o tour
+  const handleFinishTour = () => {
+    setShowTour(false);
+    markTourCompleted('school');
+  };
+
+  // Função para iniciar o tour manualmente
+  const handleStartTour = () => {
+    setShowTour(true);
   };
 
   // Calcular estatísticas da escola (apenas alunos vinculados às turmas)
@@ -513,8 +524,15 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
   // Visão geral da escola
   return (
     <div className="min-h-screen bg-interface p-4 pb-20">
-      {showOnboarding && (
-        <OnboardingModal profile="school" onFinish={handleFinishOnboarding} />
+      {/* Tour Interativo */}
+      {showTour && (
+        <InteractiveTour
+          isActive={showTour}
+          onFinish={handleFinishTour}
+          steps={schoolTourSteps}
+          profile="school"
+          darkMode={darkMode}
+        />
       )}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -526,7 +544,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           }}
         >
           <h1 
-            className="text-4xl font-yufin mb-4"
+            className="text-4xl font-yufin mb-4 tour-header"
             style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
           >
             🏫 Dashboard da Escola {user.name ? user.name : ''}
@@ -538,10 +556,10 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           </p>
           
           {/* Abas */}
-          <div className="flex space-x-2 mt-6">
+          <div className="flex flex-wrap gap-2 mt-6">
             <button
               onClick={() => setActiveTab('overview')}
-              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-overview ${
                 activeTab === 'overview'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
                   : darkMode 
@@ -562,7 +580,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
             </button>
             <button
               onClick={() => setActiveTab('tokens')}
-              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-tokens ${
                 activeTab === 'tokens'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
                   : darkMode 
@@ -583,7 +601,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
             </button>
             <button
               onClick={() => setActiveTab('progression')}
-              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+              className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-progression ${
                 activeTab === 'progression'
                   ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md transform scale-105'
                   : darkMode 
@@ -602,6 +620,29 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
                 🎓 Progressão Escolar
               </span>
             </button>
+            
+            {/* Botão de Tour - Oculto em mobile */}
+            {!isMobileDevice() && (
+              <button
+                onClick={handleStartTour}
+                className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+                  darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                }`}
+              >
+                <span 
+                  style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+                >
+                  💡 Tutorial
+                </span>
+                <span 
+                  style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+                >
+                  💡 Ver Tutorial
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -610,7 +651,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           <>
             {/* Estatísticas Gerais da Escola */}
             <div 
-              className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+              className="rounded-xl shadow-lg p-6 mb-6 border-2 tour-section-summary" 
               style={{ 
                 backgroundColor: darkMode ? '#374151' : '#ffffff',
                 borderColor: 'rgb(238, 145, 22)' 
@@ -654,7 +695,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
 
         {/* Turmas */}
         <div 
-          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
+          className="rounded-xl shadow-lg p-6 mb-6 border-2 tour-section-classes" 
           style={{ 
             backgroundColor: darkMode ? '#374151' : '#ffffff',
             borderColor: 'rgb(238, 145, 22)' 
@@ -802,7 +843,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
 
         {/* Aba de Tokens */}
         {activeTab === 'tokens' && (
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+          <div className="bg-white rounded-xl shadow-lg p-6 border-2 tour-section-tokens" style={{ borderColor: 'rgb(238, 145, 22)' }}>
             <TokenManager user={user} />
           </div>
         )}
@@ -810,7 +851,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
         {/* Aba de Progressão Escolar */}
         {activeTab === 'progression' && (
           <div 
-            className="rounded-xl shadow-lg p-6 border-2" 
+            className="rounded-xl shadow-lg p-6 border-2 tour-section-progression" 
             style={{ 
               backgroundColor: darkMode ? '#374151' : '#ffffff',
               borderColor: 'rgb(238, 145, 22)' 

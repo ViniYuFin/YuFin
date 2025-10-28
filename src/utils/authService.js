@@ -145,22 +145,37 @@ export const registerUser = async (userData) => {
   }
   
   // 🔐 NOVA ROTA SEGURA COM HASH DE SENHA (LOCAL)
+  const payload = {
+    name: userData.name,
+    email: userData.email,
+    password: userData.password, // Backend fará o hash automaticamente
+    role: userData.role,
+    gradeId: userData.gradeId, // Obrigatório para estudantes
+    schoolId: userData.schoolId,
+    classId: userData.classId,
+    token: userData.token, // Token do responsável
+    parentConsent: userData.role === 'student' ? true : undefined, // Obrigatório para estudantes
+    birthDate: userData.birthDate,
+    parentEmail: userData.parentEmail,
+    familyPlanData: userData.familyPlanData, // Dados do plano família
+    schoolPlanData: userData.schoolPlanData, // Dados do plano escola
+    familyLicense: userData.familyLicense, // Licença família
+    schoolLicense: userData.schoolLicense // Licença escola
+  };
+  
+  console.log('🔍 AuthService: Dados sendo enviados para o backend:', {
+    familyPlanData: payload.familyPlanData,
+    schoolPlanData: payload.schoolPlanData,
+    familyLicense: payload.familyLicense,
+    schoolLicense: payload.schoolLicense
+  });
+  
+  console.log('🔍 AuthService: Payload completo:', payload);
+  
   const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.AUTH.REGISTER}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      name: userData.name,
-      email: userData.email,
-      password: userData.password, // Backend fará o hash automaticamente
-      role: userData.role,
-      gradeId: userData.gradeId, // Obrigatório para estudantes
-      schoolId: userData.schoolId,
-      classId: userData.classId,
-      token: userData.token, // Token do responsável
-      parentConsent: userData.role === 'student' ? true : undefined, // Obrigatório para estudantes
-      birthDate: userData.birthDate,
-      parentEmail: userData.parentEmail
-    })
+    body: JSON.stringify(payload)
   });
   
   if (!response.ok) {

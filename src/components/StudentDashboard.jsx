@@ -5,6 +5,8 @@ import notificationService from '../utils/notificationService';
 import { storageService, STORAGE_KEYS } from '../utils/storageService';
 import devModeService from '../utils/devModeService';
 import gratuitoProgressService from '../services/GratuitoProgressService';
+import InteractiveTour from './InteractiveTour';
+import { studentTourSteps, shouldShowTour, markTourCompleted, handleMobileTourSkip, isMobileDevice } from '../utils/tourConfigs';
 
 const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const [gradeProgress, setGradeProgress] = useState(null);
@@ -16,6 +18,18 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const progressBarRef = useRef(null);
   const [classes, setClasses] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+
+  // Função para finalizar o tour
+  const handleFinishTour = () => {
+    setShowTour(false);
+    markTourCompleted('student');
+  };
+
+  // Função para iniciar o tour manualmente
+  const handleStartTour = () => {
+    setShowTour(true);
+  };
 
   useEffect(() => {
     loadGradeProgress();
@@ -24,6 +38,14 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     // Carregar preferência do modo escuro
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
     setDarkMode(savedDarkMode);
+    
+    // Verificar se deve mostrar o tour (desabilitado em mobile)
+    if (shouldShowTour('student')) {
+      setShowTour(true);
+    } else {
+      // Se for mobile, marcar como completado automaticamente
+      handleMobileTourSkip('student');
+    }
   }, [user]);
 
   // Listener para mudanças no Modo Dev
@@ -1059,8 +1081,18 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 dark:from-gray-900 dark:to-gray-800">
+      {/* Tour Interativo */}
+      {showTour && (
+        <InteractiveTour
+          isActive={showTour}
+          onFinish={handleFinishTour}
+          steps={studentTourSteps}
+          profile="student"
+          darkMode={darkMode}
+        />
+      )}
       {/* Header Fixo - Informações do Aluno */}
-      <div className="fixed top-0 left-0 right-0 w-full bg-white shadow-lg z-50 rounded-b-xl" style={{ borderBottom: '3px solid #EE9116' }}>
+      <div className="fixed top-0 left-0 right-0 w-full bg-white shadow-lg z-50 rounded-b-xl tour-header" style={{ borderBottom: '3px solid #EE9116' }}>
         <div className="flex justify-between items-center h-16 lg:h-18 xl:h-20 px-6 lg:px-8 xl:px-12 w-full">
           {/* Lado Esquerdo - Informações do Usuário */}
           <div className="flex items-center space-x-4">
@@ -1118,6 +1150,29 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                 </div>
               </div>
             </div>
+            
+            {/* Botão de Tour - Oculto em mobile */}
+            {!isMobileDevice() && (
+              <button
+                onClick={handleStartTour}
+                className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm ${
+                  darkMode 
+                    ? 'bg-gray-700 text-white hover:bg-gray-600 border-2 border-gray-600 hover:border-orange-300'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-orange-300'
+                }`}
+              >
+                <span 
+                  style={{ display: window.innerWidth < 640 ? 'inline' : 'none' }}
+                >
+                  💡 Tutorial
+                </span>
+                <span 
+                  style={{ display: window.innerWidth >= 640 ? 'inline' : 'none' }}
+                >
+                  💡 Ver Tutorial
+                </span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -1134,7 +1189,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
         <div className="mt-12 h-64 pb-20"></div>
         {/* Card do 6º Ano */}
         <div className="w-full max-w-full px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl 2xl:max-w-9xl mx-auto lg:p-8 xl:p-12">
-          <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-orange-200 mb-8">
+          <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-orange-200 mb-8 tour-section-summary">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-3xl font-bold text-orange-600">{grade.name}</h2>
@@ -1219,7 +1274,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
 
         {/* Navegação de Módulos e Botão Próximo Ano */}
         <div className="w-full max-w-full px-4 sm:px-6 lg:max-w-6xl xl:max-w-7xl 2xl:max-w-9xl mx-auto lg:p-8 xl:p-12 mt-6">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 lg:flex lg:space-x-3 lg:overflow-x-auto">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8 lg:flex lg:space-x-3 lg:overflow-x-auto tour-section-classes">
           {[1, 2, 3, 4].map(moduleNum => {
             const moduleData = progress.byModule[moduleNum];
             const isCompleted = moduleData && moduleData.completed === moduleData.total && moduleData.total > 0;

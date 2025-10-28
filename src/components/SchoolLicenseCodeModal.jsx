@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getApiUrl } from '../config/environment';
 
-const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) => {
+const SchoolLicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) => {
   const [licenseCode, setLicenseCode] = useState(initialLicenseCode || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -9,10 +9,10 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
   // Atualizar código quando initialLicenseCode mudar
   useEffect(() => {
     if (initialLicenseCode) {
-      console.log('🔑 LicenseCodeModal: Código inicial detectado:', initialLicenseCode);
+      console.log('🔑 SchoolLicenseCodeModal: Código inicial detectado:', initialLicenseCode);
       setLicenseCode(initialLicenseCode);
       // ✅ Apenas preencher o campo, NÃO validar automaticamente
-      console.log('📝 LicenseCodeModal: Código preenchido, aguardando validação manual');
+      console.log('📝 SchoolLicenseCodeModal: Código preenchido, aguardando validação manual');
     }
   }, [initialLicenseCode, isOpen]);
 
@@ -20,7 +20,6 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!licenseCode.trim()) {
       setError('Por favor, insira o código da licença.');
       return;
@@ -28,41 +27,37 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
 
     setLoading(true);
     setError('');
-    
+    const code = licenseCode.trim().toUpperCase();
+
     try {
-      console.log('🔍 VALIDANDO CÓDIGO:', licenseCode.trim());
+      console.log('🔍 VALIDANDO CÓDIGO ESCOLA:', code);
       console.log('🌍 API URL:', getApiUrl());
       
-      // Primeiro, tentar validar como licença universal
-      const universalUrl = `${getApiUrl()}/auth/validate-universal-license/${licenseCode.trim()}`;
+      // Tentar licença universal primeiro
+      const universalUrl = `${getApiUrl()}/auth/validate-universal-license/${code}`;
       console.log('🔗 URL Universal:', universalUrl);
-      
       let response = await fetch(universalUrl);
       let result = await response.json();
-      
       console.log('📋 Resposta Universal:', result);
       
-      // Se não for licença universal, tentar licença familiar
       if (!result.success || !result.valid) {
-        const familyUrl = `${getApiUrl()}/api/family-license/validate/${licenseCode.trim()}`;
-        console.log('🔗 URL Family:', familyUrl);
-        
-        response = await fetch(familyUrl);
+        // Tentar licença escola
+        const schoolUrl = `${getApiUrl()}/api/school-license/validate/${code}`;
+        console.log('🔗 URL School:', schoolUrl);
+        response = await fetch(schoolUrl);
         result = await response.json();
-        
-        console.log('📋 Resposta Family:', result);
+        console.log('📋 Resposta School:', result);
       }
       
       if (result.success && result.valid) {
-        console.log('✅ Licença válida!');
-        // Licença válida - confirmar
-        await onConfirm(licenseCode.trim());
+        console.log('✅ Licença escola válida!');
+        await onConfirm(code);
       } else {
         console.log('❌ Licença inválida:', result.error);
         setError(result.error || 'Código de licença inválido. Verifique e tente novamente.');
       }
     } catch (err) {
-      console.error('❌ Erro ao validar licença:', err);
+      console.error('❌ Erro ao validar licença escola:', err);
       setError('Erro ao validar licença. Verifique sua conexão e tente novamente.');
     } finally {
       setLoading(false);
@@ -91,7 +86,7 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
           <div className="flex items-center justify-center relative">
             <div className="text-center">
               <h2 className="text-2xl font-bold">Código de Licença</h2>
-              <p className="text-orange-100 mt-1">Plano Família</p>
+              <p className="text-orange-100 mt-1">Plano Escola</p>
             </div>
             <button
               onClick={handleCancel}
@@ -126,7 +121,7 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
                 type="text"
                 value={licenseCode}
                 onChange={(e) => setLicenseCode(e.target.value.toUpperCase())}
-                placeholder="Ex: FAM-2024-XXXX-XXXX"
+                placeholder="Ex: SCH-2024-XXXX-XXXX"
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-center font-mono text-lg tracking-wider"
                 disabled={loading}
               />
@@ -150,7 +145,7 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
                 Cancelar
               </button>
               <button
-                id="validate-license-btn"
+                id="validate-school-license-btn"
                 type="submit"
                 disabled={loading || !licenseCode.trim()}
                 className={`flex-1 px-4 py-3 rounded-lg transition-colors font-semibold text-base ${
@@ -176,4 +171,6 @@ const LicenseCodeModal = ({ isOpen, onClose, onConfirm, initialLicenseCode }) =>
   );
 };
 
-export default LicenseCodeModal;
+export default SchoolLicenseCodeModal;
+
+

@@ -60,6 +60,9 @@ const RegisterWithToken = ({ token, onSuccess, onCancel }) => {
         }
       });
 
+      // Disparar evento para atualizar tokens
+      window.dispatchEvent(new CustomEvent('tokenUsed'));
+      
       onSuccess(response.user);
     } catch (error) {
       setError(error.response?.data?.error || 'Erro ao registrar usuário');

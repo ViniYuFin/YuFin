@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { apiGet } from '../utils/apiService';
 import { getApiUrl } from '../config/environment';
 import FamilyPlanModal from './FamilyPlanModal';
@@ -17,6 +17,33 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
   const [showFamilyModal, setShowFamilyModal] = useState(false);
   const [familyPlanData, setFamilyPlanData] = useState(null);
 
+  // Verificar se há uma licença pendente no localStorage
+  useEffect(() => {
+    const pendingFamilyLicense = localStorage.getItem('pendingFamilyLicense');
+    const pendingSchoolLicense = localStorage.getItem('pendingSchoolLicense');
+    console.log('🔍 Register: Verificando licenças pendentes:', { 
+      pendingFamilyLicense, 
+      pendingSchoolLicense, 
+      role, 
+      initialFamilyPlanData 
+    });
+    
+    if (pendingFamilyLicense && role === 'parent') {
+      console.log('✅ Register: Licença família pendente encontrada, definindo familyPlanData:', pendingFamilyLicense);
+      setFamilyPlanData(pendingFamilyLicense);
+      // Limpar a licença pendente do localStorage
+      localStorage.removeItem('pendingFamilyLicense');
+    } else if (pendingSchoolLicense && role === 'school') {
+      console.log('✅ Register: Licença escola pendente encontrada, definindo familyPlanData:', pendingSchoolLicense);
+      setFamilyPlanData(pendingSchoolLicense);
+      // Limpar a licença pendente do localStorage
+      localStorage.removeItem('pendingSchoolLicense');
+    } else if (initialFamilyPlanData && (role === 'parent' || role === 'school')) {
+      console.log('✅ Register: Licença inicial fornecida:', initialFamilyPlanData);
+      setFamilyPlanData(initialFamilyPlanData);
+    }
+  }, [role, initialFamilyPlanData]);
+
   // Lista de séries disponíveis
   const availableGrades = [
     '6º Ano',
@@ -31,6 +58,8 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
   const onSubmitRegister = async (e) => {
     e.preventDefault();
     setError('');
+    
+    console.log('🔍 Register: onSubmitRegister iniciado');
     setLoading(true);
 
     if (!name || !email || !password || !confirmPassword) {
@@ -47,42 +76,103 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
 
     // Para pais/responsáveis, verificar se tem licença validada
     if (role === 'parent') {
-      if (initialFamilyPlanData) {
+      console.log('🔍 Register: Verificando licença para parent:', { initialFamilyPlanData, familyPlanData });
+      if (initialFamilyPlanData || familyPlanData) {
         // Tem licença validada, processar registro
         setLoading(true);
         try {
           // Usar licença individual
-          const licenseResponse = await fetch(`${getApiUrl()}/api/family-license/use`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              licenseCode: initialFamilyPlanData,
-              userData: {
-                name,
-                email
-              }
-            })
-          });
+          const licenseCode = initialFamilyPlanData || familyPlanData;
+          
+          let licenseResponse;
+          
+          // Verificar se é licença universal
+          if (licenseCode.startsWith('UNI-')) {
+            console.log('🔍 Register: Usando licença universal para parent:', {
+              licenseCode,
+              userData: { name, email }
+            });
+            
+            licenseResponse = await fetch(`${getApiUrl()}/api/universal-license/use`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                code: licenseCode,
+                userData: {
+                  name,
+                  email
+                },
+                planType: 'family'
+              })
+            });
+          } else {
+            console.log('🔍 Register: Enviando dados para /api/family-license/use:', {
+              licenseCode,
+              userData: { name, email }
+            });
+            
+            licenseResponse = await fetch(`${getApiUrl()}/api/family-license/use`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                licenseCode,
+                userData: {
+                  name,
+                  email
+                }
+              })
+            });
+          }
           
           const licenseResult = await licenseResponse.json();
+          console.log('📋 Register: Resposta da licença:', licenseResult);
           
           if (!licenseResult.success) {
+            console.log('❌ Register: Erro na licença:', licenseResult.error);
             setError(licenseResult.error || 'Erro ao validar licença.');
             setLoading(false);
             return;
           }
           
+          console.log('✅ Register: Licença aceita, prosseguindo com registro');
+          
+          // Usar dados reais do plano retornados pelo backend
+          const familyPlanDataFromBackend = licenseResult.planData || {
+            numParents: 1, // Fallback
+            numStudents: 2, // Fallback
+            totalPrice: 19.90
+          };
+          
+          console.log('📊 Dados do plano família obtidos do backend:', familyPlanDataFromBackend);
+          
           // Registrar usuário normalmente
+          console.log('🔍 Register: Dados sendo enviados para handleRegister:', {
+            name,
+            email,
+            role: 'parent',
+            familyPlanData: familyPlanDataFromBackend,
+            familyLicense: {
+              code: initialFamilyPlanData || familyPlanData,
+              individualCode: licenseResult.individualLicenseCode
+            }
+          });
+          
+          console.log('🔍 Register: familyPlanDataFromBackend detalhado:', familyPlanDataFromBackend);
+          console.log('🔍 Register: licenseResult.individualLicenseCode:', licenseResult.individualLicenseCode);
+          
           const result = await handleRegister({
             name,
             email,
             password,
             confirmPassword,
             role: 'parent',
+            familyPlanData: familyPlanDataFromBackend,
             familyLicense: {
-              code: initialFamilyPlanData,
+              code: initialFamilyPlanData || familyPlanData,
               individualCode: licenseResult.individualLicenseCode
             }
           });
@@ -90,7 +180,19 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
           if (!result.success) {
             setError(result.message);
           } else {
-            setActiveScreen('home');
+            // Disparar evento para atualizar tokens se foi usado um token
+            if (token && token.trim()) {
+              window.dispatchEvent(new CustomEvent('tokenUsed'));
+            }
+            
+            // Redirecionar para a tela apropriada baseada na role
+            if (role === 'student') {
+              setActiveScreen('home');
+            } else if (role === 'parent') {
+              setActiveScreen('parent-dashboard');
+            } else if (role === 'school') {
+              setActiveScreen('school-dashboard');
+            }
           }
         } catch (err) {
           setError("Ocorreu um erro inesperado. Tente novamente.");
@@ -103,6 +205,128 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
         // Não tem licença, redirecionar para Welcome
         setLoading(false);
         setError('Você precisa de uma licença válida para se registrar como pai/responsável.');
+        setTimeout(() => {
+          setActiveScreen('welcome');
+        }, 2000);
+        return;
+      }
+    }
+
+    // Para escolas, verificar se tem licença validada
+    if (role === 'school') {
+      console.log('🔍 Register: Verificando licença para school:', { initialFamilyPlanData, familyPlanData });
+      if (initialFamilyPlanData || familyPlanData) {
+        // Tem licença validada, processar registro
+        setLoading(true);
+        try {
+          // Usar licença escola
+          const licenseCode = initialFamilyPlanData || familyPlanData;
+          
+          let licenseResponse;
+          
+          // Verificar se é licença universal
+          if (licenseCode.startsWith('UNI-')) {
+            console.log('🔍 Register: Usando licença universal para school:', {
+              licenseCode,
+              userData: { name, email }
+            });
+            
+            licenseResponse = await fetch(`${getApiUrl()}/api/universal-license/use`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                code: licenseCode,
+                userData: {
+                  name,
+                  email
+                },
+                planType: 'school'
+              })
+            });
+          } else {
+            console.log('🔍 Register: Enviando dados para /api/school-license/use:', {
+              licenseCode,
+              userData: { name, email }
+            });
+            
+            licenseResponse = await fetch(`${getApiUrl()}/api/school-license/use`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                licenseCode,
+                userData: {
+                  name,
+                  email
+                }
+              })
+            });
+          }
+          
+          const licenseResult = await licenseResponse.json();
+          console.log('📋 Register: Resposta da licença escola:', licenseResult);
+          
+          if (!licenseResult.success) {
+            console.log('❌ Register: Erro na licença escola:', licenseResult.error);
+            setError(licenseResult.error || 'Erro ao validar licença.');
+            setLoading(false);
+            return;
+          }
+          
+          console.log('✅ Register: Licença escola aceita, prosseguindo com registro');
+          
+          // Usar dados reais do plano retornados pelo backend
+          const schoolPlanData = licenseResult.planData || licenseResult.license?.planData || {
+            numStudents: 50, // Fallback apenas se não houver dados
+            userType: 'Diretor',
+            pricePerStudent: 9.90,
+            totalPrice: 50 * 9.90
+          };
+          
+          console.log('📊 Dados do plano escola obtidos do backend:', schoolPlanData);
+          console.log('🔍 Verificando se dados são reais:', {
+            numStudents: schoolPlanData.numStudents,
+            isRealData: schoolPlanData.numStudents !== 50 || licenseResult.license?.isSimulated === false
+          });
+          
+          // Registrar usuário normalmente
+          const result = await handleRegister({
+            name,
+            email,
+            password,
+            confirmPassword,
+            role: 'school',
+            schoolPlanData: schoolPlanData,
+            schoolLicense: {
+              code: initialFamilyPlanData || familyPlanData,
+              individualCode: licenseResult.individualLicenseCode
+            }
+          });
+          
+          if (!result.success) {
+            setError(result.message);
+          } else {
+            // Disparar evento para atualizar tokens se foi usado um token
+            if (token && token.trim()) {
+              window.dispatchEvent(new CustomEvent('tokenUsed'));
+            }
+            
+            setActiveScreen('school-dashboard');
+          }
+        } catch (err) {
+          setError("Ocorreu um erro inesperado. Tente novamente.");
+          console.error("Erro no registro:", err);
+        } finally {
+          setLoading(false);
+        }
+        return;
+      } else {
+        // Não tem licença, redirecionar para Welcome
+        setLoading(false);
+        setError('Você precisa de uma licença válida para se registrar como escola.');
         setTimeout(() => {
           setActiveScreen('welcome');
         }, 2000);
@@ -143,6 +367,11 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
       if (!result.success) {
         setError(result.message);
       } else {
+        // Disparar evento para atualizar tokens se foi usado um token
+        if (token && token.trim()) {
+          window.dispatchEvent(new CustomEvent('tokenUsed'));
+        }
+        
         // Redirecionar para a tela apropriada baseada na role
         if (role === 'student') {
           setActiveScreen('home');
@@ -221,7 +450,7 @@ const Register = ({ handleRegister, setActiveScreen, role, familyPlanData: initi
       if (!result.success) {
         setError(result.message);
       } else {
-        setActiveScreen('home');
+        setActiveScreen('parent-dashboard');
       }
     } catch (err) {
       setError("Ocorreu um erro inesperado. Tente novamente.");

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import LicenseCodeModal from './LicenseCodeModal';
+import SchoolLicenseCodeModal from './SchoolLicenseCodeModal';
 
 const Welcome = ({ setActiveScreen }) => {
   console.log('🏠 Welcome component renderizado!');
@@ -7,15 +8,52 @@ const Welcome = ({ setActiveScreen }) => {
   const [showLoginOptions, setShowLoginOptions] = useState(false);
   const [showRegisterOptions, setShowRegisterOptions] = useState(false);
   const [showLicenseModal, setShowLicenseModal] = useState(false);
+  const [showSchoolLicenseModal, setShowSchoolLicenseModal] = useState(false);
+  const [autoLicenseCode, setAutoLicenseCode] = useState(null);
+
+  // Detectar parâmetros de licença na URL
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const license = urlParams.get('license');
+    const type = urlParams.get('type');
+    
+    console.log('🔍 Welcome: Detectando parâmetros de URL - license:', license, 'type:', type);
+    
+    if (license && type) {
+      console.log('✅ Welcome: Licença detectada, abrindo modal automaticamente');
+      setAutoLicenseCode(license);
+      
+      if (type === 'family') {
+        console.log('👨‍👩‍👧‍👦 Welcome: Abrindo modal de licença familiar');
+        setShowLicenseModal(true);
+      } else if (type === 'school') {
+        console.log('🏫 Welcome: Abrindo modal de licença escolar');
+        setShowSchoolLicenseModal(true);
+      }
+    }
+  }, []);
 
   const handleLicenseConfirm = (licenseCode) => {
     // Aqui seria validada a licença e depois redirecionado para registro
     setShowLicenseModal(false);
+    // Armazenar o código da licença no localStorage para o componente Register acessar
+    localStorage.setItem('pendingFamilyLicense', licenseCode);
     setActiveScreen('register-parent');
   };
 
   const handleLicenseCancel = () => {
     setShowLicenseModal(false);
+  };
+
+  const handleSchoolLicenseConfirm = (licenseCode) => {
+    setShowSchoolLicenseModal(false);
+    // Armazenar o código da licença no localStorage para o componente Register acessar
+    localStorage.setItem('pendingSchoolLicense', licenseCode);
+    setActiveScreen('register-school');
+  };
+
+  const handleSchoolLicenseCancel = () => {
+    setShowSchoolLicenseModal(false);
   };
 
   return (
@@ -88,7 +126,7 @@ const Welcome = ({ setActiveScreen }) => {
                 Sou Pai/Responsável
               </button>
               <button
-                onClick={() => { setActiveScreen('register-school'); setShowRegisterOptions(false); }}
+                onClick={() => { setShowSchoolLicenseModal(true); setShowRegisterOptions(false); }}
                 className="w-full bg-white text-teal border-2 text-sm py-2 rounded-lg shadow-sm hover:bg-teal hover:text-white transition-colors duration-200 hover-lift"
                 style={{ borderColor: 'rgb(238, 145, 22)' }}
               >
@@ -104,6 +142,13 @@ const Welcome = ({ setActiveScreen }) => {
         isOpen={showLicenseModal}
         onClose={handleLicenseCancel}
         onConfirm={handleLicenseConfirm}
+        initialLicenseCode={autoLicenseCode}
+      />
+      <SchoolLicenseCodeModal
+        isOpen={showSchoolLicenseModal}
+        onClose={handleSchoolLicenseCancel}
+        onConfirm={handleSchoolLicenseConfirm}
+        initialLicenseCode={autoLicenseCode}
       />
     </div>
   );

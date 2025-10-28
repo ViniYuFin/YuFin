@@ -95,7 +95,7 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
             <button
               key={item.id}
               onClick={handleClick}
-              className="flex flex-col items-center justify-center p-1 sm:p-2"
+              className={`flex flex-col items-center justify-center p-1 sm:p-2 tour-nav-${item.id}`}
               style={{
                 color: isActive ? '#EE9116' : (isEnabled ? (darkMode ? '#ffffff' : '#9CA3AF') : (darkMode ? '#6B7280' : '#D1D5DB')),
                 outline: 'none',

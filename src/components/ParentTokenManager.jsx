@@ -7,7 +7,7 @@ const ParentTokenManager = ({ user }) => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
   const [newToken, setNewToken] = useState({
-    maxUses: 1,
+    maxUses: 1, // Fixo em 1 para Plano Família
     expiresAt: '',
     metadata: {
       description: '',
@@ -15,6 +15,108 @@ const ParentTokenManager = ({ user }) => {
       studentName: ''
     }
   });
+
+  // Estado para controlar se o usuário pode gerar tokens
+  const [canGenerateTokensState, setCanGenerateTokensState] = useState(true);
+
+  // Verificar se o usuário pode gerar tokens
+  const canGenerateTokens = () => {
+    // Se não tem licença família, não pode gerar tokens
+    if (!user.familyLicense || !user.familyLicense.code) {
+      console.log('❌ Usuário não tem licença família');
+      return false;
+    }
+    
+    // Para licenças com 1 responsável, sempre pode gerar tokens
+    if (!user.familyPlanData || user.familyPlanData.numParents === 1) {
+      console.log('✅ Usuário tem licença família (1 responsável), pode gerar tokens');
+      return true;
+    }
+    
+    // Para licenças com 2 responsáveis, verificar no backend
+    console.log('🔍 Verificando permissão para gerar tokens (2 responsáveis):', {
+      numParents: user.familyPlanData.numParents,
+      userId: user._id,
+      licenseCode: user.familyLicense.code
+    });
+    
+    return canGenerateTokensState;
+  };
+
+  // Verificar permissão no backend quando o componente carrega
+  useEffect(() => {
+    const checkTokenPermission = async () => {
+      if (user.familyLicense && user.familyLicense.code && user.familyPlanData && user.familyPlanData.numParents === 2) {
+        try {
+          // Fazer uma chamada para o backend para verificar se o usuário pode gerar tokens
+          const response = await fetch(`${process.env.REACT_APP_API_URL || 'https://yufin-backend.vercel.app'}/api/family-license/check-token-permission/${user.familyLicense.code}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            setCanGenerateTokensState(data.canGenerateTokens);
+            console.log('🔍 Resposta do backend sobre permissão de tokens:', data);
+            console.log('🔍 Estado atualizado para canGenerateTokens:', data.canGenerateTokens);
+          } else {
+            console.error('❌ Erro na resposta do backend:', response.status, response.statusText);
+            const errorData = await response.text();
+            console.error('❌ Detalhes do erro:', errorData);
+          }
+        } catch (error) {
+          console.error('❌ Erro ao verificar permissão de tokens:', error);
+          // Em caso de erro, permitir por padrão
+          setCanGenerateTokensState(true);
+        }
+      }
+    };
+
+    checkTokenPermission();
+  }, [user.familyLicense, user.familyPlanData]);
+
+  // Calcular limite de tokens baseado na contratação
+  const getTokenLimit = () => {
+    console.log('🔍 ParentTokenManager: Verificando dados do usuário:', {
+      user: user,
+      familyPlanData: user.familyPlanData,
+      numStudents: user.familyPlanData?.numStudents,
+      familyLicense: user.familyLicense
+    });
+    
+    // Verificar se é licença universal
+    if (user.familyLicense && user.familyLicense.code && user.familyLicense.code.startsWith('UNI-')) {
+      console.log('🔒 Licença universal detectada - limite de tokens: 0');
+      return 0;
+    }
+    
+    // Se o usuário tem dados de contratação do plano família
+    if (user.familyPlanData && user.familyPlanData.numStudents) {
+      // O limite é baseado no número de filhos escolhido no modal
+      // Exemplos:
+      // - 1 responsável + 2 filhos = 2 tokens
+      // - 2 responsáveis + 1 filho = 1 token
+      console.log('📊 Limite de tokens baseado no modal:', user.familyPlanData.numStudents);
+      return user.familyPlanData.numStudents;
+    }
+    // Fallback: se não tem dados específicos, permitir 2 tokens (máximo padrão: 1 responsável + 2 filhos)
+    console.log('⚠️ Usando limite padrão: 2 tokens');
+    return 2;
+  };
+
+  const getRemainingTokens = () => {
+    const limit = getTokenLimit();
+    const createdTokens = tokens.length; // Total de tokens criados (independente de uso)
+    console.log('🔍 Calculando tokens restantes:', {
+      limit,
+      createdTokens,
+      remaining: Math.max(0, limit - createdTokens)
+    });
+    return Math.max(0, limit - createdTokens);
+  };
 
   useEffect(() => {
     fetchTokens();
@@ -50,10 +152,17 @@ const ParentTokenManager = ({ user }) => {
 
   const handleCreateToken = async () => {
     try {
+      // Verificar se ainda pode criar tokens
+      const remainingTokens = getRemainingTokens();
+      if (remainingTokens <= 0) {
+        alert(`Você já atingiu o limite de tokens permitidos (${getTokenLimit()}). Não é possível criar mais tokens.`);
+        return;
+      }
+
       const tokenData = {
         createdBy: user.id, // ID do responsável que está criando o token
         type: 'parent',
-        maxUses: newToken.maxUses || null,
+        maxUses: 1, // Sempre 1 para Plano Família
         expiresAt: newToken.expiresAt || null,
         metadata: newToken.metadata
       };
@@ -68,10 +177,18 @@ const ParentTokenManager = ({ user }) => {
       fetchTokens();
     } catch (error) {
       console.error('Erro ao criar token:', error);
+      alert('Erro ao criar token: ' + error.message);
     }
   };
 
   const handleDeleteToken = async (tokenId) => {
+    // Encontrar o token para verificar se foi usado
+    const token = tokens.find(t => t.id === tokenId);
+    if (token && token.usedCount > 0) {
+      alert('Este token já foi utilizado e não pode ser excluído.');
+      return;
+    }
+    
     if (!window.confirm('Tem certeza que deseja excluir este token?')) return;
     
     try {
@@ -124,17 +241,42 @@ const ParentTokenManager = ({ user }) => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h3 
-          className="text-xl font-semibold"
-          style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-        >
-          Tokens para Filhos
-        </h3>
+        <div>
+          <h3 
+            className="text-xl font-semibold"
+            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+          >
+            Tokens para Filhos
+          </h3>
+          <p 
+            className="text-sm mt-1"
+            style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
+          >
+            {user.familyLicense && user.familyLicense.code && user.familyLicense.code.startsWith('UNI-')
+              ? 'Licença Universal - Acesso administrativo sem geração de tokens'
+              : `Limite: ${getTokenLimit()} tokens | Restantes: ${getRemainingTokens()}`
+            }
+          </p>
+        </div>
         <button
           onClick={() => setShowCreateForm(true)}
-          className="bg-primary text-white px-4 py-2 rounded-lg font-semibold hover:bg-primary-dark transition"
+          disabled={getRemainingTokens() <= 0 || !canGenerateTokens()}
+          className={`px-4 py-2 rounded-lg font-semibold transition ${
+            getRemainingTokens() <= 0 || !canGenerateTokens()
+              ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              : 'bg-primary text-white hover:bg-primary-dark'
+          }`}
         >
-          Gerar Token para Filho
+          {!canGenerateTokens() 
+            ? (user.familyPlanData && user.familyPlanData.numParents === 2 
+                ? 'Apenas o 1º Responsável' 
+                : 'Sem Permissão')
+            : getRemainingTokens() <= 0 
+              ? (user.familyLicense && user.familyLicense.code && user.familyLicense.code.startsWith('UNI-')
+                  ? 'Licença Universal - Sem Tokens'
+                  : 'Limite Atingido')
+              : 'Gerar Token para Filho'
+          }
         </button>
       </div>
 
@@ -194,11 +336,14 @@ const ParentTokenManager = ({ user }) => {
               </label>
               <input
                 type="number"
-                value={newToken.maxUses}
-                onChange={(e) => setNewToken({...newToken, maxUses: e.target.value})}
-                className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Deixe vazio para ilimitado"
+                value={1}
+                disabled
+                className="w-full p-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-600 cursor-not-allowed"
+                title="Para o Plano Família, cada token pode ser usado apenas 1 vez"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Fixo em 1 para Plano Família (cada token = 1 filho)
+              </p>
             </div>
             
             <div>
@@ -290,7 +435,13 @@ const ParentTokenManager = ({ user }) => {
                 </div>
                 <button
                   onClick={() => handleDeleteToken(token.id)}
-                  className="text-red-600 hover:text-red-800 text-sm"
+                  disabled={token.usedCount > 0}
+                  className={`text-sm ${
+                    token.usedCount > 0
+                      ? 'text-gray-400 cursor-not-allowed'
+                      : 'text-red-600 hover:text-red-800'
+                  }`}
+                  title={token.usedCount > 0 ? 'Token já foi utilizado e não pode ser excluído' : 'Excluir token'}
                 >
                   Excluir
                 </button>
@@ -339,30 +490,6 @@ const ParentTokenManager = ({ user }) => {
                 )}
               </div>
               
-              {token.usedBy && token.usedBy.length > 0 && (
-                <div 
-                  className="mt-3 pt-3"
-                  style={{ borderTopColor: darkMode ? '#6b7280' : '#e5e7eb' }}
-                >
-                  <h5 
-                    className="text-sm font-medium mb-2"
-                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                  >
-                    Usado por:
-                  </h5>
-                  <div className="space-y-1">
-                    {token.usedBy.map((usage, index) => (
-                      <div 
-                        key={index} 
-                        className="text-sm"
-                        style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
-                      >
-                        {usage.studentName} - {formatDate(usage.usedAt)}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           ))
         )}

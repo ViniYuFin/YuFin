@@ -13,8 +13,50 @@ export async function apiGet(path) {
   }
   
   const res = await fetch(`${API_URL}${path}`, { headers });
+  
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({ error: 'Erro desconhecido' }));
+    
+    // Se token expirado, tentar renovar
+    if (res.status === 401 && errorData.code === 'EXPIRED_TOKEN') {
+      console.log('🔄 Token expirado, tentando renovar...');
+      
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (refreshToken) {
+        try {
+          const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refreshToken })
+          });
+          
+          if (refreshRes.ok) {
+            const data = await refreshRes.json();
+            localStorage.setItem('authToken', data.token);
+            localStorage.setItem('refreshToken', data.refreshToken);
+            
+            // Tentar novamente com o novo token
+            headers.Authorization = `Bearer ${data.token}`;
+            const retryRes = await fetch(`${API_URL}${path}`, { headers });
+            
+            if (retryRes.ok) {
+              return retryRes.json();
+            }
+          }
+        } catch (error) {
+          console.error('Erro ao renovar token:', error);
+        }
+      }
+      
+      // Se não conseguiu renovar, redirecionar para login
+      console.log('❌ Não foi possível renovar token, redirecionando para login...');
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      window.location.href = '/';
+      return;
+    }
+    
     throw new Error(errorData.error || `Erro ${res.status}: ${res.statusText}`);
   }
   return res.json();

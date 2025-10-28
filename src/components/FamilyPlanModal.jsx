@@ -27,7 +27,7 @@ const FamilyPlanModal = ({ isOpen, onClose, onConfirm }) => {
   const totalPrice = numParents * 9.90; // R$ 9,90 por responsável
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md animate-fadeIn">
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-6 rounded-t-xl">
@@ -56,7 +56,7 @@ const FamilyPlanModal = ({ isOpen, onClose, onConfirm }) => {
               <ul className="text-sm text-orange-700 space-y-1">
                 <li>• Tudo do plano Iniciante</li>
                 <li>• Acesso completo (6º ao 3º EM)</li>
-                <li>• Até 4 perfis por conta (pais + filhos)</li>
+                <li>• Até 3 perfis por conta (pais + filhos)</li>
                 <li>• Dashboard parental de acompanhamento</li>
                 <li>• Suporte prioritário (24h)</li>
               </ul>

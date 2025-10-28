@@ -94,17 +94,8 @@ const RegisterGratuito = ({ handleRegister, handleLoginGratuito, setActiveScreen
       console.error('❌ Detalhes do erro:', {
         message: error.message,
         status: error.status,
-        response: error.response,
-        stack: error.stack
+        response: error.response
       });
-      
-      // Se for erro 500, mostrar mensagem específica
-      if (error.status === 500) {
-        console.error('🚨 ERRO 500 - Backend com problema');
-        setError('Erro temporário no servidor. Tente novamente em alguns instantes.');
-        return false;
-      }
-      
       return false;
     }
   };

@@ -90,7 +90,7 @@ const OnboardingModal = ({ profile, onFinish }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30 backdrop-blur-sm">
       <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center animate-fadeIn">
         <h2 className="text-2xl font-bold text-primary mb-4">{renderTitle(steps[step].title)}</h2>
         <p className="text-gray-700 mb-6">{steps[step].description}</p>

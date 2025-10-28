@@ -4,6 +4,7 @@ import notificationService from '../utils/notificationService';
 
 // Agora recebe 'handleLogout' e 'onResetProgress' como props
 const Settings = ({ user, handleLogout, onResetProgress }) => {
+  console.log('🔍 Settings component renderizado com user:', user);
   const [darkMode, setDarkMode] = useState(false);
   const [notifications, setNotifications] = useState(true);
   const [sound, setSound] = useState(true);
@@ -301,12 +302,7 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
             <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
               <p><strong>Nome:</strong> {user.name}</p>
               <p><strong>Email:</strong> {user.email}</p>
-              <p><strong>Tipo:</strong> {
-                user.role === 'student' ? 'Estudante' : 
-                user.role === 'student-gratuito' ? 'Estudante Gratuito' : 
-                user.role === 'parent' ? 'Responsável' : 
-                'Escola'
-              }</p>
+              <p><strong>Tipo:</strong> {user.role === 'student' ? 'Estudante' : user.role === 'student-gratuito' ? 'Estudante Gratuito' : user.role === 'parent' ? 'Responsável' : 'Escola'}</p>
             </div>
           </div>
 
@@ -320,15 +316,11 @@ const Settings = ({ user, handleLogout, onResetProgress }) => {
             Sair da Conta
           </button>
 
-          {/* Botão de Zerar Progresso - Para Estudantes e Estudantes Gratuitos */}
-          {(user.role === 'student' || user.role === 'student-gratuito') && (
+          {/* Botão de Zerar Progresso - Apenas para Estudantes */}
+          {user.role === 'student' && (
             <button
               onClick={() => {
-                const message = user.role === 'student-gratuito' 
-                  ? 'Tem certeza que deseja zerar o progresso da série atual? Todas as lições completadas serão perdidas. Esta ação não pode ser desfeita!'
-                  : 'Tem certeza que deseja zerar o progresso da série atual? O progresso de outras séries será mantido. Esta ação não pode ser desfeita!';
-                
-                if (window.confirm(message)) {
+                if (window.confirm('Tem certeza que deseja zerar o progresso da série atual? O progresso de outras séries será mantido. Esta ação não pode ser desfeita!')) {
                   if (typeof onResetProgress === 'function') onResetProgress();
                 }
               }}
