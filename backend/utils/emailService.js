@@ -389,6 +389,35 @@ const createLicenseConfirmationEmail = (licenseData) => {
 // Função para enviar email de confirmação de licença
 const sendLicenseConfirmationEmail = async (email, licenseData) => {
   try {
+    console.log('🔍 DEBUG EMAIL: Parâmetros recebidos:', { email, licenseData });
+    
+    // Validação mais rigorosa do email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValidEmail = email && 
+                        typeof email === 'string' && 
+                        email !== 'undefined' && 
+                        email !== 'null' && 
+                        email.trim() !== '' && 
+                        !email.includes('XXXXXXXXXXX') &&
+                        emailRegex.test(email);
+    
+    console.log('🔍 DEBUG EMAIL: Validação do email:', {
+      email,
+      type: typeof email,
+      isString: typeof email === 'string',
+      notUndefined: email !== 'undefined',
+      notNull: email !== 'null',
+      notEmpty: email.trim() !== '',
+      notMasked: !email.includes('XXXXXXXXXXX'),
+      regexTest: emailRegex.test(email),
+      isValid: isValidEmail
+    });
+    
+    if (!isValidEmail) {
+      console.error('❌ DEBUG EMAIL: Email inválido recebido:', email);
+      return { success: false, error: 'Email inválido ou mascarado' };
+    }
+    
     console.log('📧 Enviando email de confirmação de licença para:', email);
     
     // Verificar se as configurações de email estão disponíveis

@@ -37,8 +37,25 @@ router.post('/create-preference', async (req, res) => {
             purchaserEmail
         });
 
-        // Gerar referência externa única
-        const externalReference = `${planType.toUpperCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        // Gerar referência externa única com dados do plano codificados em Base64
+        // Codificar planData em Base64 para garantir que os dados sejam preservados no webhook
+        const planDataEncoded = Buffer.from(JSON.stringify({
+            planType: planType,
+            numParents: planData.numParents || 0,
+            numStudents: planData.numStudents || 1,
+            totalPrice: planData.totalPrice || 0,
+            purchaserEmail: purchaserEmail // Incluir email do comprador logado
+        })).toString('base64');
+        
+        const externalReference = planDataEncoded; // Usar apenas o Base64 como external_reference
+        
+        console.log('🔍 External reference criado (Base64):', externalReference);
+        console.log('🔍 Dados do plano codificados:', {
+            planType,
+            numParents: planData.numParents,
+            numStudents: planData.numStudents,
+            totalPrice: planData.totalPrice
+        });
         
         // Configurar dados do pagamento
         const excludedMethods = getExcludedMethods(paymentMethod);
@@ -129,7 +146,7 @@ async function processApprovedPayment(paymentData) {
                 purchaser: {
                     email: purchaserData?.email,
                     name: purchaserData?.name,
-                    phone: purchaserData?.phone
+                    phone: typeof purchaserData?.phone === 'object' ? (purchaserData.phone?.number || null) : (purchaserData?.phone || null)
                 }
             });
             
@@ -192,10 +209,28 @@ async function processApprovedPayment(paymentData) {
         }
         
         // Enviar email de confirmação
-        if (licenseCode && purchaserData?.email) {
+        console.log('🔍 DEBUG EMAIL: Verificando dados para envio:', {
+            licenseCode,
+            purchaserData,
+            email: purchaserData?.email,
+            emailType: typeof purchaserData?.email,
+            emailValue: purchaserData?.email,
+            emailIsEmpty: !purchaserData?.email,
+            emailIsUndefined: purchaserData?.email === undefined,
+            emailIsNull: purchaserData?.email === null
+        });
+        
+        if (licenseCode && purchaserData?.email && purchaserData.email !== 'undefined' && purchaserData.email !== 'null' && purchaserData.email.trim() !== '') {
             console.log('📧 Enviando email de confirmação...');
             await sendLicenseConfirmationEmail(purchaserData.email, licenseData);
             console.log('✅ Email de confirmação enviado');
+        } else {
+            console.log('⚠️ Email não enviado - dados faltando:', {
+                licenseCode: !!licenseCode,
+                email: purchaserData?.email,
+                emailValid: purchaserData?.email && purchaserData.email !== 'undefined' && purchaserData.email !== 'null' && purchaserData.email.trim() !== '',
+                purchaserData: purchaserData
+            });
         }
         
         return {
@@ -209,6 +244,64 @@ async function processApprovedPayment(paymentData) {
         throw error;
     }
 }
+
+// ===========================
+// ROTA PARA BUSCAR LICENÇA POR EXTERNAL_REFERENCE
+// ===========================
+router.get('/license-by-reference', async (req, res) => {
+    try {
+        const { externalReference } = req.query;
+        
+        if (!externalReference) {
+            return res.status(400).json({ 
+                error: 'externalReference é obrigatório' 
+            });
+        }
+        
+        // Decodificar external_reference
+        let planData = null;
+        try {
+            const decodedData = Buffer.from(externalReference, 'base64').toString('utf-8');
+            planData = JSON.parse(decodedData);
+        } catch (error) {
+            return res.status(400).json({ 
+                error: 'externalReference inválido' 
+            });
+        }
+        
+        // Buscar licença pelo transactionId (se disponível) ou pelo plano
+        const FamilyLicense = require('../models/FamilyLicense');
+        
+        // Primeiro, tentar buscar por transactionId se tivermos
+        // Caso contrário, buscar pela última licença criada com esses dados de plano
+        const license = await FamilyLicense.findOne({
+            'planData.numParents': planData.numParents,
+            'planData.numStudents': planData.numStudents,
+            'planData.totalPrice': planData.totalPrice,
+            status: 'paid'
+        }).sort({ createdAt: -1 }).limit(1);
+        
+        if (!license) {
+            return res.status(404).json({ 
+                error: 'Licença não encontrada',
+                message: 'A licença ainda não foi criada. Aguarde alguns segundos e tente novamente.'
+            });
+        }
+        
+        res.json({
+            success: true,
+            licenseCode: license.licenseCode,
+            planData: license.planData
+        });
+        
+    } catch (error) {
+        console.error('❌ Erro ao buscar licença por external_reference:', error);
+        res.status(500).json({ 
+            error: 'Erro ao buscar licença',
+            message: error.message
+        });
+    }
+});
 
 // ===========================
 // WEBHOOK - NOTIFICAÇÕES DO MERCADO PAGO
@@ -262,8 +355,26 @@ router.post('/webhook', async (req, res) => {
         console.log('🔔 WEBHOOK - Dados processados:', { type, data, topic, id });
         
         if (type === 'payment' || topic === 'payment') {
-            const paymentId = data?.id || id;
+            // Extrair paymentId de múltiplas fontes possíveis
+            const paymentId = data?.id || id || notificationData['data.id'] || req.query.id || req.query.resource;
             console.log('💳 WEBHOOK - Pagamento processado:', paymentId);
+            console.log('🔍 DEBUG WEBHOOK - Fontes de paymentId:', {
+                'data?.id': data?.id,
+                'id': id,
+                'notificationData[data.id]': notificationData['data.id'],
+                'req.query.id': req.query.id,
+                'req.query.resource': req.query.resource,
+                'paymentId final': paymentId
+            });
+            
+            if (!paymentId) {
+                console.error('❌ WEBHOOK - Payment ID não encontrado nos dados:', notificationData);
+                return res.status(400).json({ 
+                    received: true, 
+                    error: 'Payment ID não encontrado',
+                    notificationData: notificationData
+                });
+            }
             
             try {
                 // Verificar status do pagamento
@@ -274,28 +385,162 @@ router.post('/webhook', async (req, res) => {
                 if (paymentStatus && paymentStatus.status === 'approved') {
                     console.log('✅ PAGAMENTO APROVADO - Processando licença...');
                     
-                    // Extrair dados do external_reference
+                    // Extrair dados do external_reference (agora em Base64)
                     const externalRef = paymentStatus.external_reference;
-                    const planType = externalRef?.startsWith('FAMILY') ? 'family' : 'school';
+                    
+                    console.log('🔍 External reference recebido:', externalRef);
+                    
+                    // Tentar decodificar Base64 primeiro
+                    let planType = 'family';
+                    let planData = null;
+                    let purchaserEmail = null; // Email do comprador logado na landing
+                    
+                    if (!externalRef) {
+                        console.log('⚠️ External reference está undefined, usando valores padrão');
+                        planType = 'family';
+                        planData = {
+                            numParents: 1,
+                            numStudents: 2,
+                            totalPrice: paymentStatus.transaction_amount || 19.90
+                        };
+                    } else {
+                        try {
+                            // Tentar decodificar Base64 primeiro (formato novo)
+                            const decodedData = Buffer.from(externalRef, 'base64').toString('utf-8');
+                            const parsedData = JSON.parse(decodedData);
+                            
+                            planType = parsedData.planType || 'family';
+                            planData = {
+                                numParents: parsedData.numParents || 0,
+                                numStudents: parsedData.numStudents || 1,
+                                totalPrice: parsedData.totalPrice || paymentStatus.transaction_amount || 0
+                            };
+                            
+                            // Extrair purchaserEmail do external_reference
+                            purchaserEmail = parsedData.purchaserEmail;
+                            console.log('✅ Dados decodificados do external_reference (Base64):', planData);
+                            console.log('✅ Email do comprador extraído:', purchaserEmail);
+                        } catch (base64Error) {
+                            console.log('⚠️ External reference não é Base64 válido, tentando formato antigo...');
+                            console.log('⚠️ Erro Base64:', base64Error.message);
+                            
+                            // Fallback: tentar identificar pelo formato antigo
+                            if (externalRef && typeof externalRef === 'string') {
+                                const isFamily = externalRef.startsWith('FAMILY') || externalRef.startsWith('FAM-');
+                                planType = isFamily ? 'family' : 'school';
+                                
+                                // Para family, calcular baseado no valor: 19.90 = 1 pai + 2 filhos
+                                if (isFamily) {
+                                    const amount = paymentStatus.transaction_amount || 19.90;
+                                    // Valores conhecidos: 19.90 = 1 pai + 2 filhos, 39.80 = 2 pais + 1 filho
+                                    if (amount === 19.90) {
+                                        planData = {
+                                            numParents: 1,
+                                            numStudents: 2,
+                                            totalPrice: amount
+                                        };
+                                    } else if (amount === 39.80) {
+                                        planData = {
+                                            numParents: 2,
+                                            numStudents: 1,
+                                            totalPrice: amount
+                                        };
+                                    } else {
+                                        // Fallback genérico
+                                        planData = {
+                                            numParents: 1,
+                                            numStudents: 2,
+                                            totalPrice: amount
+                                        };
+                                    }
+                                } else {
+                                    // Escola: calcular baseado no valor
+                                    planData = {
+                                        numParents: 0,
+                                        numStudents: Math.floor((paymentStatus.transaction_amount || 19.90) / 9.90),
+                                        totalPrice: paymentStatus.transaction_amount || 19.90
+                                    };
+                                }
+                                
+                                console.log('⚠️ Usando fallback com formato antigo:', planData);
+                            } else {
+                                // Último fallback: valores padrão
+                                planType = 'family';
+                                planData = {
+                                    numParents: 1,
+                                    numStudents: 2,
+                                    totalPrice: paymentStatus.transaction_amount || 19.90
+                                };
+                                console.log('⚠️ Usando valores padrão:', planData);
+                            }
+                        }
+                    }
                     
                     // Dados do pagamento com validação
+                    console.log('🔍 DEBUG WEBHOOK: Dados do payer:', {
+                        payer: paymentStatus.payer,
+                        email: paymentStatus.payer?.email,
+                        emailType: typeof paymentStatus.payer?.email,
+                        emailIsUndefined: paymentStatus.payer?.email === undefined,
+                        emailIsNull: paymentStatus.payer?.email === null,
+                        name: paymentStatus.payer?.name,
+                        phone: paymentStatus.payer?.phone
+                    });
+                    
+                    // Priorizar purchaserEmail (email logado na landing) sobre payerEmail (email do Mercado Pago)
+                    const payerEmail = paymentStatus.payer?.email;
+                    
+                    console.log('🔍 DEBUG EMAIL WEBHOOK: Comparando emails:', {
+                        purchaserEmail: purchaserEmail,
+                        payerEmail: payerEmail,
+                        purchaserType: typeof purchaserEmail,
+                        payerType: typeof payerEmail
+                    });
+                    
+                    // Escolher o melhor email: purchaserEmail primeiro, depois payerEmail, depois fallback
+                    let finalEmail = 'contato@yufin.com.br'; // Fallback padrão
+                    
+                    if (purchaserEmail && 
+                        typeof purchaserEmail === 'string' && 
+                        purchaserEmail !== 'undefined' && 
+                        purchaserEmail !== 'null' && 
+                        purchaserEmail.trim() !== '' && 
+                        !purchaserEmail.includes('XXXXXXXXXXX')) {
+                        finalEmail = purchaserEmail;
+                        console.log('✅ Usando purchaserEmail (email logado na landing)');
+                    } else if (payerEmail && 
+                               typeof payerEmail === 'string' && 
+                               payerEmail !== 'undefined' && 
+                               payerEmail !== 'null' && 
+                               payerEmail.trim() !== '' && 
+                               !payerEmail.includes('XXXXXXXXXXX')) {
+                        finalEmail = payerEmail;
+                        console.log('⚠️ Usando payerEmail (email do Mercado Pago) como fallback');
+                    } else {
+                        console.log('⚠️ Usando email de fallback: contato@yufin.com.br');
+                    }
+                    
+                    console.log('🔍 DEBUG EMAIL WEBHOOK: Email final escolhido:', {
+                        purchaserEmail: purchaserEmail,
+                        payerEmail: payerEmail,
+                        final: finalEmail,
+                        source: finalEmail === purchaserEmail ? 'purchaserEmail' : 
+                                finalEmail === payerEmail ? 'payerEmail' : 'fallback'
+                    });
+                    
                     const paymentData = {
-                        planType: planType || 'family',
-                        planData: {
-                            numParents: planData?.numParents || (planType === 'family' ? 1 : 0),
-                            numStudents: planData?.numStudents || (planType === 'family' ? 2 : Math.floor((paymentStatus.transaction_amount || 19.90) / 9.90)),
-                            totalPrice: planData?.totalPrice || paymentStatus.transaction_amount || 19.90
-                        },
+                        planType: planType,
+                        planData: planData,
                         paymentMethod: paymentStatus.payment_method_id || 'credit_card',
                         transactionId: paymentId,
                         purchaserData: {
-                            email: paymentStatus.payer?.email || 'teste@exemplo.com',
-                            name: paymentStatus.payer?.name || 'Cliente Teste',
-                            phone: paymentStatus.payer?.phone || null
+                            email: finalEmail,
+                            name: paymentStatus.payer?.name || 'Cliente YüFin',
+                            phone: typeof paymentStatus.payer?.phone === 'object' ? (paymentStatus.payer.phone?.number || null) : (paymentStatus.payer?.phone || null)
                         }
                     };
                     
-                    console.log('📋 Dados do pagamento preparados:', paymentData);
+                    console.log('📋 Dados do pagamento preparados (webhook):', paymentData);
                     
                     // Processar pagamento aprovado
                     const result = await processApprovedPayment(paymentData);
@@ -303,9 +548,17 @@ router.post('/webhook', async (req, res) => {
                     console.log('✅ Licença criada com sucesso:', result.licenseCode);
                     
                     // Redirecionar usuário para página de sucesso com dados corretos
-                    const successUrl = `https://yufin-landing-bbaweogrp-vinicius-assuncaos-projects-ffa185b9.vercel.app/planos.html?status=success&plan=${paymentData.planType}&licenseCode=${result.licenseCode}&numStudents=${paymentData.planData?.numStudents || 0}&numParents=${paymentData.planData?.numParents || 0}&totalPrice=${paymentData.planData?.totalPrice || 0}`;
+                    const successUrl = `https://www.yufin.com.br/planos.html?status=success&plan=${paymentData.planType}&licenseCode=${result.licenseCode}&numStudents=${paymentData.planData?.numStudents || 0}&numParents=${paymentData.planData?.numParents || 0}&totalPrice=${paymentData.planData?.totalPrice || 0}`;
                     
                     console.log('🔄 Redirecionando para:', successUrl);
+                    console.log('🔍 DEBUG REDIRECT: Dados do redirecionamento:', {
+                        planType: paymentData.planType,
+                        licenseCode: result.licenseCode,
+                        numStudents: paymentData.planData?.numStudents,
+                        numParents: paymentData.planData?.numParents,
+                        totalPrice: paymentData.planData?.totalPrice,
+                        successUrl: successUrl
+                    });
                     console.log('📋 Dados do plano sendo redirecionados:', {
                         planType: paymentData.planType,
                         numStudents: paymentData.planData?.numStudents,
@@ -313,7 +566,15 @@ router.post('/webhook', async (req, res) => {
                         totalPrice: paymentData.planData?.totalPrice
                     });
                     
-                    res.redirect(308, successUrl);
+                    // IMPORTANTE: Webhooks são server-to-server, não devem redirecionar
+                    // O redirecionamento deve acontecer no frontend quando o pagamento é aprovado
+                    // Por enquanto, apenas retornar sucesso para o Mercado Pago
+                    res.status(200).json({ 
+                        received: true, 
+                        message: 'Webhook processado com sucesso',
+                        licenseCode: result.licenseCode,
+                        redirectUrl: successUrl // URL para referência (não será usada pelo Mercado Pago)
+                    });
                     
                 } else if (paymentStatus && paymentStatus.status === 'rejected') {
                     console.log('❌ PAGAMENTO REJEITADO:', paymentId);
@@ -573,54 +834,113 @@ async function handlePaymentApproved(paymentStatus) {
         let planData = null;
         let planType = 'family'; // Default
         
-        try {
-            // Tentar decodificar Base64 primeiro (formato novo)
-            const decodedData = Buffer.from(payment.external_reference, 'base64').toString('utf-8');
-            const parsedData = JSON.parse(decodedData);
-            
-            console.log('🔍 Dados decodificados do external_reference:', parsedData);
-            
-            planType = parsedData.planType || 'family';
+        const externalRef = payment.external_reference;
+        console.log('🔍 External reference recebido (handlePaymentApproved):', externalRef);
+        
+        if (!externalRef) {
+            console.log('⚠️ External reference está undefined, usando valores padrão');
+            planType = 'family';
             planData = {
-                numParents: parsedData.numParents || 0,
-                numStudents: parsedData.numStudents || 1,
-                totalPrice: parsedData.totalPrice || payment.transaction_amount
+                numParents: 1,
+                numStudents: 2,
+                totalPrice: payment.transaction_amount || 19.90
             };
-            
-            console.log('✅ Usando dados decodificados do Base64');
-            
-        } catch (base64Error) {
-            console.log('⚠️ Falha na decodificação Base64, tentando metadados...');
-            
-            // Fallback 1: Tentar usar metadados do pagamento
-            if (payment.metadata && payment.metadata.plan_type) {
-                planType = payment.metadata.plan_type;
-                planData = {
-                    numParents: parseInt(payment.metadata.num_parents) || 0,
-                    numStudents: parseInt(payment.metadata.num_students) || 1,
-                    totalPrice: payment.transaction_amount
-                };
-                console.log('✅ Usando dados dos metadados');
-            } else {
-                // Fallback 2: Formato antigo (compatibilidade)
-                const refParts = payment.external_reference.split('-');
-                planType = refParts[0].toLowerCase();
+        } else {
+            try {
+                // Tentar decodificar Base64 primeiro (formato novo)
+                const decodedData = Buffer.from(externalRef, 'base64').toString('utf-8');
+                const parsedData = JSON.parse(decodedData);
                 
+                console.log('🔍 Dados decodificados do external_reference:', parsedData);
+                
+                planType = parsedData.planType || 'family';
                 planData = {
-                    numParents: planType === 'family' ? 1 : 0,
-                    numStudents: planType === 'family' ? 2 : Math.floor(payment.transaction_amount / 9.90),
-                    totalPrice: payment.transaction_amount
+                    numParents: parsedData.numParents || 0,
+                    numStudents: parsedData.numStudents || 1,
+                    totalPrice: parsedData.totalPrice || payment.transaction_amount
                 };
-                console.log('⚠️ Usando fallback com valores estimados');
+                
+                console.log('✅ Usando dados decodificados do Base64');
+                
+            } catch (base64Error) {
+                console.log('⚠️ Falha na decodificação Base64, tentando fallback...');
+                console.log('⚠️ Erro Base64:', base64Error.message);
+                
+                // Fallback 1: Tentar usar metadados do pagamento
+                if (payment.metadata && payment.metadata.plan_type) {
+                    planType = payment.metadata.plan_type;
+                    planData = {
+                        numParents: parseInt(payment.metadata.num_parents) || 0,
+                        numStudents: parseInt(payment.metadata.num_students) || 1,
+                        totalPrice: payment.transaction_amount
+                    };
+                    console.log('✅ Usando dados dos metadados');
+                } else if (externalRef && typeof externalRef === 'string') {
+                    // Fallback 2: Formato antigo (compatibilidade)
+                    const isFamily = externalRef.startsWith('FAMILY') || externalRef.startsWith('FAM-');
+                    planType = isFamily ? 'family' : 'school';
+                    
+                    // Para family, calcular baseado no valor: 19.90 = 1 pai + 2 filhos
+                    if (isFamily) {
+                        const amount = payment.transaction_amount || 19.90;
+                        // Valores conhecidos: 19.90 = 1 pai + 2 filhos, 39.80 = 2 pais + 1 filho
+                        if (amount === 19.90) {
+                            planData = {
+                                numParents: 1,
+                                numStudents: 2,
+                                totalPrice: amount
+                            };
+                        } else if (amount === 39.80) {
+                            planData = {
+                                numParents: 2,
+                                numStudents: 1,
+                                totalPrice: amount
+                            };
+                        } else {
+                            // Fallback genérico
+                            planData = {
+                                numParents: 1,
+                                numStudents: 2,
+                                totalPrice: amount
+                            };
+                        }
+                    } else {
+                        // Escola: calcular baseado no valor
+                        planData = {
+                            numParents: 0,
+                            numStudents: Math.floor(payment.transaction_amount / 9.90),
+            totalPrice: payment.transaction_amount
+        };
+                    }
+                    console.log('⚠️ Usando fallback com formato antigo:', planData);
+                } else {
+                    // Último fallback: valores padrão
+                    planType = 'family';
+                    planData = {
+                        numParents: 1,
+                        numStudents: 2,
+                        totalPrice: payment.transaction_amount || 19.90
+                    };
+                    console.log('⚠️ Usando valores padrão:', planData);
+                }
             }
         }
         
         // Usar email do pagador do Mercado Pago
+        console.log('🔍 DEBUG HANDLEPAYMENT: Dados do payment.payer:', {
+            payer: payment.payer,
+            email: payment.payer?.email,
+            identification: payment.payer?.identification,
+            phone: payment.payer?.phone
+        });
+        
         const purchaserData = {
             email: payment.payer?.email || 'comprador@pix.yufin.com.br',
             name: payment.payer?.identification?.name || 'Comprador PIX',
-            phone: null
+            phone: typeof payment.payer?.phone === 'object' ? (payment.payer.phone?.number || null) : (payment.payer?.phone || null)
         };
+        
+        console.log('🔍 DEBUG HANDLEPAYMENT: purchaserData criado:', purchaserData);
         
         console.log('📧 Criando licença para:', purchaserData.email);
         console.log('💰 Valor do pagamento:', payment.transaction_amount);
