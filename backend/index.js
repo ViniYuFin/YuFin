@@ -26,6 +26,7 @@ const universalLicenseRoutes = require('./routes/universalLicense');
 const mercadoPagoRoutes = require('./routes/mercado-pago');
 const processPaymentRoutes = require('./routes/process-payment');
 const testDbRoutes = require('./routes/test-db');
+const marketValidationRoutes = require('./routes/marketValidation');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -88,6 +89,7 @@ app.use((req, res, next) => {
     'https://yufin.com.br',
     'https://www.yufin.com.br',
     'https://app.yufin.com.br',
+    'https://validacao.yufin.com.br',
     'https://yufin-frontend.vercel.app',
     'https://yufin-backend.vercel.app',
     'https://yufin-deploy.vercel.app',
@@ -113,10 +115,10 @@ app.use((req, res, next) => {
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
     console.log('✅ CORS: Origin allowed:', origin);
-  } else if ((!origin || origin === 'null') && (process.env.NODE_ENV === 'development' || process.env.NODE_ENV !== 'production')) {
-    // Permitir origin null/undefined em desenvolvimento (arquivos locais, file://)
+  } else if (!origin || origin === 'null') {
+    // Permitir origin null/undefined (arquivos locais, file://)
     res.header('Access-Control-Allow-Origin', '*');
-    console.log('⚠️  CORS: Allowing null/undefined origin (DEV MODE) - Origin:', origin);
+    console.log('⚠️  CORS: Allowing null/undefined origin - Origin:', origin);
   } else {
     console.log('❌ CORS: Origin blocked:', origin);
     // Não bloquear completamente, mas não adicionar header
@@ -124,7 +126,11 @@ app.use((req, res, next) => {
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Apenas permitir credentials para origins específicos
+  if (origin && origin !== 'null') {
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
   
   // Responder imediatamente para OPTIONS
   if (req.method === 'OPTIONS') {
@@ -181,10 +187,59 @@ app.use('/api/universal-license', universalLicenseRoutes); // Licenças universa
 app.use('/api/mercado-pago', mercadoPagoRoutes); // Pagamentos Mercado Pago
 app.use('/api/mercado-pago', processPaymentRoutes); // Processamento de pagamentos CardForm
 app.use('/api', testDbRoutes); // Teste de conexão MongoDB
+app.use('/api/market-validation', marketValidationRoutes); // Validação de mercado
 
 // Endpoint de teste
 app.get('/', (req, res) => {
   res.json({ message: 'Backend YuFin com MongoDB rodando!' });
+});
+
+// Rota temporária para criar usuário admin (APENAS DESENVOLVIMENTO)
+app.post('/setup-admin', async (req, res) => {
+  try {
+    const bcrypt = require('bcryptjs');
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+    }
+    
+    // Verificar se usuário já existe
+    let user = await User.findOne({ email });
+    
+    if (user) {
+      // Atualizar usuário existente para admin
+      user.role = 'admin';
+      user.password = await bcrypt.hash(password, 10);
+      await user.save();
+      return res.json({ 
+        success: true, 
+        message: 'Usuário atualizado para admin com sucesso!',
+        email: user.email,
+        role: user.role
+      });
+    } else {
+      // Criar novo usuário admin
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user = new User({
+        email,
+        password: hashedPassword,
+        role: 'admin',
+        name: 'Administrador',
+        isVerified: true
+      });
+      await user.save();
+      return res.json({ 
+        success: true, 
+        message: 'Usuário admin criado com sucesso!',
+        email: user.email,
+        role: user.role
+      });
+    }
+  } catch (error) {
+    console.error('❌ Erro ao criar usuário admin:', error);
+    res.status(500).json({ error: 'Erro ao criar usuário admin' });
+  }
 });
 
 // 🔒 ROTAS PROTEGIDAS (requer autenticação + rate limiting para API)
