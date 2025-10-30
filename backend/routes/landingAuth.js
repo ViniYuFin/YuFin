@@ -112,8 +112,15 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Buscar usuário
-    const user = await LandingUser.findOne({ email: email.toLowerCase().trim() });
+    // Buscar usuário (primeiro em User, depois em LandingUser)
+    let user = await User.findOne({ email: email.toLowerCase().trim() });
+    let userType = 'app';
+    
+    if (!user) {
+      user = await LandingUser.findOne({ email: email.toLowerCase().trim() });
+      userType = 'landing';
+    }
+    
     if (!user) {
       return res.status(401).json({
         error: 'Email ou senha incorretos',
@@ -121,8 +128,10 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Verificar senha
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    // Verificar senha (User usa passwordHash, LandingUser usa password)
+    const passwordToCheck = user.passwordHash || user.password;
+    const isPasswordValid = await bcrypt.compare(password, passwordToCheck);
+    
     if (!isPasswordValid) {
       return res.status(401).json({
         error: 'Email ou senha incorretos',
@@ -130,31 +139,44 @@ router.post('/auth/login', async (req, res) => {
       });
     }
 
-    // Gerar token JWT
+    // Gerar token JWT com role para admins
+    const tokenPayload = {
+      userId: user._id,
+      email: user.email,
+      type: userType,
+      role: user.role || 'landing'
+    };
+    
     const token = jwt.sign(
-      { 
-        userId: user._id, 
-        email: user.email,
-        type: 'landing'
-      },
+      tokenPayload,
       process.env.JWT_SECRET || 'fallback-secret',
       { expiresIn: '30d' }
     );
 
-    console.log('✅ Login landing realizado:', user.email);
+    console.log('✅ Login realizado:', user.email, '- Role:', user.role || 'landing');
 
-    res.json({
+    // Preparar resposta
+    const responseData = {
       success: true,
       user: {
         id: user._id,
         name: user.name,
         email: user.email,
-        phone: user.phone,
         createdAt: user.createdAt,
-        token: token
+        token: token,
+        role: user.role || 'landing'
       },
       message: 'Login realizado com sucesso!'
-    });
+    };
+    
+    // Adicionar campos específicos
+    if (user.phone) responseData.user.phone = user.phone;
+    if (user.role) responseData.user.role = user.role;
+    
+    // Para compatibilidade com o frontend, também retornar accessToken
+    responseData.accessToken = token;
+
+    res.json(responseData);
 
   } catch (error) {
     console.error('❌ Erro no login landing:', error);

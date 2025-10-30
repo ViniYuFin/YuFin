@@ -27,6 +27,7 @@ const mercadoPagoRoutes = require('./routes/mercado-pago');
 const processPaymentRoutes = require('./routes/process-payment');
 const testDbRoutes = require('./routes/test-db');
 const marketValidationRoutes = require('./routes/marketValidation');
+const licensesRoutes = require('./routes/licenses');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -188,6 +189,7 @@ app.use('/api/mercado-pago', mercadoPagoRoutes); // Pagamentos Mercado Pago
 app.use('/api/mercado-pago', processPaymentRoutes); // Processamento de pagamentos CardForm
 app.use('/api', testDbRoutes); // Teste de conexão MongoDB
 app.use('/api/market-validation', marketValidationRoutes); // Validação de mercado
+app.use('/api', licensesRoutes); // Licenças: mine, history, cancel subscription
 
 // Endpoint de teste
 app.get('/', (req, res) => {

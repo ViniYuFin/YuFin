@@ -118,14 +118,55 @@ const familyLicenseSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     default: function() {
-      // Licença válida por 1 ano
-      return new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+      // Licença válida por 1 mês (recorrência mensal)
+      return new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     }
   },
   
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  
+  // Sistema de assinatura recorrente
+  subscription: {
+    id: String, // ID da assinatura no Mercado Pago
+    status: {
+      type: String,
+      enum: ['active', 'paused', 'cancelled', 'expired'],
+      default: 'active'
+    },
+    nextBillingDate: Date, // Próxima data de cobrança
+    billingCycle: {
+      type: String,
+      enum: ['monthly', 'yearly'],
+      default: 'monthly'
+    },
+    autoRenew: {
+      type: Boolean,
+      default: true
+    }
+  },
+  
+  // Histórico de renovações
+  renewalHistory: [{
+    renewedAt: Date,
+    amount: Number,
+    transactionId: String,
+    status: {
+      type: String,
+      enum: ['success', 'failed', 'refunded']
+    }
+  }],
+  
+  // Período de graça para falhas de pagamento
+  gracePeriod: {
+    isActive: {
+      type: Boolean,
+      default: false
+    },
+    expiresAt: Date,
+    reason: String // 'payment_failed', 'subscription_paused'
   }
 }, {
   timestamps: true
@@ -139,7 +180,19 @@ familyLicenseSchema.index({ 'purchaser.email': 1 });
 
 // Método para verificar se a licença é válida
 familyLicenseSchema.methods.isValid = function() {
-  return this.status === 'active' && this.expiresAt > new Date();
+  // Verificar se status da licença está ativo
+  if (this.status !== 'paid' && this.status !== 'active') return false;
+  
+  // Verificar se assinatura está ativa
+  if (this.subscription && this.subscription.status !== 'active') return false;
+  
+  // Verificar se está em período de graça
+  if (this.gracePeriod?.isActive && this.gracePeriod?.expiresAt > new Date()) {
+    return true; // Acesso permitido durante período de graça
+  }
+  
+  // Verificar se licença não expirou
+  return this.expiresAt > new Date();
 };
 
 // Método para verificar se a licença pode ser usada

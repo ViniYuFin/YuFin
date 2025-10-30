@@ -1,10 +1,11 @@
 // 🔧 ROTAS DO MERCADO PAGO
 const express = require('express');
 const router = express.Router();
-const { createPaymentPreference, getPaymentStatus } = require('../config/mercado-pago');
+const { createPaymentPreference, getPaymentStatus, createSubscription, getSubscriptionStatus } = require('../config/mercado-pago');
 const FamilyLicense = require('../models/FamilyLicense');
 const SchoolLicense = require('../models/SchoolLicense');
 const { sendLicenseConfirmationEmail } = require('../utils/emailService');
+const { activateGracePeriod, suspendFamilyAccess, restoreFamilyAccess, suspendSchoolAccess, restoreSchoolAccess } = require('../utils/licenseManager');
 
 // ===========================
 // CRIAR PREFERÊNCIA DE PAGAMENTO
@@ -980,6 +981,277 @@ async function handlePaymentCancelled(paymentStatus) {
         
     } catch (error) {
         console.error('❌ Erro ao processar pagamento cancelado:', error);
+    }
+}
+
+// ===========================
+// CRIAR ASSINATURA RECORRENTE
+// ===========================
+router.post('/create-subscription', async (req, res) => {
+    try {
+        const { planData, purchaserEmail } = req.body;
+        const planType = planData?.planType || 'family';
+        
+        console.log('🔄 Criando assinatura recorrente:', { planType, planData, purchaserEmail });
+        
+        // Configurar assinatura
+        const subscriptionData = {
+            reason: `YüFin ${planType === 'family' ? 'Família' : 'Escola'} - Renovação mensal`,
+            frequency: 1, // Mensal
+            frequencyType: 'months',
+            billingDay: 1, // Dia 1 do mês
+            amount: planData.totalPrice,
+            payerEmail: purchaserEmail,
+            externalReference: Buffer.from(JSON.stringify({
+                planType: planType,
+                numParents: planData.numParents || 0,
+                numStudents: planData.numStudents || 1,
+                totalPrice: planData.totalPrice || 0,
+                purchaserEmail: purchaserEmail
+            })).toString('base64'),
+            startDate: new Date().toISOString(),
+            endDate: null // Sem data de término
+        };
+        
+        // Criar assinatura no Mercado Pago
+        const subscription = await createSubscription(subscriptionData);
+        
+        console.log('✅ Assinatura criada:', subscription.id);
+        
+        res.json({
+            success: true,
+            subscriptionId: subscription.id,
+            initPoint: subscription.init_point,
+            sandboxInitPoint: subscription.sandbox_init_point
+        });
+        
+    } catch (error) {
+        console.error('❌ Erro ao criar assinatura:', error);
+        res.status(500).json({ 
+            error: error.message || 'Erro ao criar assinatura'
+        });
+    }
+});
+
+// ===========================
+// WEBHOOK DE ASSINATURA (RENOVAÇÕES)
+// ===========================
+router.post('/webhook-subscription', async (req, res) => {
+    try {
+        console.log('🔔 WEBHOOK SUBSCRIPTION - Notificação recebida');
+        console.log('🔔 Body:', JSON.stringify(req.body, null, 2));
+        
+        const { type, data } = req.body;
+        
+        if (type === 'subscription' || type === 'preapproval') {
+            const subscriptionId = data?.id;
+            
+            if (!subscriptionId) {
+                console.error('❌ Subscription ID não encontrado');
+                return res.status(400).json({ error: 'Subscription ID não encontrado' });
+            }
+            
+            console.log('🔄 Processando assinatura:', subscriptionId);
+            
+            // Buscar status da assinatura no Mercado Pago
+            const subscription = await getSubscriptionStatus(subscriptionId);
+            
+            console.log('📊 Status da assinatura:', subscription.status);
+            
+            // Decodificar external_reference
+            let planData = null;
+            let planType = 'family';
+            
+            if (subscription.external_reference) {
+                try {
+                    const decodedData = Buffer.from(subscription.external_reference, 'base64').toString('utf-8');
+                    planData = JSON.parse(decodedData);
+                    planType = planData.planType || 'family';
+                } catch (error) {
+                    console.error('❌ Erro ao decodificar external_reference:', error);
+                    return res.status(400).json({ error: 'External reference inválido' });
+                }
+            }
+            
+            // Processar status da assinatura
+            if (subscription.status === 'authorized') {
+                console.log('✅ Assinatura autorizada - renovando licença');
+                
+                // Renovar licença automaticamente
+                await renewSubscription(subscription.external_reference, subscription);
+                
+            } else if (subscription.status === 'paused') {
+                console.log('⏸️ Assinatura pausada - suspendendo acesso imediatamente');
+                // Suspender imediatamente (sem período de graça)
+                if (planType === 'family') {
+                    const license = await FamilyLicense.findOne({ 'purchaser.email': planData?.purchaserEmail }).sort({ createdAt: -1 });
+                    if (license) await suspendFamilyAccess(license.licenseCode);
+                } else if (planType === 'school') {
+                    const license = await SchoolLicense.findOne({ 'schoolData.email': planData?.purchaserEmail }).sort({ createdAt: -1 });
+                    if (license) await suspendSchoolAccess(license.licenseCode);
+                }
+                
+            } else if (subscription.status === 'cancelled') {
+                console.log('❌ Assinatura cancelada - suspendendo acesso imediatamente');
+                // Suspender imediatamente (sem período de graça)
+                if (planType === 'family') {
+                    const license = await FamilyLicense.findOne({ 'purchaser.email': planData?.purchaserEmail }).sort({ createdAt: -1 });
+                    if (license) await suspendFamilyAccess(license.licenseCode);
+                } else if (planType === 'school') {
+                    const license = await SchoolLicense.findOne({ 'schoolData.email': planData?.purchaserEmail }).sort({ createdAt: -1 });
+                    if (license) await suspendSchoolAccess(license.licenseCode);
+                }
+                
+            } else if (subscription.status === 'pending') {
+                console.log('⏳ Assinatura pendente');
+            }
+        }
+        
+        res.status(200).json({ received: true });
+        
+    } catch (error) {
+        console.error('❌ Erro no webhook de subscription:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ===========================
+// FUNÇÕES AUXILIARES DE SUBSCRIPTION
+// ===========================
+
+// Renovar assinatura
+async function renewSubscription(externalReference, subscriptionData) {
+    try {
+        console.log('🔄 Renovando assinatura...');
+        
+        // Decodificar external_reference
+        const decodedData = Buffer.from(externalReference, 'base64').toString('utf-8');
+        const planData = JSON.parse(decodedData);
+        
+        if (planData.planType === 'family') {
+            // Buscar licença família pela última transação
+            const license = await FamilyLicense.findOne({
+                'purchaser.email': planData.purchaserEmail,
+                status: 'paid'
+            }).sort({ createdAt: -1 }).limit(1);
+            
+            if (license) {
+                // Atualizar licença
+                license.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // +30 dias
+                license.subscription.status = 'active';
+                license.subscription.nextBillingDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                
+                // Adicionar ao histórico de renovações
+                license.renewalHistory.push({
+                    renewedAt: new Date(),
+                    amount: planData.totalPrice,
+                    transactionId: subscriptionData.id,
+                    status: 'success'
+                });
+                
+                // Desativar período de graça se ativo
+                if (license.gracePeriod?.isActive) {
+                    license.gracePeriod.isActive = false;
+                }
+                
+                await license.save();
+                
+                // Restaurar acesso em cascata
+                await restoreFamilyAccess(license.licenseCode);
+                
+                console.log('✅ Licença família renovada:', license.licenseCode);
+            }
+            
+        } else if (planData.planType === 'school') {
+            // Buscar licença escola
+            const license = await SchoolLicense.findOne({
+                'schoolData.email': planData.purchaserEmail,
+                status: 'paid'
+            }).sort({ createdAt: -1 }).limit(1);
+            
+            if (license) {
+                // Atualizar licença
+                license.expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // +30 dias
+                license.subscription.status = 'active';
+                license.subscription.nextBillingDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                
+                // Adicionar ao histórico de renovações
+                license.renewalHistory.push({
+                    renewedAt: new Date(),
+                    amount: planData.totalPrice,
+                    transactionId: subscriptionData.id,
+                    status: 'success'
+                });
+                
+                // Desativar período de graça se ativo
+                if (license.gracePeriod?.isActive) {
+                    license.gracePeriod.isActive = false;
+                }
+                
+                await license.save();
+                
+                // Restaurar acesso em cascata
+                await restoreSchoolAccess(license.licenseCode);
+                
+                console.log('✅ Licença escola renovada:', license.licenseCode);
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao renovar assinatura:', error);
+        throw error;
+    }
+}
+
+// Cancelar assinatura
+async function cancelSubscription(externalReference, planType) {
+    try {
+        console.log('❌ Cancelando assinatura...');
+        
+        // Decodificar external_reference
+        const decodedData = Buffer.from(externalReference, 'base64').toString('utf-8');
+        const planData = JSON.parse(decodedData);
+        
+        if (planType === 'family') {
+            const license = await FamilyLicense.findOne({
+                'purchaser.email': planData.purchaserEmail,
+                status: 'paid'
+            }).sort({ createdAt: -1 }).limit(1);
+            
+            if (license) {
+                license.subscription.status = 'cancelled';
+                await license.save();
+                
+                // Suspender acesso após período de graça
+                setTimeout(() => {
+                    suspendFamilyAccess(license.licenseCode);
+                }, 7 * 24 * 60 * 60 * 1000); // 7 dias
+                
+                console.log('✅ Assinatura família cancelada');
+            }
+            
+        } else if (planType === 'school') {
+            const license = await SchoolLicense.findOne({
+                'schoolData.email': planData.purchaserEmail,
+                status: 'paid'
+            }).sort({ createdAt: -1 }).limit(1);
+            
+            if (license) {
+                license.subscription.status = 'cancelled';
+                await license.save();
+                
+                // Suspender acesso após período de graça
+                setTimeout(() => {
+                    suspendSchoolAccess(license.licenseCode);
+                }, 7 * 24 * 60 * 60 * 1000); // 7 dias
+                
+                console.log('✅ Assinatura escola cancelada');
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ Erro ao cancelar assinatura:', error);
+        throw error;
     }
 }
 

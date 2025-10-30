@@ -58,7 +58,7 @@ router.post('/create', async (req, res) => {
       purchaser: {
         email: purchaserData?.email,
         name: purchaserData?.name,
-        phone: purchaserData?.phone
+        phone: typeof purchaserData?.phone === 'object' ? (purchaserData.phone?.number || null) : (purchaserData?.phone || null)
       }
     });
 

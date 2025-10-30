@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   role: { 
     type: String, 
     required: true,
-    enum: ["student", "parent", "school", "student-gratuito"]
+    enum: ["student", "parent", "school", "student-gratuito", "admin"]
   },
   isGratuito: { type: Boolean, default: false }, // Flag para identificar usuários do plano gratuito
   schoolId: { type: String }, // ID da escola (para isolamento)
@@ -133,6 +133,39 @@ const userSchema = new mongoose.Schema({
   schoolLicense: {
     code: { type: String },
     individualCode: { type: String }
+  },
+  
+  // Controle de acesso
+  accessStatus: {
+    type: String,
+    enum: ['active', 'suspended', 'expired'],
+    default: 'active'
+  },
+  
+  licenseStatus: {
+    isValid: {
+      type: Boolean,
+      default: true
+    },
+    expiresAt: Date,
+    lastChecked: Date,
+    reason: String // 'license_expired', 'payment_failed', 'subscription_cancelled', 'parent_license_expired'
+  },
+  
+  // Preferências de notificação de assinatura
+  subscriptionPreferences: {
+    emailNotifications: {
+      type: Boolean,
+      default: true
+    },
+    smsNotifications: {
+      type: Boolean,
+      default: false
+    },
+    autoRenew: {
+      type: Boolean,
+      default: true
+    }
   }
 }, {
   timestamps: true

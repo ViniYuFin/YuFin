@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const FamilyLicense = require('../models/FamilyLicense');
+const SchoolLicense = require('../models/SchoolLicense');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'yufin-secret-key-change-in-production';
 
@@ -35,6 +37,68 @@ const authenticateToken = async (req, res, next) => {
     // Adicionar usuário ao request para uso nas rotas
     req.user = user;
     req.userId = user._id.toString();
+    
+    // NOVA VERIFICAÇÃO: Checar se licença está ativa (apenas para roles pagos)
+    if (user.role === 'parent' && user.familyLicense?.code) {
+      const license = await FamilyLicense.findOne({ 
+        licenseCode: user.familyLicense.code 
+      });
+      
+      if (!license || !license.isValid()) {
+        // Atualizar status do usuário
+        await User.updateOne(
+          { _id: user._id },
+          { 
+            accessStatus: 'suspended',
+            'licenseStatus.isValid': false,
+            'licenseStatus.reason': 'family_license_expired',
+            'licenseStatus.lastChecked': new Date()
+          }
+        );
+        
+        return res.status(403).json({
+          error: 'Licença expirada ou inativa',
+          code: 'LICENSE_EXPIRED',
+          requiresRenewal: true,
+          gracePeriod: license?.gracePeriod
+        });
+      }
+    }
+    
+    if (user.role === 'school' && user.schoolLicense?.code) {
+      const license = await SchoolLicense.findOne({ 
+        licenseCode: user.schoolLicense.code 
+      });
+      
+      if (!license || !license.isValid()) {
+        // Atualizar status do usuário
+        await User.updateOne(
+          { _id: user._id },
+          { 
+            accessStatus: 'suspended',
+            'licenseStatus.isValid': false,
+            'licenseStatus.reason': 'school_license_expired',
+            'licenseStatus.lastChecked': new Date()
+          }
+        );
+        
+        return res.status(403).json({
+          error: 'Licença expirada ou inativa',
+          code: 'LICENSE_EXPIRED',
+          requiresRenewal: true,
+          gracePeriod: license?.gracePeriod
+        });
+      }
+    }
+    
+    // Verificar se usuário está suspenso
+    if (user.accessStatus === 'suspended') {
+      return res.status(403).json({
+        error: 'Acesso suspenso. Renove sua assinatura para continuar.',
+        code: 'ACCESS_SUSPENDED',
+        reason: user.licenseStatus?.reason || 'unknown'
+      });
+    }
     
     next();
   } catch (error) {

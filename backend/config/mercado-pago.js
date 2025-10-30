@@ -175,8 +175,135 @@ const getPaymentStatus = async (paymentId) => {
     }
 };
 
+// Função para criar assinatura recorrente
+const createSubscription = async (subscriptionData) => {
+    try {
+        const accessToken = process.env.NODE_ENV === 'production' 
+            ? process.env.MERCADO_PAGO_ACCESS_TOKEN_PROD 
+            : process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST;
+
+        const subscription = {
+            reason: subscriptionData.reason || 'Assinatura YüFin',
+            frequency: subscriptionData.frequency || 1,
+            frequency_type: subscriptionData.frequencyType || 'months',
+            billing_day: subscriptionData.billingDay || 1,
+            billing_day_proportional: false,
+            transaction_amount: subscriptionData.amount,
+            currency_id: 'BRL',
+            start_date: subscriptionData.startDate || new Date().toISOString(),
+            end_date: subscriptionData.endDate || null,
+            external_reference: subscriptionData.externalReference,
+            payer: {
+                email: subscriptionData.payerEmail
+            },
+            payment_methods: {
+                excluded_payment_methods: [],
+                excluded_payment_types: ['ticket', 'bank_transfer'], // Excluir PIX e boleto
+                installments: 1
+            }
+        };
+
+        const response = await fetch('https://api.mercadopago.com/preapproval', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(subscription)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Erro ao criar assinatura:', errorText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ Assinatura criada com sucesso:', result.id);
+        
+        return {
+            id: result.id,
+            status: result.status,
+            init_point: result.init_point,
+            sandbox_init_point: result.sandbox_init_point
+        };
+    } catch (error) {
+        console.error('❌ Erro ao criar assinatura:', error);
+        throw error;
+    }
+};
+
+// Função para verificar status da assinatura
+const getSubscriptionStatus = async (subscriptionId) => {
+    try {
+        const accessToken = process.env.NODE_ENV === 'production' 
+            ? process.env.MERCADO_PAGO_ACCESS_TOKEN_PROD 
+            : process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST;
+
+        const response = await fetch(`https://api.mercadopago.com/preapproval/${subscriptionId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const subscription = await response.json();
+        
+        return {
+            id: subscription.id,
+            status: subscription.status,
+            reason: subscription.reason,
+            external_reference: subscription.external_reference,
+            payer: subscription.payer,
+            date_created: subscription.date_created,
+            last_modified: subscription.last_modified
+        };
+    } catch (error) {
+        console.error('❌ Erro ao verificar status da assinatura:', error);
+        throw error;
+    }
+};
+
+// Cancelar uma assinatura (preapproval) por ID
+const cancelSubscriptionById = async (subscriptionId) => {
+    try {
+        const accessToken = process.env.NODE_ENV === 'production' 
+            ? process.env.MERCADO_PAGO_ACCESS_TOKEN_PROD 
+            : process.env.MERCADO_PAGO_ACCESS_TOKEN_TEST;
+
+        const response = await fetch(`https://api.mercadopago.com/preapproval/${subscriptionId}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'cancelled' })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Erro ao cancelar assinatura:', errorText);
+            throw new Error(`HTTP ${response.status}: ${response.statusText} - ${errorText}`);
+        }
+
+        const result = await response.json();
+        return { id: result.id, status: result.status };
+    } catch (error) {
+        console.error('❌ Erro ao cancelar assinatura:', error);
+        throw error;
+    }
+};
+
 module.exports = {
     configureMercadoPago,
     createPaymentPreference,
-    getPaymentStatus
+    getPaymentStatus,
+    createSubscription,
+    getSubscriptionStatus,
+    cancelSubscriptionById
 };

@@ -472,11 +472,11 @@ class LandingAuth {
           Entrar no App
         </a>
         <div class="development-section">
-          <div class="dev-tag-single">EM DESENVOLVIMENTO</div>
-          <a href="#" class="sidebar-nav-item development" onclick="landingAuth.closeSidebar();">
+          <div class="dev-tag-single">ÁREA DO CLIENTE</div>
+          <a href="#" class="sidebar-nav-item" onclick="checkAuthAndRedirect('navigate-licenses', () => { window.location.href='minhas-licencas.html'; landingAuth.closeSidebar(); })">
             Minhas Licenças
           </a>
-          <a href="#" class="sidebar-nav-item development" onclick="landingAuth.closeSidebar();">
+          <a href="#" class="sidebar-nav-item" onclick="checkAuthAndRedirect('navigate-history', () => { window.location.href='historico-pagamentos.html'; landingAuth.closeSidebar(); })">
             Histórico de Pagamentos
           </a>
         </div>
