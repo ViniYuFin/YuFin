@@ -95,9 +95,24 @@
 
     function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString('pt-BR'); }catch{ return '-'; } }
 
-    function licenseBadge(status){
-      const map = { active:'badge active', paid:'badge paid', cancelled:'badge suspended', suspended:'badge suspended', pending:'badge pending' };
-      const label = { active:'Ativa', paid:'Paga', cancelled:'Cancelada', suspended:'Suspensa', pending:'Pendente' };
+    function licenseBadge(license){
+      // Determinar status baseado na expiração
+      const now = new Date();
+      const expiresAt = new Date(license.expiresAt);
+      const isExpired = expiresAt < now;
+      const subscriptionStatus = license.subscription?.status;
+      
+      // Status ativo/inativo baseado na data de expiração
+      let status = isExpired ? 'inactive' : 'active';
+      
+      const map = { 
+        active:'badge active', 
+        inactive:'badge suspended'
+      };
+      const label = { 
+        active:'Ativa', 
+        inactive:'Inativa'
+      };
       return `<span class="${map[status]||'badge'}">${label[status]||status}</span>`;
     }
 
@@ -113,11 +128,24 @@
       if(!data.success || !data.licenses?.length){ empty.style.display='block'; return; }
       empty.style.display='none';
       data.licenses.forEach(l=>{
+        const hasSubscription = l.subscription && l.subscription.status;
+        const isCancelled = hasSubscription && l.subscription.status === 'cancelled';
+        const isPix = l.payment && l.payment.paymentMethod && l.payment.paymentMethod.toLowerCase() === 'pix';
+        
+        let cancelButton = '';
+        if(isPix || !hasSubscription){
+          cancelButton = '<div style="text-align:center;padding:12px;background:#fff3cd;border-radius:8px;color:#856404;font-size:13px;font-weight:600;"><span style="margin-right:6px;">ℹ️</span>PIX não possui recorrência automática</div>';
+        } else if(isCancelled){
+          cancelButton = '<button class="btn" style="background:#f3f4f6;color:#6b7280;border:none;cursor:not-allowed;" disabled>Recorrência Cancelada</button>';
+        } else {
+          cancelButton = '<button class="btn btn-primary" onclick="cancelar(\'' + l.code + '\')">Cancelar recorrência</button>';
+        }
+        
         wrap.insertAdjacentHTML('beforeend',`
           <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:8px;">
               <div style="font-weight:800;font-size:20px;color:#1f2937;">${l.planType==='family'?'Plano Família':'Plano Escola'}</div>
-              ${licenseBadge(l.subscription?.status||l.status)}
+              ${licenseBadge(l)}
             </div>
             <div class="meta">
               <span><strong>Código:</strong> ${l.code}</span>
@@ -127,7 +155,7 @@
             </div>
             <div class="actions">
               <button class="btn btn-secondary" onclick="verHistorico('${l.code}')">Ver histórico</button>
-              <button class="btn btn-primary" onclick="cancelar('${l.code}')">Cancelar recorrência</button>
+              ${cancelButton}
             </div>
           </div>
         `);

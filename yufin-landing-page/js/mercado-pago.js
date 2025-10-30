@@ -117,9 +117,10 @@ async function selectPaymentMethod(method) {
         
         if (preference.success) {
             console.log('💳 DEBUG - Preferência criada com sucesso, redirecionando...');
-            console.log('💳 DEBUG - initPoint:', preference.initPoint);
+            console.log('💳 DEBUG - initPoint:', preference.initPoint || preference.sandboxInitPoint);
             // Redirecionar para Mercado Pago
-            redirectToMercadoPago(preference.initPoint);
+            const initPoint = preference.initPoint || preference.sandboxInitPoint;
+            redirectToMercadoPago(initPoint);
         } else {
             console.error('💳 DEBUG - Preferência falhou:', preference);
             throw new Error(preference.error || 'Erro ao criar preferência de pagamento');
@@ -148,10 +149,33 @@ async function createPaymentPreference() {
         console.log('🔍 DEBUG - Protocol:', window.location.protocol);
         console.log('🔍 DEBUG - Hostname:', window.location.hostname);
         
+        // Obter email do usuário logado (se disponível)
+        let purchaserEmail = null;
+        try {
+            // Tentar primeiro 'landingUser' (para landing page)
+            const landingUser = localStorage.getItem('landingUser');
+            if (landingUser) {
+                const user = JSON.parse(landingUser);
+                purchaserEmail = user.email;
+                console.log('📧 Email do usuário da landing:', purchaserEmail);
+            } else {
+                // Tentar 'user' (fallback para outras telas)
+                const userData = localStorage.getItem('user');
+                if (userData) {
+                    const user = JSON.parse(userData);
+                    purchaserEmail = user.email;
+                    console.log('📧 Email do usuário (fallback):', purchaserEmail);
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Não foi possível obter email do usuário:', e);
+        }
+        
         const requestData = {
             planData: window.currentPlanData,
             paymentMethod: window.currentPaymentMethod,
-            planType: window.currentPlanData.planType || 'family'
+            planType: window.currentPlanData.planType || 'family',
+            purchaserEmail: purchaserEmail
         };
         
         console.log('🔍 DEBUG - Dados da requisição:', requestData);
