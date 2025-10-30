@@ -10,6 +10,7 @@ const crypto = require('crypto');
 const FamilyLicense = require('../models/FamilyLicense');
 const SchoolLicense = require('../models/SchoolLicense');
 const { sendLicenseConfirmationEmail } = require('../utils/emailService');
+const { createSubscription } = require('../config/mercado-pago');
 
 // Configurar Mercado Pago
 const isProduction = process.env.NODE_ENV === 'production';
@@ -111,6 +112,72 @@ router.post('/process-payment', async (req, res) => {
 
             if (licenseResult.success) {
                 console.log('✅ Licença criada com sucesso:', licenseResult.licenseCode);
+                
+                // ✅ NOVO: Se for cartão E PRODUÇÃO, criar assinatura recorrente após pagamento aprovado
+                const isCardPayment = payment_method_id && ['visa', 'master', 'amex', 'elo', 'diners'].includes(payment_method_id.toLowerCase());
+                const isProduction = process.env.NODE_ENV === 'production';
+                
+                if (isCardPayment && planData && isProduction) {
+                    try {
+                        console.log('🔄 Criando assinatura recorrente para pagamento com cartão...');
+                        
+                        const subscriptionData = {
+                            reason: `YüFin ${planType === 'family' ? 'Família' : 'Escola'} - Renovação mensal`,
+                            frequency: 1,
+                            frequencyType: 'months',
+                            billingDay: 1,
+                            amount: transaction_amount,
+                            payerEmail: payer.email,
+                            externalReference: Buffer.from(JSON.stringify({
+                                planType: planType || 'family',
+                                numParents: planData.numParents || 0,
+                                numStudents: planData.numStudents || 1,
+                                totalPrice: transaction_amount,
+                                purchaserEmail: payer.email
+                            })).toString('base64'),
+                            startDate: new Date().toISOString(),
+                            endDate: null
+                        };
+                        
+                        const subscription = await createSubscription(subscriptionData);
+                        console.log('✅ Assinatura recorrente criada:', subscription.id);
+                        
+                        // Atualizar licença com subscription ID
+                        if (planType === 'family') {
+                            const license = await FamilyLicense.findOne({ licenseCode: licenseResult.licenseCode });
+                            if (license) {
+                                license.subscription = {
+                                    id: subscription.id,
+                                    status: 'active',
+                                    nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                                    billingCycle: 'monthly',
+                                    autoRenew: true
+                                };
+                                await license.save();
+                                console.log('✅ Licença atualizada com assinatura');
+                            }
+                        } else if (planType === 'school') {
+                            const license = await SchoolLicense.findOne({ licenseCode: licenseResult.licenseCode });
+                            if (license) {
+                                license.subscription = {
+                                    id: subscription.id,
+                                    status: 'active',
+                                    nextBillingDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+                                    billingCycle: 'monthly',
+                                    autoRenew: true
+                                };
+                                await license.save();
+                                console.log('✅ Licença atualizada com assinatura');
+                            }
+                        }
+                    } catch (subscriptionError) {
+                        console.error('⚠️ Erro ao criar assinatura (pagamento já foi aprovado):', subscriptionError.message);
+                        // Não bloquear a resposta, pois o pagamento já foi aprovado
+                    }
+                } else if (isCardPayment && !isProduction) {
+                    console.log('⚠️ Ambiente de TESTE: Assinatura recorrente não será criada (limitação da conta de teste)');
+                    console.log('✅ Em PRODUÇÃO, a assinatura será criada automaticamente');
+                }
                 
                 return res.json({
                     success: true,

@@ -79,6 +79,7 @@ router.get('/licenses/:code/history', requireToken, async (req, res) => {
       success: true,
       planType,
       licenseCode: license.licenseCode,
+      status: license.status,
       renewalHistory: license.renewalHistory || [],
       payment: license.payment || null,
       subscription: license.subscription || null
