@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histórico de Pagamentos • YüFin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/auth-modals.css">
+  <style>
+    body { font-family: 'Nunito', sans-serif; background:#f5f7fb; color:#1f2937; }
+    .page-hero { background: var(--yufin-gradient); color:white; padding:96px 24px 64px; text-align:center; margin-top:80px; }
+    .page-hero h1 { margin:0; font-size:2.5rem; font-weight:800; color:white; }
+    .page-hero p { color:white; opacity:.95; margin-top:12px; font-size:1.25rem; font-weight:600; }
+    .container { max-width:1200px; margin:32px auto; padding:0 24px; }
+    .filter { display:flex;flex-direction:column;gap:12px;align-items:center;justify-content:center;margin:32px auto;padding:24px 32px;background:white;border-radius:var(--border-radius-lg);box-shadow:var(--shadow-md);border:1px solid rgba(238,145,22,0.1);max-width:600px;}
+    .filter label{font-weight:800;color:#1f2937;font-size:16px;letter-spacing:0.3px;}
+    .filter select{padding:14px 18px;border:2px solid #e5e7eb;border-radius:var(--border-radius-md);background:white;color:#374151;font-weight:600;font-size:15px;width:100%;transition:var(--transition-fast);cursor:pointer;}
+    .filter select:hover{border-color:rgba(238,145,22,0.3);}
+    .filter select:focus{outline:none;border-color:var(--yufin-primary);box-shadow:0 0 0 4px rgba(238,145,22,0.1);transform:translateY(-1px);}
+    table { width:100%;border-collapse:separate;border-spacing:0;background:white;border-radius:var(--border-radius-lg);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(238,145,22,0.1);}
+    th, td { padding:16px 20px;font-size:14px;text-align:center;}
+    th { background:rgba(238,145,22,0.05);color:#1f2937;font-weight:800;font-size:13px;text-transform:uppercase;letter-spacing:0.5px;}
+    td { color:#374151;border-top:1px solid #f0f0f0;}
+    td:first-child, td:nth-child(2) { text-align:center; }
+    tbody tr:hover { background:#f9fafb;}
+    .badge { padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+    .badge.completed{ background:#dcfce7;color:#166534;}
+    .badge.pending{ background:#fef3c7;color:#92400e;}
+    .badge.failed{ background:#fee2e2;color:#991b1b;}
+    .hint { color:#6b7280;font-size:13px;text-align:center;padding:24px;}
+    code{background:#f3f4f6;padding:4px 8px;border-radius:6px;font-size:12px;color:#1f2937;font-family:'Courier New',monospace;}
+    @media (max-width:768px){.container{padding:0 16px;margin:24px auto;}.filter{flex-direction:column;align-items:stretch;}.filter select{max-width:100%;}}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <button class="sidebar-toggle" aria-label="Menu Lateral" onclick="window.landingAuth.openSidebar()" style="display: none;">
+        <span></span><span></span><span></span>
+      </button>
+      <button class="navbar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="navbar-menu">
+        <a href="index-clean.html#hero" class="navbar-link">Início</a>
+        <a href="planos.html" class="navbar-link">Planos</a>
+        <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+      </div>
+      <a href="index-clean.html" class="navbar-logo">YüFin</a>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <h1>Histórico de Pagamentos</h1>
+    <p style="opacity:.9; margin-top:6px">Acompanhe as cobranças e renovações da sua assinatura</p>
+  </section>
+
+  <main class="container">
+    <div class="filter">
+      <label class="hint">Licença:</label>
+      <select id="licenseFilter"></select>
+    </div>
+    <div style="overflow:auto">
+      <table>
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Descrição</th>
+            <th>Valor</th>
+            <th>Método</th>
+            <th>Status</th>
+            <th>Transação</th>
+          </tr>
+        </thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // Carregar scripts de autenticação para o header (sidebar/login)
+  </script>
+  <script src="js/auth-system.js?v=1734731000"></script>
+  <script src="js/auth-modals.js?v=1734731000"></script>
+  <script>
+    // Guard de autenticação: exige login
+    (function(){
+      const raw = localStorage.getItem('landingUser') || localStorage.getItem('landingAuth');
+      if(!raw){ alert('Faça login para acessar o histórico.'); window.location.href='planos.html'; }
+    })();
+
+    const API_BASE = (location.hostname.includes('localhost')||location.hostname.includes('127.0.0.1'))
+      ? 'http://localhost:3001'
+      : 'https://yufin-backend.vercel.app';
+
+    function getToken(){
+      const lu = localStorage.getItem('landingUser');
+      if(lu){ try{ return (JSON.parse(lu)||{}).token; } catch{} }
+      return localStorage.getItem('accessToken')
+        || localStorage.getItem('token')
+        || localStorage.getItem('landingToken')
+        || (JSON.parse(localStorage.getItem('landingAuth')||'{}').token);
+    }
+
+    const fmt = (n)=>`R$ ${(n||0).toFixed(2).replace('.',',')}`;
+    const fmtDate=(d)=>{try{return new Date(d).toLocaleDateString('pt-BR');}catch{return '-';}};
+    function badge(s){
+      const map={
+        completed:'completed',pending:'pending',failed:'failed',
+        paid:'completed',active:'completed',expired:'failed',used:'completed'
+      };
+      const label={
+        completed:'Concluído',pending:'Pendente',failed:'Falhou',
+        paid:'Pago',active:'Ativo',expired:'Expirado',used:'Usado'
+      };
+      return `<span class="badge ${map[s]||'pending'}">${label[s]||s}</span>`;
+    }
+
+    async function loadLicensesIntoFilter(){
+      const token = getToken();
+      // Usar endpoint existente da landing até o backend com novas rotas estar no ar
+      const r = await fetch(`${API_BASE}/api/landing/licenses`,{ headers:{ Authorization:`Bearer ${token}` }});
+      const d = await r.json();
+      const sel = document.getElementById('licenseFilter');
+      sel.innerHTML = '';
+      (d.licenses||[]).forEach(l=>{
+        const opt = document.createElement('option');
+        opt.value = l.code; opt.textContent = `${l.planType==='family'?'Família':'Escola'} • ${l.code}`;
+        sel.appendChild(opt);
+      });
+      const urlCode = new URLSearchParams(location.search).get('code');
+      if(urlCode) sel.value = urlCode;
+      loadHistory();
+      sel.addEventListener('change', loadHistory);
+    }
+
+    async function loadHistory(){
+      const code = document.getElementById('licenseFilter').value;
+      if(!code) return;
+      const token = getToken();
+      const tbody = document.getElementById('rows');
+      tbody.innerHTML = '';
+      const r = await fetch(`${API_BASE}/api/licenses/${encodeURIComponent(code)}/history`,{ headers:{ Authorization:`Bearer ${token}` }});
+      if(!r.ok){ tbody.innerHTML=`<tr><td colspan="6" class="hint">Erro ao carregar histórico: ${r.status}</td></tr>`; return; }
+      const d = await r.json();
+      const items = [];
+      // Pagamento inicial (Pix ou cartão único)
+      if(d.payment && d.payment.amount){
+        const paymentMethod = d.payment.paymentMethod || 'Cartão';
+        const methodLabel = paymentMethod.toLowerCase() === 'pix' ? 'PIX' : 'Cartão';
+        items.push({ 
+          date: d.payment.paidAt || d.payment.createdAt, 
+          description: 'Pagamento inicial', 
+          amount: d.payment.amount, 
+          method: methodLabel,
+          status: d.status || 'paid', 
+          tx: d.payment.transactionId || '-' 
+        });
+      }
+      // Renovações (apenas para assinaturas recorrentes)
+      (d.renewalHistory||[]).forEach(h=> items.push({ 
+        date: h.renewedAt, 
+        description: 'Renovação mensal', 
+        amount: h.amount, 
+        method: 'Cartão',
+        status: h.status==='success'?'completed':'failed', 
+        tx: h.transactionId || '-' 
+      }));
+      items.sort((a,b)=> new Date(b.date)-new Date(a.date));
+      if(!items.length){ tbody.innerHTML = `<tr><td colspan="6" class="hint">Nenhum registro encontrado para esta licença.</td></tr>`; return; }
+      items.forEach(i=>{
+        const methodBadge = i.method === 'PIX' 
+          ? `<span class="badge" style="background:#e0e7ff;color:#4338ca;">PIX</span>`
+          : `<span class="badge" style="background:#f3f4f6;color:#4b5563;">CARTÃO</span>`;
+        tbody.insertAdjacentHTML('beforeend',`
+          <tr>
+            <td>${fmtDate(i.date)}</td>
+            <td>${i.description}</td>
+            <td>${fmt(i.amount||0)}</td>
+            <td>${methodBadge}</td>
+            <td>${badge(i.status)}</td>
+            <td><code>${i.tx||'-'}</code></td>
+          </tr>
+        `);
+      });
+    }
+
+    loadLicensesIntoFilter();
+  </script>
+</body>
+</html>
+
+

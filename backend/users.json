@@ -1,0 +1,115 @@
+[
+  {
+    "name": "Vinicius Assunção",
+    "email": "vinicius.assuncao2000@gmail.com",
+    "password": "Jeova@123",
+    "role": "student",
+    "passwordHash": "Jeova@123",
+    "id": 1,
+    "createdAt": "2025-07-17T19:42:49.290Z",
+    "progress": {
+      "xp": 500,
+      "level": 3,
+      "xpToNextLevel": 900,
+      "streak": 5,
+      "dailyGoal": 50,
+      "dailyProgress": 500,
+      "yuCoins": 50,
+      "completedLessons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "perfectLessons": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "achievements": [
+        "first_lesson",
+        "streak_3"
+      ],
+      "totalXp": 0,
+      "maxXp": 1000,
+      "hearts": 3,
+      "activeEffects": [],
+      "inventory": [],
+      "avatar": {
+        "accessory": "none"
+      },
+      "timeSpent": 0,
+      "totalLessonsCompleted": 0,
+      "lastActivityDate": null,
+      "currentStreak": 0,
+      "bestStreak": 0,
+      "weeklyProgress": 0,
+      "monthlyProgress": 0
+    },
+    "savings": {
+      "balance": 15,
+      "transactions": [
+        {
+          "amount": 1,
+          "reason": "Incentivo: 1 lição(ões) concluída(s), 1 lição(ões) perfeita(s)",
+          "date": "2025-07-24T00:17:46.587Z"
+        },
+        {
+          "amount": 2,
+          "reason": "Incentivo: 2 lição(ões) concluída(s), 2 lição(ões) perfeita(s)",
+          "date": "2025-07-24T00:18:04.885Z"
+        },
+        {
+          "amount": 3,
+          "reason": "Incentivo: 3 lição(ões) concluída(s), 3 lição(ões) perfeita(s)",
+          "date": "2025-07-24T00:18:15.066Z"
+        },
+        {
+          "amount": 4,
+          "reason": "Incentivo: 4 lição(ões) concluída(s), 4 lição(ões) perfeita(s)",
+          "date": "2025-07-24T00:18:24.325Z"
+        },
+        {
+          "amount": 5,
+          "reason": "Incentivo: 5 lição(ões) concluída(s), 5 lição(ões) perfeita(s)",
+          "date": "2025-07-24T00:18:43.238Z"
+        }
+      ],
+      "goals": []
+    }
+  },
+  {
+    "name": "Silvia Nascimento",
+    "email": "silvia@gmail.com",
+    "password": "Jeova@123",
+    "role": "parent",
+    "passwordHash": "Jeova@123",
+    "id": 2,
+    "createdAt": "2025-07-18T12:39:49.973Z",
+    "linkedStudents": [
+      1
+    ],
+    "savingsConfig": {
+      "perLesson": 0.5,
+      "perStreak": 1,
+      "perPerfectLesson": 0.5,
+      "perLevelUp": 1,
+      "perAchievement": 3,
+      "autoTransfer": false,
+      "monthlyLimit": 100,
+      "weeklyGoal": 20
+    }
+  },
+  {
+    "name": "Crescer",
+    "email": "crescer@gmail.com",
+    "password": "Jeova@123",
+    "role": "school",
+    "passwordHash": "Jeova@123",
+    "id": 3,
+    "createdAt": "2025-07-18T12:41:26.593Z"
+  }
+]

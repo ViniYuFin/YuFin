@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Termos de Uso - <span class="yufin-logo">YüFin</span></title>
+    <meta name="description" content="Termos de Uso da plataforma <span class='yufin-logo'>YüFin</span> - Educação Financeira Gamificada">
+    
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <style>
+        /* Estilos específicos para página de termos */
+        .legal-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding-top: 80px;
+        }
+        
+        .legal-container {
+            max-width: 800px;
+            margin: 2rem auto 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #ee9116;
+        }
+        
+        .legal-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 400;
+        }
+        
+        .legal-content {
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        
+        .legal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ee9116;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .legal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .legal-content ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .legal-content strong {
+            color: #ee9116;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--yufin-gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(238, 145, 22, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .contact-info {
+            background: linear-gradient(135deg, rgba(238, 145, 22, 0.1) 0%, rgba(255, 179, 0, 0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid #ee9116;
+        }
+        
+        .contact-info h3 {
+            color: #ee9116;
+            margin-top: 0;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* Estilo do logo YüFin no navbar */
+        .navbar-logo {
+            font-size: 3rem;
+            font-family: 'Cherry Bomb One', cursive;
+            font-weight: 400;
+            background: var(--yufin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition-normal);
+            line-height: 1;
+            margin: 0;
+            padding: 0.5rem 0;
+        }
+        
+        /* Estilo para referências YüFin no conteúdo */
+        .yufin-logo {
+            font-family: 'Cherry Bomb One', cursive;
+            font-weight: 400;
+            background: var(--yufin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0.2em;
+            display: inline;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .legal-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .legal-title {
+                font-size: 2rem;
+            }
+            
+            .legal-content h2 {
+                font-size: 1.3rem;
+            }
+            
+            .navbar-logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index-clean.html" class="back-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Voltar ao Início
+            </a>
+            
+            <div class="navbar-menu">
+                <a href="index-clean.html" class="navbar-link">Início</a>
+                <a href="planos.html" class="navbar-link">Planos</a>
+                <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+            </div>
+            
+            <a href="index-clean.html" class="navbar-logo">YüFin</a>
+        </div>
+    </nav>
+
+    <div class="legal-page">
+        <div class="legal-container">
+            
+            <div class="legal-header">
+                <h1 class="legal-title">Termos de Uso</h1>
+                <p class="legal-subtitle"><span class="yufin-logo">YüFin</span> - Educação Financeira Gamificada</p>
+            </div>
+            
+            <div class="legal-content">
+                <h2>1. Aceitação dos Termos</h2>
+                <p>Ao usar a plataforma <span class="yufin-logo">YüFin</span>, você concorda com estes termos de uso. Se não concordar com qualquer parte destes termos, não deve utilizar nossa plataforma.</p>
+
+                <h2>2. Definições</h2>
+                <ul>
+                    <li><span class="yufin-logo">YüFin</span>: Plataforma de educação financeira gamificada</li>
+                    <li><strong>Usuário:</strong> Pessoa que utiliza a plataforma</li>
+                    <li><strong>Responsável:</strong> Pai, mãe ou tutor legal</li>
+                    <li><strong>Estudante:</strong> Menor de idade usuário da plataforma</li>
+                </ul>
+
+                <h2>3. Tipos de Usuários</h2>
+                
+                <h3>Estudantes:</h3>
+                <ul>
+                    <li>Menores de 18 anos</li>
+                    <li>Precisam de token de registro</li>
+                    <li>Consentimento parental obrigatório</li>
+                </ul>
+
+                <h3>Responsáveis:</h3>
+                <ul>
+                    <li>Pais, mães ou tutores</li>
+                    <li>Podem gerar tokens para filhos</li>
+                    <li>Acompanham progresso dos filhos</li>
+                </ul>
+
+                <h3>Escolas:</h3>
+                <ul>
+                    <li>Instituições de ensino</li>
+                    <li>Podem registrar estudantes</li>
+                    <li>Acesso a relatórios da escola</li>
+                </ul>
+
+                <h2>4. Obrigações do Usuário</h2>
+                
+                <h3>Todos os usuários devem:</h3>
+                <ul>
+                    <li>Fornecer informações verdadeiras e atualizadas</li>
+                    <li>Manter senha segura e confidencial</li>
+                    <li>Respeitar outros usuários da plataforma</li>
+                    <li>Não compartilhar conta com terceiros</li>
+                    <li>Usar a plataforma apenas para fins educacionais</li>
+                </ul>
+
+                <h3>Responsáveis devem:</h3>
+                <ul>
+                    <li>Autorizar uso da plataforma por menores</li>
+                    <li>Supervisionar atividades dos filhos</li>
+                    <li>Manter dados de contato atualizados</li>
+                    <li>Garantir que menores sigam as regras da plataforma</li>
+                </ul>
+
+                <h2>5. Obrigações da <span class="yufin-logo">YüFin</span></h2>
+                <ul>
+                    <li>Proteger dados pessoais conforme LGPD</li>
+                    <li>Manter plataforma funcionando adequadamente</li>
+                    <li>Respeitar legislação brasileira</li>
+                    <li>Fornecer suporte técnico quando necessário</li>
+                    <li>Manter transparência sobre uso de dados</li>
+                </ul>
+
+                <h2>6. Conteúdo e Gamificação</h2>
+                <ul>
+                    <li><span class="yufin-logo">YuCoins</span> são moedas virtuais educacionais</li>
+                    <li>Não têm valor monetário real</li>
+                    <li>Conquistas são simbólicas e educativas</li>
+                    <li>Progresso é baseado em aprendizado</li>
+                    <li>Conteúdo é desenvolvido por especialistas em educação financeira</li>
+                </ul>
+
+                <h2>7. Privacidade e Dados</h2>
+                <ul>
+                    <li>Dados protegidos conforme Lei Geral de Proteção de Dados (LGPD)</li>
+                    <li>Consentimento explícito obrigatório</li>
+                    <li>Direito à exclusão garantido</li>
+                    <li>Transparência total sobre coleta e uso</li>
+                    <li>Política de privacidade detalhada disponível</li>
+                </ul>
+
+                <h2>8. Limitações de Responsabilidade</h2>
+                <p>A <span class="yufin-logo">YüFin</span> não se responsabiliza por:</p>
+                <ul>
+                    <li>Uso inadequado da plataforma</li>
+                    <li>Perda de dados por descuido do usuário</li>
+                    <li>Problemas de conectividade de internet</li>
+                    <li>Danos indiretos ou consequenciais</li>
+                    <li>Resultados educacionais específicos</li>
+                </ul>
+
+                <h2>9. Modificações</h2>
+                <ul>
+                    <li>Termos podem ser atualizados periodicamente</li>
+                    <li>Usuários serão notificados sobre mudanças</li>
+                    <li>Uso continuado após mudanças = aceitação</li>
+                    <li>Versão atual sempre disponível no site</li>
+                </ul>
+
+                <h2>10. Resolução de Conflitos</h2>
+                <ol>
+                    <li><strong>Primeiro:</strong> Contato direto com nossa equipe</li>
+                    <li><strong>Segundo:</strong> Mediação quando necessário</li>
+                    <li><strong>Terceiro:</strong> Arbitragem conforme legislação</li>
+                </ol>
+
+                <h2>11. Lei Aplicável</h2>
+                <ul>
+                    <li>Lei brasileira (Lei nº 13.709/2018 - LGPD)</li>
+                    <li>Código de Defesa do Consumidor</li>
+                    <li>Marco Civil da Internet</li>
+                    <li>Estatuto da Criança e do Adolescente</li>
+                </ul>
+
+                <div class="contact-info">
+                    <h3>12. Contato</h3>
+                    <p><strong>Suporte:</strong> contato.yufin@gmail.com</p>
+                    <p><strong>LGPD:</strong> contato.yufin@gmail.com</p>
+                    <p><strong>Comercial:</strong> contato.yufin@gmail.com</p>
+                    <p><strong>Telefone:</strong> (11) 94046-5848</p>
+                </div>
+            </div>
+            
+            <div class="last-updated">
+                <p><strong>Última atualização:</strong> Janeiro de 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth-system.js"></script>
+    <script src="js/auth-modals.js"></script>
+    
+    <script>
+        // Inicializar sistema de autenticação
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 Página de Termos de Uso carregada');
+        });
+    </script>
+</body>
+</html>

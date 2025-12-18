@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidade - <span class="yufin-logo">YüFin</span></title>
+    <meta name="description" content="Política de Privacidade da plataforma <span class='yufin-logo'>YüFin</span> - Educação Financeira Gamificada">
+    
+    <!-- Fontes -->
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Principal -->
+    <link rel="stylesheet" href="css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    
+    <style>
+        /* Estilos específicos para página de política de privacidade */
+        .legal-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding-top: 80px;
+        }
+        
+        .legal-container {
+            max-width: 800px;
+            margin: 2rem auto 0;
+            padding: 2rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .legal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #ee9116;
+        }
+        
+        .legal-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-subtitle {
+            font-size: 1.1rem;
+            color: #6c757d;
+            font-weight: 400;
+        }
+        
+        .legal-content {
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        
+        .legal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ee9116;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .legal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 1.5rem 0 0.8rem 0;
+        }
+        
+        .legal-content p {
+            margin-bottom: 1rem;
+            text-align: justify;
+        }
+        
+        .legal-content ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .legal-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .legal-content strong {
+            color: #ee9116;
+            font-weight: 600;
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--yufin-gradient);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 0;
+            height: 40px;
+            box-sizing: border-box;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(238, 145, 22, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .data-category {
+            background: linear-gradient(135deg, rgba(238, 145, 22, 0.1) 0%, rgba(255, 179, 0, 0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            border-left: 4px solid #ee9116;
+        }
+        
+        .data-category h3 {
+            color: #ee9116;
+            margin-top: 0;
+        }
+        
+        .rights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .right-item {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #ee9116;
+        }
+        
+        .right-item h4 {
+            color: #ee9116;
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+        
+        .right-item p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .contact-info {
+            background: linear-gradient(135deg, rgba(238, 145, 22, 0.1) 0%, rgba(255, 179, 0, 0.05) 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+            border-left: 4px solid #ee9116;
+        }
+        
+        .contact-info h3 {
+            color: #ee9116;
+            margin-top: 0;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        /* Estilo do logo YüFin no navbar */
+        .navbar-logo {
+            font-size: 3rem;
+            font-family: 'Cherry Bomb One', cursive;
+            font-weight: 400;
+            background: var(--yufin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+            transition: var(--transition-normal);
+            line-height: 1;
+            margin: 0;
+            padding: 0.5rem 0;
+        }
+        
+        /* Estilo para referências YüFin no conteúdo */
+        .yufin-logo {
+            font-family: 'Cherry Bomb One', cursive;
+            font-weight: 400;
+            background: var(--yufin-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0.2em;
+            display: inline;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .legal-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .legal-title {
+                font-size: 2rem;
+            }
+            
+            .legal-content h2 {
+                font-size: 1.3rem;
+            }
+            
+            .rights-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .navbar-logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index-clean.html" class="back-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                Voltar ao Início
+            </a>
+            
+            <div class="navbar-menu">
+                <a href="index-clean.html" class="navbar-link">Início</a>
+                <a href="planos.html" class="navbar-link">Planos</a>
+                <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+            </div>
+            
+            <a href="index-clean.html" class="navbar-logo">YüFin</a>
+        </div>
+    </nav>
+
+    <div class="legal-page">
+        <div class="legal-container">
+            
+            <div class="legal-header">
+                <h1 class="legal-title">Política de Privacidade</h1>
+                <p class="legal-subtitle"><span class="yufin-logo">YüFin</span> - Educação Financeira Gamificada</p>
+            </div>
+            
+            <div class="legal-content">
+                <h2>1. Informações Gerais</h2>
+                <p><strong>Responsável pelo tratamento:</strong> <span class="yufin-logo">YüFin</span> Educação Financeira Ltda.</p>
+                <p><strong>Email:</strong> contato.yufin@gmail.com</p>
+                <p><strong>CNPJ:</strong> 61.003.145/0001-30</p>
+                <p><strong>Endereço:</strong> São Paulo, SP, Brasil</p>
+
+                <h2>2. Dados Coletados</h2>
+                
+                <div class="data-category">
+                    <h3>Dados Pessoais:</h3>
+                    <ul>
+                        <li>Nome completo</li>
+                        <li>Email</li>
+                        <li>Data de nascimento</li>
+                        <li>Série escolar</li>
+                        <li>Escola</li>
+                        <li>Telefone (opcional)</li>
+                    </ul>
+                </div>
+
+                <div class="data-category">
+                    <h3>Dados Educacionais:</h3>
+                    <ul>
+                        <li>Progresso nas lições</li>
+                        <li>Notas e avaliações</li>
+                        <li>Tempo de estudo</li>
+                        <li>Conquistas e gamificação</li>
+                        <li><span class="yufin-logo">YuCoins</span> (moeda virtual)</li>
+                        <li>Metas de poupança</li>
+                    </ul>
+                </div>
+
+                <div class="data-category">
+                    <h3>Dados Técnicos:</h3>
+                    <ul>
+                        <li>Endereço IP</li>
+                        <li>Informações do navegador</li>
+                        <li>Data e hora de acesso</li>
+                        <li>Páginas visitadas</li>
+                    </ul>
+                </div>
+
+                <h2>3. Finalidade do Tratamento</h2>
+                <ul>
+                    <li><strong>Educação financeira gamificada:</strong> Fornecer conteúdo educativo personalizado</li>
+                    <li><strong>Acompanhamento de progresso:</strong> Monitorar evolução do aprendizado</li>
+                    <li><strong>Comunicação:</strong> Enviar informações sobre a plataforma</li>
+                    <li><strong>Melhoria da plataforma:</strong> Analisar uso para otimizar funcionalidades</li>
+                    <li><strong>Suporte técnico:</strong> Resolver problemas e dúvidas</li>
+                </ul>
+
+                <h2>4. Base Legal</h2>
+                <ul>
+                    <li><strong>Consentimento</strong> (art. 7º, I, LGPD) - Para menores de 18 anos</li>
+                    <li><strong>Execução de contrato</strong> (art. 7º, V, LGPD) - Para prestação do serviço</li>
+                    <li><strong>Legítimo interesse</strong> (art. 7º, IX, LGPD) - Para melhorias da plataforma</li>
+                    <li><strong>Cumprimento de obrigação legal</strong> (art. 7º, II, LGPD) - Para menores</li>
+                </ul>
+
+                <h2>5. Compartilamento de Dados</h2>
+                <p>Os dados <strong>NÃO são compartilhados</strong> com terceiros, exceto:</p>
+                <ul>
+                    <li><strong>Pais/responsáveis:</strong> Para menores de idade</li>
+                    <li><strong>Escolas:</strong> Com autorização expressa</li>
+                    <li><strong>Autoridades competentes:</strong> Quando solicitado por lei</li>
+                    <li><strong>Prestadores de serviço:</strong> Para funcionamento da plataforma (com contratos de proteção)</li>
+                </ul>
+
+                <h2>6. Seus Direitos</h2>
+                <div class="rights-grid">
+                    <div class="right-item">
+                        <h4>🔍 Acesso</h4>
+                        <p>Ver quais dados temos sobre você</p>
+                    </div>
+                    <div class="right-item">
+                        <h4>✏️ Correção</h4>
+                        <p>Corrigir dados incorretos ou incompletos</p>
+                    </div>
+                    <div class="right-item">
+                        <h4>🗑️ Exclusão</h4>
+                        <p>Solicitar remoção dos seus dados</p>
+                    </div>
+                    <div class="right-item">
+                        <h4>📤 Portabilidade</h4>
+                        <p>Exportar seus dados em formato legível</p>
+                    </div>
+                    <div class="right-item">
+                        <h4>🚫 Revogação</h4>
+                        <p>Cancelar consentimento a qualquer momento</p>
+                    </div>
+                    <div class="right-item">
+                        <h4>📊 Informação</h4>
+                        <p>Saber como seus dados são tratados</p>
+                    </div>
+                </div>
+
+                <h2>7. Como Exercer Seus Direitos</h2>
+                <ul>
+                    <li><strong>Exportar dados:</strong> Use o botão "Exportar Dados" no seu perfil</li>
+                    <li><strong>Excluir dados:</strong> Use o botão "Excluir Conta" no seu perfil</li>
+                    <li><strong>Outras solicitações:</strong> Envie email para contato.yufin@gmail.com</li>
+                    <li><strong>Prazo de resposta:</strong> Até 15 dias úteis</li>
+                </ul>
+
+                <h2>8. Segurança dos Dados</h2>
+                <ul>
+                    <li><strong>Criptografia:</strong> Senhas protegidas com bcrypt</li>
+                    <li><strong>Conexões seguras:</strong> HTTPS em todas as comunicações</li>
+                    <li><strong>Acesso restrito:</strong> Apenas funcionários autorizados</li>
+                    <li><strong>Logs de auditoria:</strong> Registro de todas as ações</li>
+                    <li><strong>Backup seguro:</strong> Dados protegidos contra perda</li>
+                </ul>
+
+                <h2>9. Retenção de Dados</h2>
+                <ul>
+                    <li><strong>Contas ativas:</strong> Enquanto a conta existir</li>
+                    <li><strong>Contas inativas:</strong> 5 anos após último acesso</li>
+                    <li><strong>Menores de idade:</strong> Até completarem 18 anos</li>
+                    <li><strong>Dados de pagamento:</strong> Conforme legislação fiscal</li>
+                </ul>
+
+                <h2>10. Cookies e Tecnologias Similares</h2>
+                <ul>
+                    <li><strong>Cookies essenciais:</strong> Para funcionamento da plataforma</li>
+                    <li><strong>Cookies de preferências:</strong> Para personalizar experiência</li>
+                    <li><strong>Cookies analíticos:</strong> Para melhorar a plataforma</li>
+                    <li><strong>Controle:</strong> Você pode gerenciar cookies no navegador</li>
+                </ul>
+
+                <h2>11. Transferência Internacional</h2>
+                <p>Seus dados são armazenados no Brasil. Caso seja necessário transferir dados para outros países, garantiremos proteção adequada conforme LGPD.</p>
+
+                <h2>12. Menores de Idade</h2>
+                <ul>
+                    <li><strong>Consentimento parental:</strong> Obrigatório para menores</li>
+                    <li><strong>Supervisão:</strong> Pais podem acompanhar atividades</li>
+                    <li><strong>Proteção especial:</strong> Dados de menores têm proteção adicional</li>
+                    <li><strong>Exclusão facilitada:</strong> Pais podem solicitar exclusão</li>
+                </ul>
+
+                <h2>13. Alterações na Política</h2>
+                <ul>
+                    <li>Esta política pode ser atualizada periodicamente</li>
+                    <li>Usuários serão notificados sobre mudanças importantes</li>
+                    <li>Versão atual sempre disponível no site</li>
+                    <li>Uso continuado após mudanças = aceitação</li>
+                </ul>
+
+                <div class="contact-info">
+                    <h3>14. Contato</h3>
+                    <p><strong>DPO (Data Protection Officer):</strong></p>
+                    <p><strong>Email:</strong> contato.yufin@gmail.com</p>
+                    <p><strong>Telefone:</strong> (11) 94046-5848</p>
+                    <p><strong>Endereço:</strong> São Paulo, SP, Brasil</p>
+                    <p><strong>Horário de atendimento:</strong> Segunda a sexta, 9h às 18h</p>
+                </div>
+            </div>
+            
+            <div class="last-updated">
+                <p><strong>Última atualização:</strong> Janeiro de 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/auth-system.js"></script>
+    <script src="js/auth-modals.js"></script>
+    
+    <script>
+        // Inicializar sistema de autenticação
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('📄 Página de Política de Privacidade carregada');
+        });
+    </script>
+</body>
+</html>

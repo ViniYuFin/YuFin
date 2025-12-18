@@ -1,0 +1,672 @@
+/**
+ * YüFin - Responsividade
+ * Arquivo dedicado APENAS para adaptação a diferentes tamanhos de tela
+ * SEM alteração de identidade visual, layout ou tamanhos
+ */
+
+/* ===== DESKTOP GRANDE (1200px+) ===== */
+@media (min-width: 1200px) {
+  .navbar-container {
+    max-width: 1400px;
+  }
+  
+  .section-container {
+    max-width: 1400px;
+  }
+  
+  .plans-container {
+    max-width: 1400px;
+  }
+}
+
+/* ===== NOTEBOOK (992px - 1199px) ===== */
+@media (max-width: 1199px) and (min-width: 992px) {
+  .navbar-container {
+    padding: 0 1.5rem;
+  }
+  
+  .section-container {
+    padding: 0 1.5rem;
+  }
+  
+  .plans-container {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* ===== TABLET LANDSCAPE (768px - 991px) ===== */
+@media (max-width: 991px) and (min-width: 768px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+  
+  .navbar-menu {
+    gap: 1.5rem;
+  }
+  
+  .section-container {
+    padding: 0 1rem;
+  }
+  
+  .plans-container {
+    padding: 2.5rem 1rem;
+  }
+  
+  .plans-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .hero-content {
+    padding: 0 1rem;
+  }
+  
+  .grid {
+    gap: 1.5rem;
+  }
+  
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== TABLET PORTRAIT (576px - 767px) ===== */
+@media (max-width: 767px) and (min-width: 576px) {
+  .navbar-container {
+    padding: 0 1rem;
+  }
+  
+  .navbar-menu {
+    gap: 1rem;
+  }
+  
+  .navbar-link {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  
+  .section-container {
+    padding: 0 1rem;
+  }
+  
+  .plans-container {
+    padding: 2rem 1rem;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .hero-content {
+    padding: 0 1rem;
+  }
+  
+  .grid {
+    gap: 1.5rem;
+  }
+  
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .innovation-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .innovation-card {
+    min-width: 260px;
+    max-width: 300px;
+  }
+  
+  .integrated-ready-section {
+    padding: 3rem 1rem;
+  }
+  
+  .section-divider {
+    margin: 1.5rem 0;
+  }
+  
+  .ready-badges {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+/* ===== CELULAR GRANDE (480px - 575px) ===== */
+@media (max-width: 575px) and (min-width: 480px) {
+  .navbar-container {
+    padding: 0 0.75rem;
+  }
+  
+  .navbar-menu {
+    gap: 0.8rem;
+  }
+  
+  .navbar-link {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.85rem;
+  }
+  
+  .section-container {
+    padding: 0 0.75rem;
+  }
+  
+  .plans-container {
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+  
+  .plan-card {
+    padding: 1.5rem;
+  }
+  
+  .hero-content {
+    padding: 0 0.75rem;
+  }
+  
+  .grid {
+    gap: 1.25rem;
+  }
+  
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .innovation-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
+  .innovation-card {
+    min-width: 240px;
+    max-width: 280px;
+    padding: 1.5rem;
+  }
+  
+  .integrated-ready-section {
+    padding: 2.5rem 0.75rem;
+  }
+  
+  .section-divider {
+    margin: 1.25rem 0;
+  }
+  
+  .ready-badges {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .faq-container {
+    padding: 0 0.5rem;
+  }
+}
+
+/* ===== CELULAR PEQUENO (até 479px) ===== */
+@media (max-width: 479px) {
+  .navbar-container {
+    padding: 0.75rem 0.5rem;
+    height: 85px;
+    min-height: 85px;
+  }
+  
+  .navbar-logo {
+    font-size: 1.8rem;
+  }
+  
+  .navbar-menu {
+    top: 85px;
+    gap: 0.6rem;
+  }
+  
+  .navbar-toggle {
+    padding: 0.5rem;
+    height: 44px;
+    width: 44px;
+  }
+  
+  .navbar-toggle span {
+    width: 18px;
+    height: 2px;
+    margin: 1.5px 0;
+  }
+  
+  /* Animações do hambúrguer para celulares pequenos */
+  .navbar-toggle.active span:nth-child(1) {
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 14px;
+  }
+  
+  .navbar-toggle.active span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0);
+  }
+  
+  .navbar-toggle.active span:nth-child(3) {
+    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 14px;
+  }
+  
+  /* Ajustar padding do hero para celulares pequenos */
+  .hero {
+    padding-top: 105px;
+  }
+  
+  .navbar-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+  }
+  
+  /* Botão Entrar no menu mobile para celulares pequenos */
+  .navbar-btn-entrar {
+    padding: 0.6rem 1.2rem !important;
+    font-size: 0.9rem !important;
+    margin-top: 0.4rem !important;
+  }
+  
+  .section-container {
+    padding: 0 0.5rem;
+  }
+  
+  .plans-container {
+    padding: 1rem 0.5rem;
+  }
+  
+  .plans-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .plan-card {
+    padding: 1.25rem;
+  }
+  
+  .hero-content {
+    padding: 0 0.5rem;
+  }
+  
+  .grid {
+    gap: 1rem;
+  }
+  
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .innovation-grid {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  
+  .innovation-card {
+    min-width: 200px;
+    max-width: 260px;
+    padding: 1.25rem;
+  }
+  
+  .integrated-ready-section {
+    padding: 2rem 0.5rem;
+  }
+  
+  .section-divider {
+    margin: 1rem 0;
+  }
+  
+  .ready-badges {
+    flex-direction: column;
+    gap: 0.4rem;
+    align-items: center;
+  }
+  
+  .faq-container {
+    padding: 0 0.25rem;
+  }
+  
+  .contact-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .mvp-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+}
+
+/* ===== NAVEGAÇÃO MOBILE MELHORADA ===== */
+@media (max-width: 767px) {
+  /* Garantir que a navbar não seja cortada */
+  .navbar {
+    padding-top: 0;
+    margin-top: 0;
+  }
+  
+  /* Ajustar container da navbar para mobile */
+  .navbar-container {
+    height: 90px;
+    padding: 1rem;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 90px;
+    box-sizing: border-box;
+  }
+  
+  /* Logo responsivo */
+  .navbar-logo {
+    font-size: 2rem;
+    flex-shrink: 0;
+    margin-right: 1rem;
+  }
+  
+  /* Menu mobile - escondido por padrão */
+  .navbar-menu {
+    position: fixed;
+    top: 90px;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    gap: 1rem;
+    opacity: 0;
+    visibility: hidden;
+    display: flex !important;
+  }
+  
+  .navbar-menu.active {
+    transform: translateY(0) !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    display: flex !important;
+  }
+  
+  /* Botão hambúrguer */
+  .navbar-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem;
+    margin-left: auto;
+    z-index: 1001;
+    align-self: center;
+    height: 48px;
+    width: 48px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .navbar-toggle:hover {
+    background-color: rgba(238, 145, 22, 0.1);
+  }
+  
+  /* Garantir que o X não seja cortado */
+  .navbar-toggle {
+    overflow: visible !important;
+    position: relative;
+  }
+  
+  .navbar-toggle span {
+    overflow: visible !important;
+    position: relative;
+  }
+  
+  /* Centralizar o X perfeitamente */
+  .navbar-toggle.active span:nth-child(1),
+  .navbar-toggle.active span:nth-child(3) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+  }
+  
+  .navbar-toggle span {
+    width: 20px;
+    height: 2px;
+    background: var(--yufin-primary) !important;
+    border-radius: 1px;
+    transition: var(--transition-fast);
+    display: block !important;
+    margin: 2px 0;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+  
+  /* Animações do hambúrguer */
+  .navbar-toggle.active span:nth-child(1) {
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 16px;
+  }
+  
+  .navbar-toggle.active span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0);
+  }
+  
+  .navbar-toggle.active span:nth-child(3) {
+    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 16px;
+  }
+  
+  /* Links do menu mobile */
+  .navbar-menu .navbar-link {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    font-size: 1.1rem;
+  }
+  
+  /* Botão Entrar no menu mobile */
+  .navbar-menu .btn {
+    margin: 0.5rem 0;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+  }
+  
+  /* Estilo específico para o botão Entrar no menu mobile */
+  .navbar-btn-entrar {
+    background: var(--yufin-primary) !important;
+    color: white !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    text-align: center !important;
+    margin-top: 0.5rem !important;
+    border: 2px solid var(--yufin-primary) !important;
+    transition: all 0.3s ease !important;
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .navbar-btn-entrar:hover {
+    background: var(--yufin-primary-dark) !important;
+    border-color: var(--yufin-primary-dark) !important;
+    color: white !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Manter botão Entrar visível em mobile quando usuário não logado */
+  .navbar .btn:not(.navbar-menu .btn) {
+    display: block;
+  }
+  
+  /* Ocultar botão Entrar apenas quando usuário logado */
+  .user-logged-in .navbar .btn:not(.navbar-menu .btn) {
+    display: none;
+  }
+  
+  /* Ajustar padding do hero para mobile */
+  .hero {
+    padding-top: 110px;
+  }
+
+  /* ===== SIDEBAR TOGGLE - CÓPIA EXATA DO NAVBAR-TOGGLE ===== */
+  .sidebar-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem;
+    margin-left: 0 !important; /* Remover margin-left: auto */
+    z-index: 1001;
+    align-self: center;
+    height: 48px;
+    width: 48px;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    overflow: visible !important;
+    position: absolute !important; /* Posicionamento absoluto */
+    left: 0.5rem !important; /* Extremidade esquerda */
+    right: auto !important;
+  }
+  
+  .sidebar-toggle:hover {
+    background-color: rgba(238, 145, 22, 0.1);
+  }
+  
+  .sidebar-toggle span {
+    width: 20px;
+    height: 2px;
+    background: var(--yufin-primary) !important;
+    border-radius: 1px;
+    transition: var(--transition-fast);
+    display: block !important;
+    margin: 2px 0;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+    position: relative;
+  }
+  
+  /* Animações do hambúrguer para sidebar */
+  .sidebar-toggle.active span:nth-child(1) {
+    transform: translate(-50%, -50%) rotate(45deg);
+    width: 16px;
+  }
+  
+  .sidebar-toggle.active span:nth-child(2) {
+    opacity: 0;
+    transform: scale(0);
+  }
+  
+  .sidebar-toggle.active span:nth-child(3) {
+    transform: translate(-50%, -50%) rotate(-45deg);
+    width: 16px;
+  }
+  
+  /* Centralizar o X perfeitamente para sidebar */
+  .sidebar-toggle.active span:nth-child(1),
+  .sidebar-toggle.active span:nth-child(3) {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center;
+  }
+
+  /* Mostrar sidebar-toggle quando usuário logado */
+  .sidebar-toggle.user-logged-in {
+    display: flex;
+  }
+
+  /* Ocultar navbar-toggle quando usuário logado */
+  .user-logged-in .navbar-toggle {
+    display: none !important;
+  }
+}
+
+/* ===== MELHORIAS PARA LANDSCAPE MOBILE ===== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero {
+    padding: 2rem 0;
+  }
+  
+  .hero-title {
+    font-size: 2rem;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
+  }
+  
+  .section {
+    padding: 2rem 0;
+  }
+}
+
+/* ===== IMPRESSÃO ===== */
+@media print {
+  .navbar,
+  .scroll-indicator,
+  .back-to-top,
+  .btn {
+    display: none !important;
+  }
+  
+  .section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
+/* ===== ALTA DENSIDADE DE PIXEL (Retina) ===== */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .hero-badge,
+  .card-icon,
+  .innovation-card .stat-number {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ===== DARK MODE SUPPORT (Futuro) ===== */
+@media (prefers-color-scheme: dark) {
+  /* Preparado para futuras implementações de dark mode */
+  /* Mantendo identidade visual atual */
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .navbar-link::after,
+  .innovation-card,
+  .card,
+  .btn {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .hero-decoration {
+    animation: none !important;
+  }
+}
+

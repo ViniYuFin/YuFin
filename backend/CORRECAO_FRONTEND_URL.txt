@@ -1,0 +1,36 @@
+# ================================
+# CORREÇÃO URGENTE - FRONTEND_URL
+# ================================
+
+## PROBLEMA IDENTIFICADO:
+O link de validação por email está apontando para localhost:5173 em vez do domínio de produção.
+
+## SOLUÇÃO:
+No arquivo .env, altere a linha:
+
+DE:
+FRONTEND_URL=http://localhost:5173
+
+PARA:
+FRONTEND_URL=https://app.yufin.com.br
+
+## PASSOS:
+1. Abra o arquivo .env no backend
+2. Encontre a linha: FRONTEND_URL=http://localhost:5173
+3. Substitua por: FRONTEND_URL=https://app.yufin.com.br
+4. Salve o arquivo
+5. Reinicie o servidor backend
+
+## RESULTADO:
+Após essa correção, os links de validação por email irão apontar para:
+https://app.yufin.com.br/validate-parent-consent?token=...
+
+Em vez de:
+http://localhost:5173/validate-parent-consent?token=...
+
+## IMPORTANTE:
+- Faça essa alteração no servidor de PRODUÇÃO
+- Reinicie o backend após a alteração
+- Teste novamente o cadastro gratuito
+
+

@@ -1,0 +1,540 @@
+/* 💳 ESTILOS PARA MODAL DE MÉTODOS DE PAGAMENTO */
+
+/* Modal de Métodos de Pagamento */
+#paymentMethodsModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 20000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+#paymentMethodsModal .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden; /* ✅ MUDANÇA: Remover scroll horizontal */
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Header do Modal - APENAS PARA MODAL DE PAGAMENTO */
+#paymentMethodsModal .modal-header {
+    display: flex;
+    justify-content: center; /* ✅ MUDANÇA: Centralizar texto */
+    align-items: center;
+    margin: -24px -24px 24px -24px; /* Estender para as bordas */
+    padding: 20px 24px;
+    background: var(--yufin-gradient); /* ✅ MUDANÇA: Usar gradiente padrão */
+    border-radius: 16px 16px 0 0;
+    color: white;
+    position: relative; /* Para posicionar o botão fechar */
+}
+
+#paymentMethodsModal .modal-header h3 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center; /* ✅ MUDANÇA: Centralizar texto */
+}
+
+#paymentMethodsModal .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: absolute; /* ✅ MUDANÇA: Posicionar absolutamente */
+    right: 20px; /* ✅ MUDANÇA: Posição fixa à direita */
+    top: 50%;
+    transform: translateY(-50%); /* ✅ MUDANÇA: Centralizar verticalmente */
+}
+
+#paymentMethodsModal .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Opções de Pagamento */
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.payment-option {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.payment-option:hover {
+    border-color: #ff8c42;
+    background: #fff8f5;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 140, 66, 0.2);
+}
+
+.payment-option:active {
+    transform: translateY(0);
+}
+
+.payment-icon {
+    font-size: 2rem;
+    margin-right: 16px;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.payment-info {
+    flex: 1;
+}
+
+.payment-info h4 {
+    color: #333;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+.payment-info p {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+/* Ações do Modal */
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.btn-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+/* Loading do Pagamento */
+.payment-loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    z-index: 10;
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #ff8c42;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.payment-loading p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    #paymentMethodsModal .modal-content {
+        margin: 16px;
+        padding: 20px;
+        max-width: calc(100% - 32px);
+    }
+    
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .payment-option {
+        padding: 14px;
+    }
+    
+    .payment-icon {
+        font-size: 1.8rem;
+        width: 40px;
+        height: 40px;
+        margin-right: 12px;
+    }
+    
+    .payment-info h4 {
+        font-size: 1rem;
+    }
+    
+    .payment-info p {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    #paymentMethodsModal {
+        padding: 8px;
+    }
+    
+    #paymentMethodsModal .modal-content {
+        margin: 8px;
+        padding: 16px;
+        max-width: calc(100% - 16px);
+    }
+    
+    .payment-option {
+        padding: 12px;
+    }
+    
+    .payment-icon {
+        font-size: 1.5rem;
+        width: 36px;
+        height: 36px;
+        margin-right: 10px;
+    }
+}
+
+/* �� ESTILOS PARA MODAL PIX */
+
+/* Modal PIX */
+#pixModal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 20001;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+#pixModal .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 85vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: modalSlideIn 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header do Modal PIX - com gradiente e título branco */
+#pixModal .modal-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: -24px -24px 24px -24px;
+    padding: 20px 24px;
+    background: var(--yufin-gradient);
+    border-radius: 16px 16px 0 0;
+    color: white;
+    position: relative;
+    flex-shrink: 0;
+}
+
+#pixModal .modal-header h3 {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    text-align: center;
+}
+
+#pixModal .modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+#pixModal .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+/* Corpo do Modal PIX - permite scroll */
+#pixModal .modal-body.pix-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Container do QR Code - tamanho significativamente reduzido */
+#pixModal .pix-qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 16px;
+    gap: 12px;
+}
+
+#pixModal .pix-qr-code-container img {
+    max-width: 180px;
+    max-height: 180px;
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
+    background: white;
+    padding: 8px;
+}
+
+#pixModal .pix-qr-code-container label {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Seção de Copiar Código */
+#pixModal .pix-copy-code {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#pixModal .pix-copy-code label {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 600;
+}
+
+#pixModal .copy-code-input {
+    display: flex;
+    width: 100%;
+}
+
+#pixModal .copy-code-input input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-family: monospace;
+    background: #f8f9fa;
+}
+
+#pixModal .btn-copy {
+    width: 100%;
+    padding: 10px 16px;
+    background: var(--yufin-gradient);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+#pixModal .btn-copy:hover {
+    background: var(--yufin-gradient-dark);
+    transform: translateY(-1px);
+}
+
+/* Status do Pagamento */
+#pixModal .pix-status {
+    margin-top: 8px;
+}
+
+#pixModal .status-waiting {
+    background: #fff8e1;
+    border: 1px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+#pixModal .status-waiting p {
+    margin: 0;
+    color: #f57c00;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+#pixModal .status-approved {
+    background: #e8f5e9;
+    border: 1px solid #4caf50;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+#pixModal .status-approved p {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+#pixModal .status-rejected {
+    background: #ffebee;
+    border: 1px solid #f44336;
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+}
+
+#pixModal .status-rejected p {
+    margin: 0;
+    color: #c62828;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Ações do Modal PIX */
+#pixModal .modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    flex-shrink: 0;
+}
+
+/* Scrollbar personalizado para o modal PIX - igual aos modais de plano */
+#pixModal .modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+#pixModal .modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+#pixModal .modal-content::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
+}
+
+#pixModal .modal-content::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+#pixModal .modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f1f1f1;
+}
+
+/* Responsividade Modal PIX */
+@media (max-width: 768px) {
+    #pixModal .modal-content {
+        margin: 16px;
+        padding: 20px;
+        max-width: calc(100% - 32px);
+    }
+    
+    #pixModal .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    #pixModal .pix-qr-code-container img {
+        max-width: 150px;
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    #pixModal {
+        padding: 8px;
+    }
+    
+    #pixModal .modal-content {
+        margin: 8px;
+        padding: 16px;
+        max-width: calc(100% - 16px);
+    }
+    
+    #pixModal .pix-qr-code-container img {
+        max-width: 120px;
+        max-height: 120px;
+    }
+}

@@ -1,0 +1,34 @@
+# ================================
+# CONFIGURAÇÃO DA URL DA API
+# ================================
+
+## PROBLEMA IDENTIFICADO:
+O frontend está tentando fazer requisições para a API, mas pode estar usando a URL errada.
+
+## SOLUÇÃO:
+Criar arquivo .env na raiz do projeto frontend com:
+
+```
+# Para desenvolvimento local:
+REACT_APP_API_URL=http://localhost:3001
+
+# Para produção (quando fizer deploy):
+REACT_APP_API_URL=https://api.yufin.com.br
+```
+
+## PASSOS:
+1. Criar arquivo .env na raiz do projeto (mesmo nível do app.jsx)
+2. Adicionar a linha: REACT_APP_API_URL=http://localhost:3001
+3. Reiniciar o servidor frontend
+4. Testar novamente
+
+## VERIFICAÇÃO:
+- Abra o console do navegador
+- Deve aparecer: "🌐 API URL: http://localhost:3001"
+- Se aparecer undefined, o .env não está sendo lido
+
+## IMPORTANTE:
+- O arquivo .env deve estar na raiz do projeto frontend
+- Reiniciar o servidor após criar o arquivo
+- Para produção, alterar para a URL do backend em produção
+

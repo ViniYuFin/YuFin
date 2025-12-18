@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planos YüFin - Educação Financeira Gamificada</title>
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- CSS Modular -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/sections.css">
+    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/navigation.css">
+    <link rel="stylesheet" href="css/cta-final.css">
+    <link rel="stylesheet" href="css/planos.css">
+    <link rel="stylesheet" href="css/payment-methods.css">
+    <link rel="stylesheet" href="css/family-plan-modal.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/auth-modals.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+    <link rel="apple-touch-icon" href="icon.ico">
+</head>
+<body>
+     <!-- Navbar -->
+     <nav class="navbar">
+         <div class="navbar-container">
+             <!-- Botão Entrar (esquerda) -->
+             <a href="#" onclick="showLogin()" class="btn btn-primary" id="entrarBtn">Entrar</a>
+             
+             <!-- Botão do menu lateral para usuários logados (esquerda) -->
+             <button class="sidebar-toggle" aria-label="Menu Lateral" onclick="window.landingAuth.openSidebar()" style="display: none;">
+                 <span></span>
+                 <span></span>
+                 <span></span>
+             </button>
+             
+             <button class="navbar-toggle" aria-label="Menu">
+                 <span></span>
+                 <span></span>
+                 <span></span>
+             </button>
+             
+           <div class="navbar-menu">
+               <a href="index-clean.html#hero" class="navbar-link">Início</a>
+               <a href="planos.html" class="navbar-link active">Planos</a>
+               <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+           </div>
+            
+            <!-- Logo YüFin (direita) -->
+            <a href="index-clean.html" class="navbar-logo">YüFin</a>
+         </div>
+     </nav>
+
+    <!-- Hero Section -->
+    <section class="plans-hero">
+        <div class="plans-hero-content">
+            <h1>Planos Selecionados para Você</h1>
+            <p>Transforme sua educação financeira com a plataforma mais inovadora do Brasil. Escolha o plano que melhor se adapta às suas necessidades.</p>
+        </div>
+    </section>
+
+    <!-- Planos -->
+    <div class="plans-container">
+        <div class="section-header">
+            <h2>Compare os Planos</h2>
+            <p>Descubra qual plano oferece o melhor valor para sua jornada de aprendizado</p>
+        </div>
+        
+        <div class="plans-grid">
+            <!-- Plano Iniciante -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-icon">📱</div>
+                    <h3 class="plan-title">INICIANTE</h3>
+                    <p class="plan-subtitle">Para estudantes individuais, uso inicial da plataforma</p>
+                </div>
+                
+                <div class="plan-price">
+                    <div class="price">GRATUITO</div>
+                    <div class="period">Para sempre</div>
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">9 lições fundamentais</div>
+                    <div class="feature-item">Gamificação básica (XP e níveis)</div>
+                    <div class="feature-item">Dashboard de progresso</div>
+                    <div class="feature-item">Suporte por e-mail (48h)</div>
+                </div>
+                
+                <a href="https://app.yufin.com.br/register-gratuito" class="plan-button primary">Entrar</a>
+            </div>
+            
+            <!-- Plano Família -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-icon">👨‍👩‍👧‍👦</div>
+                    <h3 class="plan-title">FAMILIA</h3>
+                    <p class="plan-subtitle">Para famílias que querem aprender juntas</p>
+                </div>
+                
+                <div class="plan-price">
+                    <div class="price">R$ 19,90</div>
+                    <div class="period">por mês/por cadastro</div>
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">Tudo do plano Iniciante</div>
+                    <div class="feature-item">Acesso completo (6º ao 3º EM)</div>
+                    <div class="feature-item">Até 3 perfis + Dashboard parental</div>
+                     <div class="feature-item">Suporte prioritário (24h)</div>
+                 </div>
+                 
+                 <button onclick="checkAuthAndOpenFamilyPlan()" class="plan-button secondary">Selecionar</button>
+            </div>
+            
+            <!-- Plano Escola -->
+            <div class="plan-card">
+                <div class="plan-header">
+                    <div class="plan-icon">🏫</div>
+                    <h3 class="plan-title">ESCOLA</h3>
+                    <p class="plan-subtitle">Para escolas e instituições de ensino</p>
+                </div>
+                
+                <div class="plan-price">
+                    <div class="price">R$ 9,90</div>
+                    <div class="period">por aluno/ano</div>
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">Tudo do plano Família</div>
+                    <div class="feature-item">Gestão pedagógica completa</div>
+                    <div class="feature-item">Certificados institucionais</div>
+                    <div class="feature-item">Suporte dedicado (8h)</div>
+                </div>
+                
+                <button onclick="checkAuthAndOpenSchoolPlan()" class="plan-button secondary">Selecionar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seção Enterprise -->
+    <section class="enterprise-section">
+        <div class="enterprise-content">
+            <h2>Precisa de algo mais personalizado?</h2>
+            <p>Para grandes redes de ensino e secretarias de educação, temos soluções enterprise sob medida. Conte com nossa equipe especializada para criar a solução perfeita para sua instituição.</p>
+            <a href="https://wa.me/5511940465848?text=Olá! Gostaria de saber mais sobre as soluções enterprise da YüFin." class="enterprise-button">Falar com Especialista</a>
+        </div>
+    </section>
+
+    <!-- Modal do Plano Família -->
+    <div id="familyPlanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>👨‍👩‍👧‍👦 Plano Família</h2>
+                <button onclick="closeFamilyPlanModal()" class="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="plan-info">
+                    <h3>📋 O que está incluído:</h3>
+                    <ul>
+                        <li>Tudo do plano Iniciante</li>
+                        <li>Acesso completo (6º ao 3º EM)</li>
+                        <li>Até 3 perfis por conta (pais + filhos)</li>
+                        <li>Dashboard parental de acompanhamento</li>
+                        <li>Suporte prioritário (24h)</li>
+                    </ul>
+                </div>
+
+                <form id="familyPlanForm">
+                    <div class="form-group">
+                        <label>👨‍👩‍👧‍👦 Quantos responsáveis?</label>
+                        <select id="numParents">
+                            <option value="1">1 responsável</option>
+                            <option value="2">2 responsáveis</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🎓 Quantos alunos?</label>
+                        <select id="numStudents">
+                            <option value="1">1 aluno</option>
+                            <option value="2">2 alunos</option>
+                            <option value="3">3 alunos</option>
+                        </select>
+                    </div>
+
+                    <div class="plan-summary">
+                        <h3>💰 Resumo do Plano:</h3>
+                        <div class="summary-item">
+                            <span>Responsáveis:</span>
+                            <span id="parentsTotal">1 × R$ 19,90</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Alunos:</span>
+                            <span id="studentsTotal">1 (gratuitos)</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total mensal:</span>
+                            <span id="totalPrice">R$ 9,90</span>
+                        </div>
+                    </div>
+
+                    <div class="how-it-works">
+                        <h3>🔑 Como funciona:</h3>
+                        <ul>
+                            <li id="licenseInfo">1 licença(s) será(ão) gerada(s) para os responsáveis</li>
+                            <li>Os alunos receberão tokens de acesso gratuitos</li>
+                            <li>Após o pagamento, você poderá gerar tokens para os alunos</li>
+                            <li>Cada token permite o cadastro de 1 aluno</li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button onclick="closeFamilyPlanModal()" class="btn-cancel">Cancelar</button>
+                <button onclick="processFamilyPlanPayment()" class="btn-continue">Continuar para Pagamento</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Plano Escola -->
+    <div id="schoolPlanModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🏫 Plano Escola</h2>
+                <button onclick="closeSchoolPlanModal()" class="modal-close">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <div class="plan-info">
+                    <h3>📋 O que está incluído:</h3>
+                    <ul>
+                        <li>Tudo do plano Família</li>
+                        <li>Gestão pedagógica completa (turmas, desempenho, relatórios)</li>
+                        <li>Certificados institucionais</li>
+                        <li>Suporte dedicado (8h)</li>
+                        <li>Contratação mínima: 50 alunos</li>
+                    </ul>
+                </div>
+
+                <form id="schoolPlanForm">
+                    <div class="form-group">
+                        <label>👨‍💼 Tipo de usuário:</label>
+                        <select id="schoolUserType">
+                            <option value="director">Diretor</option>
+                            <option value="administrator">Administrador Escolar</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>🎓 Quantos alunos? (mínimo 50)</label>
+                        <input type="text" id="schoolNumStudents" inputmode="numeric" pattern="[0-9]*" autocomplete="off" placeholder="Digite a quantidade de alunos">
+                        <small class="form-help">Mínimo de 50 alunos para contratação</small>
+                    </div>
+
+                    <div class="plan-summary">
+                        <h3>💰 Resumo do Plano:</h3>
+                        <div class="summary-item">
+                            <span>Alunos:</span>
+                            <span id="schoolStudentsTotal">50 alunos</span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Valor por aluno/mês:</span>
+                            <span>R$ 9,90</span>
+                        </div>
+                        <div class="summary-total">
+                            <span>Total anual:</span>
+                            <span id="schoolTotalPrice">R$ 495,00</span>
+                        </div>
+                        <div class="license-info">
+                            <p id="schoolLicenseInfo">1 licença institucional será gerada para o diretor/administrador</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-footer">
+                <button onclick="closeSchoolPlanModal()" class="btn-cancel">Cancelar</button>
+                <button id="schoolContinueBtn" onclick="processSchoolPlanPayment()" class="btn-continue">Continuar para Pagamento</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Métodos de Pagamento -->
+    <div id="paymentMethodsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Escolha a Forma de Pagamento</h3>
+                <button class="modal-close" onclick="closePaymentMethodsModal()">&times;</button>
+            </div>
+            
+            <div class="payment-options">
+                <!-- PIX -->
+                <div class="payment-option" onclick="selectPaymentMethod('pix')">
+                    <div class="payment-icon">📱</div>
+                    <div class="payment-info">
+                        <h4>PIX</h4>
+                        <p>Pagamento instantâneo</p>
+                    </div>
+                </div>
+                
+                <!-- Cartão de Crédito -->
+                <div class="payment-option" onclick="selectPaymentMethod('credit')">
+                    <div class="payment-icon">💳</div>
+                    <div class="payment-info">
+                        <h4>Cartão de Crédito</h4>
+                        <p>Até 12x sem juros</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button onclick="closePaymentMethodsModal()" class="btn-cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento com Cartão (CardForm) -->
+    <div id="cardPaymentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pagamento com Cartão</h3>
+                <button class="modal-close" onclick="closeCardPaymentModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body">
+                <!-- Formulário CardForm do Mercado Pago -->
+                <form id="form-checkout">
+                    <div class="form-group">
+                        <label for="form-checkout__cardNumber">Número do Cartão</label>
+                        <div id="form-checkout__cardNumber" class="container"></div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-checkout__expirationDate">Validade</label>
+                            <div id="form-checkout__expirationDate" class="container"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-checkout__securityCode">CVV</label>
+                            <div id="form-checkout__securityCode" class="container"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="form-checkout__cardholderName">Nome do Titular</label>
+                        <input type="text" id="form-checkout__cardholderName" placeholder="Nome como está no cartão" />
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-checkout__issuer">Banco Emissor</label>
+                            <select id="form-checkout__issuer"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-checkout__installments">Parcelas</label>
+                            <select id="form-checkout__installments"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="form-checkout__identificationType">Tipo de Documento</label>
+                            <select id="form-checkout__identificationType"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-checkout__identificationNumber">Número do Documento</label>
+                            <input type="text" id="form-checkout__identificationNumber" placeholder="CPF ou CNPJ" />
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="form-checkout__cardholderEmail">E-mail</label>
+                        <input type="email" id="form-checkout__cardholderEmail" placeholder="Seu e-mail" />
+                    </div>
+                </form>
+            </div>
+            
+            <div class="modal-actions">
+                <button onclick="closeCardPaymentModal()" class="btn-cancel">Cancelar</button>
+                <button type="submit" id="form-checkout__submit" class="btn-pay">Pagar</button>
+            </div>
+            <div class="progress-container">
+                <progress value="0" class="progress-bar">Carregando...</progress>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Pagamento via PIX -->
+    <div id="pixModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pagamento via PIX</h3>
+                <button class="modal-close" onclick="closePixModal()">&times;</button>
+            </div>
+            
+            <div class="modal-body pix-content">
+                <!-- QR Code -->
+                <div id="pixQrCode" class="pix-qr-code-container">
+                    <!-- QR Code será inserido aqui via JavaScript -->
+                </div>
+                
+                <!-- Código Copia e Cola -->
+                <div class="pix-copy-code">
+                    <label>Código PIX (Copia e Cola)</label>
+                    <div class="copy-code-input">
+                        <input type="text" id="pixCopyCode" readonly />
+                    </div>
+                    <button onclick="copyPixCode()" class="btn-copy">Copiar</button>
+                </div>
+                
+                <!-- Status do Pagamento -->
+                <div id="pixPaymentStatus" class="pix-status">
+                    <div class="status-waiting">
+                        <p>⏳ Aguardando pagamento...</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-actions">
+                <button onclick="closePixModal()" class="btn-cancel">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mercado Pago SDK -->
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+    
+    <!-- JavaScript -->
+    <script src="js/main.js"></script>
+    
+    <!-- Sistema de Autenticação -->
+    <script src="js/auth-system.js?v=1734731000"></script>
+    <script src="js/auth-modals.js?v=1734731000"></script>
+    <script src="js/cardform.js"></script>
+    <script src="js/mercado-pago.js"></script>
+    <script src="js/family-plan.js"></script>
+    <script src="js/school-plan.js"></script>
+    
+    <!-- Sistema de Status de Pagamento -->
+    <script>
+        // Verificar status do pagamento na URL
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            const plan = urlParams.get('plan');
+            const licenseCode = urlParams.get('licenseCode');
+            const numStudents = urlParams.get('numStudents');
+            const numParents = urlParams.get('numParents');
+            const totalPrice = urlParams.get('totalPrice');
+            
+            console.log('🔍 Status do pagamento:', status);
+            console.log('🔍 Plano:', plan);
+            console.log('🔍 Código da licença:', licenseCode);
+            console.log('🔍 Código da licença (tipo):', typeof licenseCode);
+            console.log('🔍 Código da licença (vazio):', !licenseCode);
+            console.log('🔍 URL completa:', window.location.href);
+            console.log('🔍 Número de alunos:', numStudents);
+            console.log('🔍 Número de responsáveis:', numParents);
+            console.log('🔍 Preço total:', totalPrice);
+            
+            // Preparar dados do plano
+            const planData = {
+                numStudents: numStudents ? parseInt(numStudents) : (plan === 'family' ? 2 : 50),
+                totalPrice: totalPrice ? parseFloat(totalPrice) : (plan === 'family' ? 19.90 : 495.00),
+                numParents: numParents ? parseInt(numParents) : (plan === 'family' ? 1 : 1)
+            };
+            
+            if (status === 'success') {
+                // Se não tem licenseCode na URL, buscar no backend
+                if (!licenseCode) {
+                    console.log('⚠️ LicenseCode não encontrado na URL, buscando no backend...');
+                    
+                    // Criar external_reference baseado nos dados do plano
+                    const externalRefData = {
+                        planType: plan,
+                        numParents: planData.numParents,
+                        numStudents: planData.numStudents,
+                        totalPrice: planData.totalPrice
+                    };
+                    
+                    // Codificar em Base64
+                    const externalReference = btoa(JSON.stringify(externalRefData));
+                    
+                    // Buscar licença no backend
+                    fetch(`https://yufin-backend.vercel.app/api/mercado-pago/license-by-reference?externalReference=${encodeURIComponent(externalReference)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success && data.licenseCode) {
+                                console.log('✅ Licença encontrada:', data.licenseCode);
+                                // Atualizar URL com o licenseCode
+                                const newUrl = new URL(window.location.href);
+                                newUrl.searchParams.set('licenseCode', data.licenseCode);
+                                window.history.replaceState({}, '', newUrl);
+                                // Mostrar modal com o código
+                                showPaymentSuccessModal(plan, data.licenseCode, planData);
+                            } else {
+                                console.log('⚠️ Licença ainda não foi criada, aguardando...');
+                                // Tentar novamente após 2 segundos
+                                setTimeout(() => {
+                                    if (status === 'success') {
+                                        location.reload();
+                                    }
+                                }, 2000);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('❌ Erro ao buscar licença:', error);
+                            // Mostrar modal sem código (aguardando geração)
+                            showPaymentSuccessModal(plan, null, planData);
+                        });
+                } else {
+                    // Tem licenseCode, mostrar modal normalmente
+                    showPaymentSuccessModal(plan, licenseCode, planData);
+                }
+            } else if (status === 'failure') {
+                showPaymentFailureModal(plan);
+            } else if (status === 'pending') {
+                showPaymentPendingModal(plan);
+            }
+        });
+        
+        // Modal de sucesso
+        function showPaymentSuccessModal(plan, licenseCode, planData) {
+            const modal = document.createElement('div');
+            modal.id = 'paymentSuccessModal';
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content success-modal">
+                    <button class="close-modal-btn" onclick="closeSuccessModal()">&times;</button>
+                    <div class="success-header">
+                        <div class="success-icon">🎉</div>
+                        <h2>Pagamento Aprovado!</h2>
+                        <p>Sua licença ${plan === 'family' ? 'família' : 'escola'} foi gerada com sucesso.</p>
+                    </div>
+                    
+                    <div class="license-box">
+                        <h3>Código da Licença</h3>
+                        <div class="license-code">${licenseCode || 'Aguardando geração...'}</div>
+                    </div>
+                    
+                    <div class="plan-summary">
+                        <h3>📋 Resumo do Plano</h3>
+                        <ul>
+                            <li><strong>Responsáveis:</strong> ${planData?.numParents || (plan === 'family' ? '1' : '1')}</li>
+                            <li><strong>Alunos:</strong> ${planData?.numStudents || (plan === 'family' ? '2' : '50')}</li>
+                            <li><strong>Total pago:</strong> R$ ${planData?.totalPrice?.toFixed(2).replace('.', ',') || (plan === 'family' ? '19,90' : '495,00')}</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="next-steps">
+                        <h3>🚀 Próximos Passos</h3>
+                        <ul>
+                            <li>Anote o código da licença acima</li>
+                            <li>Clique em "Ir para Cadastro"</li>
+                            <li>Selecione "Sou ${plan === 'family' ? 'Pai/Responsável' : 'Diretor/Administrador'}"</li>
+                            <li>Insira o código da licença quando solicitado</li>
+                            <li>Complete seu cadastro normalmente</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button onclick="goToRegistration()" class="btn-primary">Ir para Cadastro</button>
+                        <button onclick="copyLicenseCode('${licenseCode || ''}')" class="btn-secondary" ${!licenseCode ? 'disabled' : ''}>Copiar Código</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Modal de falha
+        function showPaymentFailureModal(plan) {
+            const modal = document.createElement('div');
+            modal.id = 'paymentFailureModal';
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content failure-modal">
+                    <button class="close-modal-btn" onclick="closeFailureModal()">&times;</button>
+                    <div class="failure-header">
+                        <div class="failure-icon">❌</div>
+                        <h2>Pagamento Não Aprovado</h2>
+                        <p>Seu pagamento não foi processado com sucesso.</p>
+                    </div>
+                    
+                    <div class="failure-reasons">
+                        <h3>🔍 Possíveis motivos:</h3>
+                        <ul>
+                            <li>Cartão recusado pela operadora</li>
+                            <li>Dados incorretos</li>
+                            <li>Limite insuficiente</li>
+                            <li>Problema temporário</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="next-steps">
+                        <h3>🚀 O que fazer agora:</h3>
+                        <ul>
+                            <li>Verifique os dados do cartão</li>
+                            <li>Confirme se há limite disponível</li>
+                            <li>Tente novamente em alguns minutos</li>
+                            <li>Entre em contato com seu banco se necessário</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button onclick="retryPayment()" class="btn-primary">Tentar Novamente</button>
+                        <button onclick="chooseOtherMethod()" class="btn-secondary">Escolher Outro Método</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Modal de pendente
+        function showPaymentPendingModal(plan) {
+            const modal = document.createElement('div');
+            modal.id = 'paymentPendingModal';
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content pending-modal">
+                    <button class="close-modal-btn" onclick="closePendingModal()">&times;</button>
+                    <div class="pending-header">
+                        <div class="pending-icon">⏳</div>
+                        <h2>Pagamento Pendente</h2>
+                        <p>Seu pagamento está sendo processado.</p>
+                    </div>
+                    
+                    <div class="pending-info">
+                        <h3>O que fazer agora:</h3>
+                        <ul>
+                            <li>Complete o pagamento se ainda não o fez</li>
+                            <li>Aguarde a confirmação (até 3 dias úteis)</li>
+                            <li>Você receberá um email quando aprovado</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button onclick="closePendingModal()" class="btn-primary">Entendi</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Funções auxiliares
+        function copyLicenseCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Código copiado para a área de transferência!');
+            });
+        }
+        
+        function goToRegistration() {
+            window.location.href = 'https://app.yufin.com.br';
+        }
+        
+        function retryPayment() {
+            closeFailureModal();
+            // Reabrir modal de métodos de pagamento
+            // Você pode implementar a lógica aqui
+        }
+        
+        function chooseOtherMethod() {
+            closeFailureModal();
+            // Reabrir modal de métodos de pagamento
+            // Você pode implementar a lógica aqui
+        }
+        
+        function closeSuccessModal() {
+            const modal = document.getElementById('paymentSuccessModal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closeFailureModal() {
+            const modal = document.getElementById('paymentFailureModal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+        
+        function closePendingModal() {
+            const modal = document.getElementById('paymentPendingModal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+    </script>
+    
+    <!-- Redirecionamento Inteligente -->
+    <script>
+        function redirectToApp() {
+            // Verificar autenticação e redirecionar
+            checkAuthAndRedirect('redirect-to-app', () => {
+                // Usuário logado - mostrar área do cliente
+                authModals.showClientArea();
+            });
+        }
+        
+        // Função para mostrar login
+        function showLogin() {
+            authModals.showLoginModal();
+        }
+    </script>
+    
+    <!-- Estilos para modais de status de pagamento -->
+    <style>
+        /* Estilos para modais de status de pagamento */
+        .success-modal {
+            /* Removida borda verde */
+        }
+        
+        /* Modal de sucesso - Centralizado */
+        #paymentSuccessModal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 9999 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        #paymentSuccessModal .modal-content {
+            background: white !important;
+            border-radius: 16px !important;
+            padding: 16px !important;
+            width: 100% !important;
+            max-width: 500px !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow: hidden !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+            animation: modalSlideIn 0.3s ease-out !important;
+            position: relative !important;
+            margin: 0 !important;
+        }
+        
+        /* Modal de falha - Centralizado */
+        #paymentFailureModal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 9999 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        #paymentFailureModal .modal-content {
+            background: white !important;
+            border-radius: 16px !important;
+            padding: 16px !important;
+            width: 100% !important;
+            max-width: 500px !important;
+            max-height: calc(100vh - 60px) !important;
+            overflow: hidden !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+            animation: modalSlideIn 0.3s ease-out !important;
+            position: relative !important;
+            margin: 0 !important;
+        }
+        
+        
+        /* Modal de pendente - Centralizado */
+        #paymentPendingModal {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background-color: rgba(0, 0, 0, 0.5) !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            z-index: 9999 !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+        
+        #paymentPendingModal .modal-content {
+            background: white !important;
+            border-radius: 16px !important;
+            padding: 24px !important;
+            width: 100% !important;
+            max-width: 500px !important;
+            max-height: 90vh !important;
+            overflow-y: auto !important;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3) !important;
+            animation: modalSlideIn 0.3s ease-out !important;
+            position: relative !important;
+            margin: 0 !important;
+        }
+        
+        .failure-modal {
+            border-left: 5px solid #dc3545;
+        }
+        
+        .failure-reasons h3 {
+            color: #374151 !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            margin: 0 0 4px 0 !important;
+        }
+        
+        .failure-reasons ul {
+            margin: 4px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        
+        .failure-reasons li {
+            margin: 2px 0;
+            color: #374151;
+            font-size: 0.8rem;
+        }
+        
+        .pending-modal {
+            border-left: 5px solid #ffc107;
+        }
+        
+        .success-header, .failure-header, .pending-header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .success-header h2 {
+            color: #ff8c42 !important;
+            font-size: 1.2rem !important;
+            font-weight: 700 !important;
+            margin: 6px 0 !important;
+        }
+        
+        .success-header p {
+            color: #6b7280 !important;
+            font-size: 1rem !important;
+            margin: 5px 0 !important;
+        }
+        
+        /* Responsividade para modais de status */
+        @media (max-width: 768px) {
+            #paymentSuccessModal,
+            #paymentFailureModal,
+            #paymentPendingModal {
+                padding: 10px !important;
+            }
+            
+            #paymentSuccessModal .modal-content,
+            #paymentFailureModal .modal-content,
+            #paymentPendingModal .modal-content {
+                max-width: 100% !important;
+                max-height: 95vh !important;
+                padding: 20px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #paymentSuccessModal,
+            #paymentFailureModal,
+            #paymentPendingModal {
+                padding: 5px !important;
+            }
+            
+            #paymentSuccessModal .modal-content,
+            #paymentFailureModal .modal-content,
+            #paymentPendingModal .modal-content {
+                padding: 16px !important;
+            }
+        }
+        
+        .success-icon, .failure-icon, .pending-icon {
+            font-size: 32px;
+            margin-bottom: 6px;
+        }
+        
+        .license-box {
+            background: #fff3e0;
+            border: 2px solid #ff8c42;
+            padding: 8px;
+            margin: 6px 0;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .license-box h3 {
+            color: #374151 !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            margin: 0 0 4px 0 !important;
+        }
+        
+        .license-code {
+            font-size: 16px;
+            font-weight: bold;
+            color: #ff8c42;
+            margin: 6px 0;
+            padding: 6px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #ff8c42;
+        }
+        
+        .btn-copy {
+            background-color: #ff8c42;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .plan-summary, .failure-reasons, .pending-info {
+            background: #f3f4f6;
+            padding: 6px;
+            margin: 4px 0;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .plan-summary h3 {
+            color: #374151 !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            margin: 0 0 4px 0 !important;
+        }
+        
+        .plan-summary p {
+            margin: 0 !important;
+            color: #6b7280 !important;
+            font-size: 0.9rem !important;
+        }
+        
+        .next-steps {
+            background: #fff3e0;
+            padding: 6px;
+            margin: 4px 0;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .next-steps h3 {
+            color: #d97706 !important;
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            margin: 0 0 4px 0 !important;
+        }
+        
+        .plan-summary ul, .next-steps ul {
+            margin: 4px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+        
+        .plan-summary li, .next-steps li {
+            margin: 2px 0;
+            color: #374151;
+            font-size: 0.8rem;
+        }
+        
+        .next-steps ul {
+            margin: 0 !important;
+            padding-left: 0 !important;
+            list-style: none !important;
+        }
+        
+        .next-steps li {
+            margin-bottom: 5px !important;
+            color: #92400e !important;
+        }
+        
+        .modal-actions {
+            text-align: center;
+            margin-top: 10px;
+            padding: 12px 0;
+        }
+        
+        .modal-actions button {
+            margin: 8px;
+        }
+        
+        .close-modal-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+        
+        .close-modal-btn:hover {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        /* Cor específica para modais de planos (família e escola) */
+        #familyPlanModal .plan-summary,
+        #schoolPlanModal .plan-summary {
+            background: #f3f4f6 !important;
+        }
+        
+        
+        /* Botões do modal de sucesso */
+        .btn-primary {
+            background: var(--yufin-gradient) !important;
+            color: white !important;
+            padding: 12px 24px !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            margin: 5px !important;
+            display: inline-block !important;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #ff6b1a, #e55a00) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3) !important;
+        }
+        
+        .btn-secondary {
+            background: #f3f4f6 !important;
+            color: #374151 !important;
+            border: 2px solid #e5e7eb !important;
+            padding: 10px 22px !important;
+            border-radius: 8px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            margin: 5px !important;
+            display: inline-block !important;
+        }
+        
+        .btn-secondary:hover {
+            background: #e5e7eb !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Estilos para CardForm do Mercado Pago */
+        #form-checkout {
+            display: flex;
+            flex-direction: column;
+            max-width: 600px;
+            gap: 15px;
+        }
+
+        .container {
+            height: 40px;
+            display: inline-block;
+            border: 1px solid rgb(118, 118, 118);
+            border-radius: 4px;
+            padding: 8px 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #form-checkout input[type="text"],
+        #form-checkout input[type="email"],
+        #form-checkout select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        
+        #form-checkout__submit {
+            background: #00a650;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        
+        #form-checkout__submit:hover {
+            background: #008f45;
+        }
+        
+        #form-checkout__submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            margin-top: 10px;
+        }
+        
+        .card-payment-content {
+            padding: 20px;
+        }
+        
+        /* Modal de Pagamento com Cartão - Seguindo padrão do modal de seleção */
+        #cardPaymentModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 20000;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        
+        #cardPaymentModal.show {
+            display: flex !important;
+        }
+        
+        #cardPaymentModal .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 0;
+            width: 100%;
+            max-width: 520px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header do Modal de Pagamento */
+        #cardPaymentModal .modal-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px 24px;
+            background: var(--yufin-gradient);
+            border-radius: 16px 16px 0 0;
+            color: white;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        #cardPaymentModal .modal-header h3 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            text-align: center;
+        }
+        
+        #cardPaymentModal .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: white;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        #cardPaymentModal .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        
+        /* Body do Modal de Pagamento - Área scrollável */
+        #cardPaymentModal .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            /* Scrollbar customizada mais discreta */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 140, 66, 0.3) transparent;
+        }
+        
+        /* Ações do Modal de Pagamento - Footer fixo */
+        #cardPaymentModal .modal-actions {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 16px;
+            padding: 20px;
+            border-top: 1px solid #f0f0f0;
+            background: white;
+            border-radius: 0 0 16px 16px;
+            flex-shrink: 0;
+        }
+        
+        /* Formulário de Pagamento */
+        #form-checkout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .container {
+            height: 48px;
+            display: inline-block;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        
+        .container:focus-within {
+            border-color: #ff8c42;
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+        }
+        
+        #form-checkout input[type="text"],
+        #form-checkout input[type="email"],
+        #form-checkout select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+        
+        #form-checkout input[type="text"]:focus,
+        #form-checkout input[type="email"]:focus,
+        #form-checkout select:focus {
+            outline: none;
+            border-color: #ff8c42;
+            box-shadow: 0 0 0 3px rgba(255, 140, 66, 0.1);
+        }
+        
+        /* Botões do Footer - Tamanhos padronizados */
+        #cardPaymentModal .modal-actions .btn-cancel,
+        #cardPaymentModal .modal-actions .btn-pay {
+            flex: 1 !important;
+            width: auto !important;
+            min-width: 0 !important;
+            max-width: none !important;
+            height: 48px !important;
+            padding: 12px 16px !important;
+            border-radius: 8px !important;
+            font-size: 1rem !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            box-sizing: border-box !important;
+            border: none !important;
+        }
+        
+        #cardPaymentModal .modal-actions .btn-cancel {
+            background: #6c757d !important;
+            color: white !important;
+            border: none !important;
+            border-width: 0 !important;
+            border-style: none !important;
+            border-color: transparent !important;
+        }
+        
+        #cardPaymentModal .modal-actions .btn-cancel:hover {
+            background: #5a6268 !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* FORÇAR ALTURA IDÊNTICA - Sobrescrever qualquer CSS conflitante */
+        #cardPaymentModal .modal-actions .btn-cancel,
+        #cardPaymentModal .modal-actions .btn-pay {
+            min-height: 48px !important;
+            max-height: 48px !important;
+            line-height: 1.2 !important;
+            vertical-align: middle !important;
+        }
+        
+        /* SOBRESCREVER TODOS OS CSS CONFLITANTES */
+        #cardPaymentModal .modal-actions button.btn-cancel,
+        #cardPaymentModal .modal-actions button.btn-pay {
+            height: 48px !important;
+            min-height: 48px !important;
+            max-height: 48px !important;
+            padding: 12px 16px !important;
+            margin: 0 !important;
+            border: none !important;
+            box-sizing: border-box !important;
+        }
+        
+        #cardPaymentModal .modal-actions .btn-pay {
+            background: var(--yufin-gradient) !important;
+            color: white !important;
+            border: none !important;
+        }
+        
+        #cardPaymentModal .modal-actions .btn-pay:hover {
+            background: linear-gradient(135deg, #ff6b1a, #e55a00) !important;
+            transform: translateY(-1px) !important;
+            box-shadow: 0 4px 12px rgba(255, 140, 66, 0.3) !important;
+        }
+        
+        #cardPaymentModal .modal-actions .btn-pay:disabled {
+            background: #ccc !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        /* Container do Progress Bar */
+        .progress-container {
+            padding: 0 24px 16px 24px;
+            background: white;
+            border-radius: 0 0 16px 16px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            border-radius: 2px;
+            background: #f0f0f0;
+        }
+        
+        .progress-bar::-webkit-progress-bar {
+            background: #f0f0f0;
+            border-radius: 2px;
+        }
+        
+        .progress-bar::-webkit-progress-value {
+            background: linear-gradient(135deg, #ff8c42, #ff6b1a);
+            border-radius: 2px;
+        }
+        
+        /* Webkit scrollbar customizada para o modal de pagamento */
+        #cardPaymentModal .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #cardPaymentModal .modal-body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        #cardPaymentModal .modal-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 140, 66, 0.3);
+            border-radius: 3px;
+        }
+        
+        #cardPaymentModal .modal-body::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 140, 66, 0.5);
+        }
+        
+        /* Animação de entrada do modal */
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            #cardPaymentModal {
+                padding: 16px;
+            }
+            
+            #cardPaymentModal .modal-content {
+                max-height: 95vh;
+                max-width: 100%;
+            }
+            
+            #cardPaymentModal .modal-header {
+                border-radius: 12px 12px 0 0;
+                padding: 12px 16px;
+                flex-shrink: 0;
+                min-height: 48px;
+            }
+            
+            #cardPaymentModal .modal-body {
+                padding: 20px;
+                flex: 1;
+                overflow-y: auto;
+                min-height: 0;
+            }
+            
+            #cardPaymentModal .modal-actions {
+                padding: 20px;
+                border-radius: 0 0 12px 12px;
+                flex-shrink: 0;
+            }
+            
+            .progress-container {
+                padding: 0 16px 12px 16px;
+                border-radius: 0 0 12px 12px;
+                flex-shrink: 0;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #cardPaymentModal {
+                padding: 12px;
+            }
+            
+            #cardPaymentModal .modal-content {
+                max-width: 100%;
+                max-height: 95vh;
+            }
+            
+            #cardPaymentModal .modal-header {
+                padding: 10px 12px;
+                min-height: 44px;
+            }
+            
+            #cardPaymentModal .modal-body {
+                padding: 16px;
+            }
+            
+            #cardPaymentModal .modal-actions {
+                padding: 16px;
+                flex-direction: row;
+                gap: 8px;
+            }
+            
+            .progress-container {
+                padding: 0 12px 10px 12px;
+            }
+            
+            #cardPaymentModal .modal-actions .btn-cancel,
+            #cardPaymentModal .modal-actions .btn-pay {
+                flex: 1 !important;
+                width: auto !important;
+                min-width: 0 !important;
+                height: 42px !important;
+                padding: 8px 12px !important;
+                min-height: 42px !important;
+                max-height: 42px !important;
+                font-size: 0.85rem !important;
+            }
+            
+            .form-row {
+                gap: 12px;
+            }
+            
+            .modal-header h3 {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,38 @@
+# ===========================
+# MERCADO PAGO - CONFIGURAÇÃO
+# ===========================
+
+# Adicione estas variáveis ao seu arquivo .env:
+
+# Credenciais de TESTE (desenvolvimento)
+MERCADO_PAGO_ACCESS_TOKEN_TEST=TEST-xxxxx-xxxxx-xxxxx
+MERCADO_PAGO_PUBLIC_KEY_TEST=TEST-xxxxx-xxxxx-xxxxx
+
+# Credenciais de PRODUÇÃO (após aprovação)
+MERCADO_PAGO_ACCESS_TOKEN_PROD=APP_USR-xxxxx-xxxxx-xxxxx
+MERCADO_PAGO_PUBLIC_KEY_PROD=APP_USR-xxxxx-xxxxx-xxxxx
+
+# ===========================
+# COMO OBTER AS CREDENCIAIS:
+# ===========================
+
+# 1. Acesse: https://www.mercadopago.com.br/developers
+# 2. Faça login na sua conta
+# 3. Vá em "Suas integrações" > "Credenciais"
+# 4. Copie as credenciais de TESTE primeiro
+# 5. Para produção, use as credenciais de PRODUÇÃO
+
+# ===========================
+# EXEMPLO DE CREDENCIAIS:
+# ===========================
+
+# TESTE:
+# MERCADO_PAGO_ACCESS_TOKEN_TEST=TEST-1234567890-abcdef-1234567890-abcdef-1234567890
+# MERCADO_PAGO_PUBLIC_KEY_TEST=TEST-1234567890-abcdef-1234567890-abcdef-1234567890
+
+# PRODUÇÃO:
+# MERCADO_PAGO_ACCESS_TOKEN_PROD=APP_USR-1234567890-abcdef-1234567890-abcdef-1234567890
+# MERCADO_PAGO_PUBLIC_KEY_PROD=APP_USR-1234567890-abcdef-1234567890-abcdef-1234567890
+
+
+

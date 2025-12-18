@@ -1,0 +1,341 @@
+/**
+ * YüFin - Estilos das Seções Específicas
+ */
+
+/* ===== GRID SYSTEM ===== */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.gap-8 {
+  gap: 2rem;
+}
+
+/* ===== UTILITÁRIOS DE TEXTO ===== */
+.text-white {
+  color: white;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+/* ===== BOTÃO BRANCO ===== */
+.btn-white {
+  background: white;
+  color: var(--yufin-primary);
+  font-weight: 700;
+  border: 2px solid white;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.btn-white:hover {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--yufin-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 255, 255, 0.3);
+}
+
+/* ===== STEP BADGES (Como Funciona) ===== */
+.step-badge {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== SEÇÃO "PRONTO PARA COMEÇAR" PERSONALIZADA ===== */
+.ready-section {
+  position: relative;
+  padding: 3rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 248, 240, 0.8) 0%, rgba(255, 251, 245, 0.6) 100%);
+  border-radius: 24px;
+  border: 1px solid rgba(255, 235, 205, 0.3);
+  backdrop-filter: blur(5px);
+  margin: 2rem auto;
+  max-width: 800px;
+  transition: all 0.3s ease;
+}
+
+.ready-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(255, 165, 0, 0.1);
+  border-color: rgba(255, 165, 0, 0.2);
+}
+
+.ready-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem) !important;
+  font-weight: 700 !important;
+  color: #ff8c42 !important;
+  margin-bottom: 1.5rem !important;
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+  text-shadow: 0 1px 3px rgba(255, 140, 66, 0.2);
+}
+
+.ready-button {
+  background: linear-gradient(135deg, #ff8c42 0%, #ff6b35 100%) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  font-size: 1.1rem !important;
+  padding: 1rem 2.5rem !important;
+  border-radius: 16px !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(255, 107, 53, 0.25);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+}
+
+.ready-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.ready-button:hover::before {
+  left: 100%;
+}
+
+.ready-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 53, 0.35);
+}
+
+.ready-badges {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.ready-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.ready-badge-primary {
+  background: rgba(255, 140, 66, 0.15);
+  color: #ff8c42;
+  border-color: rgba(255, 140, 66, 0.3);
+}
+
+.ready-badge-success {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4caf50;
+  border-color: rgba(76, 175, 80, 0.3);
+}
+
+.ready-badge-info {
+  background: rgba(33, 150, 243, 0.15);
+  color: #2196f3;
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.ready-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.ready-badge-primary:hover {
+  background: rgba(255, 140, 66, 0.2);
+}
+
+.ready-badge-success:hover {
+  background: rgba(76, 175, 80, 0.2);
+}
+
+.ready-badge-info:hover {
+  background: rgba(33, 150, 243, 0.2);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 768px) {
+  .ready-section {
+    padding: 2rem 1.5rem;
+    margin: 1.5rem auto;
+  }
+  
+  .ready-badges {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  
+  .ready-badge {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .step-badge {
+    width: 50px;
+    height: 50px;
+    font-size: 1.25rem;
+  }
+}
+
+/* ===== ESTILO ESPECIAL PARA "COMO FUNCIONA?" ===== */
+#como-funciona {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}
+
+#como-funciona::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  animation: ctaBackgroundFloat 8s ease-in-out infinite;
+}
+
+#como-funciona::after {
+  content: '✨';
+  position: absolute;
+  top: 20%;
+  left: 10%;
+  font-size: 1.5rem;
+  opacity: 0.6;
+  animation: particleFloat1 6s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes ctaBackgroundFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-10px) scale(1.02); }
+}
+
+#como-funciona .section-title {
+  font-size: clamp(2rem, 4vw, 3rem) !important;
+  font-weight: 800 !important;
+  color: #ffffff !important;
+  text-align: center !important;
+  margin-bottom: 1rem !important;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  text-overflow: unset !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+#como-funciona .section-subtitle {
+  position: relative !important;
+  z-index: 2 !important;
+  font-size: 1.25rem !important;
+  text-align: center !important;
+  margin-bottom: 3rem !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  max-width: 600px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  animation: ctaSubtitleFloat 2s ease-in-out infinite;
+}
+
+@keyframes ctaSubtitleFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes particleFloat1 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-15px) translateX(15px);
+  }
+}
+
+/* ===== GARANTIR QUE BOTÕES SEJAM CLICÁVEIS ===== */
+#como-funciona .btn-white {
+  position: relative !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+#como-funciona .text-center {
+  position: relative;
+  z-index: 15;
+}
+
+/* ===== BOTÕES CTA TAMBÉM CLICÁVEIS ===== */
+.cta-final-button {
+  position: relative !important;
+  z-index: 20 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+.cta-final-section .hero-cta {
+  position: relative;
+  z-index: 15;
+}
+
+.cta-final-section {
+  position: relative;
+  overflow: visible;
+  z-index: 1;
+}

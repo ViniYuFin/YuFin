@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Licenças • YüFin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cherry+Bomb+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/auth-modals.css">
+  <style>
+    body { font-family: 'Nunito', sans-serif; background:#f5f7fb; color:#1f2937; }
+    .page-hero { background: var(--yufin-gradient); color:white; padding:96px 24px 64px; text-align:center; margin-top:80px; }
+    .page-hero h1 { margin:0; font-size:2.5rem; font-weight:800; color:white; }
+    .page-hero p { color:white; opacity:.95; margin-top:12px; font-size:1.25rem; font-weight:600; }
+    .container { max-width:1200px; margin:32px auto; padding:0 24px; }
+    .cards { display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:24px; margin-top:24px; }
+    .card { background:white; border-radius:var(--border-radius-lg); padding:24px; box-shadow:var(--shadow-md); border:1px solid rgba(238,145,22,0.1); transition:var(--transition-normal); position:relative; overflow:hidden; }
+    .card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;background:var(--yufin-gradient);}
+    .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);}
+    .badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+    .badge.active{background:#dcfce7;color:#166534;}
+    .badge.suspended{background:#fee2e2;color:#991b1b;}
+    .badge.pending{background:#fef3c7;color:#92400e;}
+    .badge.paid{background:#dbeafe;color:#1e40af;}
+    .meta{display:flex;flex-direction:column;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #e5e7eb;}
+    .meta span{color:#374151;font-size:14px;display:block;}
+    .meta strong{color:#1f2937;font-weight:700;margin-right:6px;}
+    .actions{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;}
+    .btn{padding:12px 20px;border-radius:var(--border-radius-sm);font-weight:700;cursor:pointer;transition:var(--transition-fast);font-size:14px;border:none;white-space:nowrap;flex:1;min-width:140px;text-align:center;}
+    .btn-secondary{border:2px solid #e5e7eb;background:white;color:#374151;}
+    .btn-secondary:hover{background:#f9fafb;border-color:#d1d5db;}
+    .btn-primary{background:var(--yufin-gradient);color:white;box-shadow:var(--shadow-sm);}
+    .btn-primary:hover{background:var(--yufin-gradient-dark);box-shadow:var(--shadow-md);transform:translateY(-2px);}
+    .empty{background:white;border:2px dashed #e5e7eb;border-radius:var(--border-radius-lg);padding:48px 24px;text-align:center;color:#6b7280}
+    .empty::before{content:'📋';font-size:64px;display:block;margin-bottom:16px;opacity:0.5;}
+    @media (max-width:768px){.cards{grid-template-columns:1fr;gap:16px;}.container{padding:0 16px;margin:24px auto;}}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <button class="sidebar-toggle" aria-label="Menu Lateral" onclick="window.landingAuth.openSidebar()" style="display: none;">
+        <span></span><span></span><span></span>
+      </button>
+      <button class="navbar-toggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+      <div class="navbar-menu">
+        <a href="index-clean.html#hero" class="navbar-link">Início</a>
+        <a href="planos.html" class="navbar-link">Planos</a>
+        <a href="sobre-contato.html" class="navbar-link">Sobre & Contato</a>
+      </div>
+      <a href="index-clean.html" class="navbar-logo">YüFin</a>
+    </div>
+  </nav>
+
+  <section class="page-hero">
+    <h1>Minhas Licenças</h1>
+    <p style="opacity:.9; margin-top:6px">Gerencie suas licenças, status e assinatura mensal</p>
+  </section>
+
+  <main class="container">
+    <div id="licenses" class="cards"></div>
+    <div id="empty" class="empty" style="display:none">Nenhuma licença encontrada para este usuário.</div>
+  </main>
+
+  <script>
+    // Carregar scripts de autenticação para o header (sidebar/login)
+  </script>
+  <script src="js/auth-system.js?v=1734731000"></script>
+  <script src="js/auth-modals.js?v=1734731000"></script>
+  <script>
+    // Guard de autenticação: exige login
+    (function(){
+      const raw = localStorage.getItem('landingUser') || localStorage.getItem('landingAuth');
+      if(!raw){ alert('Faça login para visualizar suas licenças.'); window.location.href='planos.html'; }
+    })();
+
+    const API_BASE = (location.hostname.includes('localhost')||location.hostname.includes('127.0.0.1'))
+      ? 'http://localhost:3001'
+      : 'https://yufin-backend.vercel.app';
+
+    function getToken(){
+      const lu = localStorage.getItem('landingUser');
+      if(lu){ try{ return (JSON.parse(lu)||{}).token; } catch{} }
+      return localStorage.getItem('accessToken')
+        || localStorage.getItem('token')
+        || localStorage.getItem('landingToken')
+        || (JSON.parse(localStorage.getItem('landingAuth')||'{}').token);
+    }
+
+    function fmtDate(iso){ try{ return new Date(iso).toLocaleDateString('pt-BR'); }catch{ return '-'; } }
+
+    function licenseBadge(license){
+      // Determinar status baseado na expiração
+      const now = new Date();
+      const expiresAt = new Date(license.expiresAt);
+      const isExpired = expiresAt < now;
+      const subscriptionStatus = license.subscription?.status;
+      
+      // Status ativo/inativo baseado na data de expiração
+      let status = isExpired ? 'inactive' : 'active';
+      
+      const map = { 
+        active:'badge active', 
+        inactive:'badge suspended'
+      };
+      const label = { 
+        active:'Ativa', 
+        inactive:'Inativa'
+      };
+      return `<span class="${map[status]||'badge'}">${label[status]||status}</span>`;
+    }
+
+    async function loadLicenses(){
+      const token = getToken();
+      if(!token){ alert('Faça login para visualizar suas licenças.'); location.href='planos.html'; return; }
+      // Usar endpoint existente da landing até o backend com novas rotas estar no ar
+      const res = await fetch(`${API_BASE}/api/landing/licenses`,{ headers:{ Authorization:`Bearer ${token}` } });
+      const data = await res.json();
+      const wrap = document.getElementById('licenses');
+      const empty = document.getElementById('empty');
+      wrap.innerHTML='';
+      if(!data.success || !data.licenses?.length){ empty.style.display='block'; return; }
+      empty.style.display='none';
+      data.licenses.forEach(l=>{
+        const hasSubscription = l.subscription && l.subscription.status;
+        const isCancelled = hasSubscription && l.subscription.status === 'cancelled';
+        const isPix = l.payment && l.payment.paymentMethod && l.payment.paymentMethod.toLowerCase() === 'pix';
+        
+        let cancelButton = '';
+        if(isPix || !hasSubscription){
+          cancelButton = '<div style="text-align:center;padding:12px;background:#fff3cd;border-radius:8px;color:#856404;font-size:13px;font-weight:600;"><span style="margin-right:6px;">ℹ️</span>PIX não possui recorrência automática</div>';
+        } else if(isCancelled){
+          cancelButton = '<button class="btn" style="background:#f3f4f6;color:#6b7280;border:none;cursor:not-allowed;" disabled>Recorrência Cancelada</button>';
+        } else {
+          cancelButton = '<button class="btn btn-primary" onclick="cancelar(\'' + l.code + '\')">Cancelar recorrência</button>';
+        }
+        
+        wrap.insertAdjacentHTML('beforeend',`
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:8px;">
+              <div style="font-weight:800;font-size:20px;color:#1f2937;">${l.planType==='family'?'Plano Família':'Plano Escola'}</div>
+              ${licenseBadge(l)}
+            </div>
+            <div class="meta">
+              <span><strong>Código:</strong> ${l.code}</span>
+              <span><strong>Valor:</strong> R$ ${(l.amount||0).toFixed(2).replace('.',',')}</span>
+              <span><strong>Expira em:</strong> ${fmtDate(l.expiresAt)}</span>
+              ${l.subscription?.nextBillingDate?`<span><strong>Próxima cobrança:</strong> ${fmtDate(l.subscription.nextBillingDate)}</span>`:''}
+            </div>
+            <div class="actions">
+              <button class="btn btn-secondary" onclick="verHistorico('${l.code}')">Ver histórico</button>
+              ${cancelButton}
+            </div>
+          </div>
+        `);
+      });
+    }
+
+    function verHistorico(code){ location.href = `historico-pagamentos.html?code=${encodeURIComponent(code)}`; }
+
+    async function cancelar(licenseCode){
+      const ok = confirm('Confirmar cancelamento da recorrência? O acesso permanece até o vencimento atual.');
+      if(!ok) return;
+      const token = getToken();
+      const res = await fetch(`${API_BASE}/api/subscription/${encodeURIComponent(licenseCode)}/cancel`,{
+        method:'POST', headers:{ 'Content-Type':'application/json', Authorization:`Bearer ${token}` }
+      });
+      const data = await res.json();
+      if(data.success){ alert('Assinatura cancelada com sucesso.'); loadLicenses(); } else { alert(data.error||'Erro ao cancelar.'); }
+    }
+
+    loadLicenses();
+  </script>
+</body>
+</html>
