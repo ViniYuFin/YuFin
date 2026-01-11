@@ -218,17 +218,31 @@ router.post('/use', async (req, res) => {
       if (familyLicense) {
         console.log('✅ Licença real encontrada para uso');
         console.log('📋 PlanData:', familyLicense.planData);
+        
+        // Garantir que usageCount está definido (pode ser undefined/null em licenças antigas)
+        if (familyLicense.usageCount === undefined || familyLicense.usageCount === null) {
+          familyLicense.usageCount = 0;
+        }
+        
+        // Garantir que maxUsages está definido
+        if (familyLicense.maxUsages === undefined || familyLicense.maxUsages === null) {
+          familyLicense.maxUsages = familyLicense.planData?.numParents || 1;
+        }
+        
         console.log('🔍 Verificando uso da licença:', {
           usageCount: familyLicense.usageCount,
           maxUsages: familyLicense.maxUsages,
-          canBeUsed: familyLicense.canBeUsed()
+          canBeUsed: familyLicense.canBeUsed(),
+          typeOfUsageCount: typeof familyLicense.usageCount,
+          typeOfMaxUsages: typeof familyLicense.maxUsages
         });
         
         // Verificar se a licença pode ser usada
         if (!familyLicense.canBeUsed()) {
           console.log('❌ Licença já foi utilizada o número máximo de vezes:', {
             usageCount: familyLicense.usageCount,
-            maxUsages: familyLicense.maxUsages
+            maxUsages: familyLicense.maxUsages,
+            comparison: `${familyLicense.usageCount} < ${familyLicense.maxUsages} = ${familyLicense.usageCount < familyLicense.maxUsages}`
           });
           return res.status(400).json({
             error: 'Licença já foi utilizada o número máximo de vezes',

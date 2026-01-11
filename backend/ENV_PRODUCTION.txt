@@ -1,0 +1,29 @@
+Chave: NODE_ENV
+Valor: production
+
+Chave: FRONTEND_URL
+Valor: https://app.yufin.com.br
+
+Chave: MONGODB_URI
+Valor: mongodb+srv://Vinicius:081023%40Jeova@cluster0.ow4ruvq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+
+Chave: JWT_SECRET
+Valor: 0c95fb18e1161007d829d842a4b8935d251ae220e6e8342ea4fa1f21624ecb08abd80ffeb3dd54278bed7008cbcd206e694c066a659bbd9a2dd1b6fe21001495
+
+Chave: REFRESH_SECRET
+Valor: a7f3e9c2d8b4a1f6e5c9d7b3a8f2e6c4d9b7a5f1e8c3d6b2a9f4e7c1d8b5a3f9e2c6d4b8a1f7e5c2d9b6a4f3e8c7d1b5a9f2e6c4d3b8a7f1e9c5d2b6a4f8e3c9d7b1a5f
+
+Chave: EMAIL_USER
+Valor: contato.yufin@gmail.com
+
+Chave: EMAIL_PASS
+Valor: vrdz rvms zotm fjpx
+
+Chave: MERCADO_PAGO_ACCESS_TOKEN_PROD
+Valor: APP_USR-2925257877860471-102208-48042d437120c03f89adc406f9e74067-431487301
+
+Chave: MERCADO_PAGO_PUBLIC_KEY_PROD
+Valor: APP_USR-0f92705d-ae9b-4cd9-b424-803b1dd28572
+
+Chave: MERCADO_PAGO_WEBHOOK_SECRET
+Valor: 91232f40f54afc36866d634d3301a830a4394256ebb9f0c6f16314946e2ea7a3

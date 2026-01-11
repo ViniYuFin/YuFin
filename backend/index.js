@@ -28,6 +28,7 @@ const processPaymentRoutes = require('./routes/process-payment');
 const testDbRoutes = require('./routes/test-db');
 const marketValidationRoutes = require('./routes/marketValidation');
 const licensesRoutes = require('./routes/licenses');
+const adminLicensesRoutes = require('./routes/adminLicenses');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -106,6 +107,7 @@ app.use((req, res, next) => {
     'https://mercadopago.com',
     'https://www.mercadopago.com',
     'http://localhost:5173',
+    'http://localhost:5174', // Frontend de geração de licenças
     'http://localhost:3000',
     'http://localhost:3001'
   ];
@@ -190,6 +192,7 @@ app.use('/api/mercado-pago', processPaymentRoutes); // Processamento de pagament
 app.use('/api', testDbRoutes); // Teste de conexão MongoDB
 app.use('/api/market-validation', marketValidationRoutes); // Validação de mercado
 app.use('/api', licensesRoutes); // Licenças: mine, history, cancel subscription
+app.use('/api/admin/licenses', adminLicensesRoutes); // Geração manual de licenças (admin)
 
 // Endpoint de teste
 app.get('/', (req, res) => {
@@ -199,20 +202,23 @@ app.get('/', (req, res) => {
 // Rota temporária para criar usuário admin (APENAS DESENVOLVIMENTO)
 app.post('/setup-admin', async (req, res) => {
   try {
-    const bcrypt = require('bcryptjs');
+    const bcrypt = require('bcrypt'); // Usar bcrypt (mesma biblioteca do login)
     const { email, password } = req.body;
     
     if (!email || !password) {
       return res.status(400).json({ error: 'Email e senha são obrigatórios' });
     }
     
+    // Normalizar email
+    const normalizedEmail = email.toLowerCase().trim();
+    
     // Verificar se usuário já existe
-    let user = await User.findOne({ email });
+    let user = await User.findOne({ email: normalizedEmail });
     
     if (user) {
       // Atualizar usuário existente para admin
       user.role = 'admin';
-      user.password = await bcrypt.hash(password, 10);
+      user.passwordHash = await bcrypt.hash(password, 10);
       await user.save();
       return res.json({ 
         success: true, 
@@ -222,15 +228,40 @@ app.post('/setup-admin', async (req, res) => {
       });
     } else {
       // Criar novo usuário admin
+      console.log('🔧 Criando novo usuário admin...');
+      console.log('📋 Email:', email);
+      console.log('📋 Password length:', password ? password.length : 'undefined');
+      
       const hashedPassword = await bcrypt.hash(password, 10);
-      user = new User({
-        email,
-        password: hashedPassword,
+      console.log('🔐 Hash gerado:', hashedPassword ? 'Sim' : 'Não');
+      console.log('🔐 Hash length:', hashedPassword ? hashedPassword.length : 0);
+      
+      // Verificar se o hash foi gerado
+      if (!hashedPassword) {
+        return res.status(500).json({ error: 'Erro ao gerar hash da senha' });
+      }
+      
+      const userData = {
+        email: normalizedEmail,
+        passwordHash: hashedPassword,
         role: 'admin',
         name: 'Administrador',
-        isVerified: true
+        isVerified: true,
+        accessStatus: 'active'
+      };
+      
+      console.log('📋 Dados do usuário:', {
+        email: userData.email,
+        role: userData.role,
+        hasPasswordHash: !!userData.passwordHash,
+        passwordHashLength: userData.passwordHash ? userData.passwordHash.length : 0
       });
+      
+      user = new User(userData);
+      
+      console.log('💾 Tentando salvar usuário...');
       await user.save();
+      console.log('✅ Usuário salvo com sucesso!');
       return res.json({ 
         success: true, 
         message: 'Usuário admin criado com sucesso!',
@@ -240,7 +271,15 @@ app.post('/setup-admin', async (req, res) => {
     }
   } catch (error) {
     console.error('❌ Erro ao criar usuário admin:', error);
-    res.status(500).json({ error: 'Erro ao criar usuário admin' });
+    console.error('❌ Detalhes do erro:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
+    res.status(500).json({ 
+      error: 'Erro ao criar usuário admin',
+      details: error.message 
+    });
   }
 });
 

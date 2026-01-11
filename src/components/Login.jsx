@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getApiUrl } from '../config/environment';
 
 const Login = ({ handleLogin, setActiveScreen, role }) => {
   const [email, setEmail] = useState('');
@@ -6,6 +7,10 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotPasswordEmail, setForgotPasswordEmail] = useState('');
+  const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const [forgotPasswordSuccess, setForgotPasswordSuccess] = useState(false);
 
   const onSubmitLogin = async (e) => {
     e.preventDefault();
@@ -51,12 +56,49 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
     }
   };
 
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setForgotPasswordLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${getApiUrl()}/auth/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: forgotPasswordEmail.toLowerCase().trim(),
+          role: role
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao solicitar redefinição de senha');
+      }
+
+      setForgotPasswordSuccess(true);
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setForgotPasswordEmail('');
+        setForgotPasswordSuccess(false);
+      }, 3000);
+    } catch (error) {
+      setError(error.message || 'Erro ao solicitar redefinição de senha');
+    } finally {
+      setForgotPasswordLoading(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen auth-background p-4 animate-fadeIn">
-      <h2 className="text-4xl font-bold text-white mb-6 text-center">
-        Entrar como <span className="font-yufin">{getRoleDisplayName(role)}</span>
-      </h2>
-      <form onSubmit={onSubmitLogin} className="bg-white p-8 lg:p-10 xl:p-12 rounded-xl shadow-lg w-full max-w-sm lg:max-w-md xl:max-w-lg flex flex-col space-y-4 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
+    <>
+      <div className="flex flex-col items-center justify-center min-h-screen auth-background p-4 animate-fadeIn" style={{ opacity: showForgotPassword ? 0.3 : 1, transition: 'opacity 0.3s ease', pointerEvents: showForgotPassword ? 'none' : 'auto' }}>
+        <h2 className="text-4xl font-bold text-white mb-6 text-center">
+          Entrar como <span className="font-yufin">{getRoleDisplayName(role)}</span>
+        </h2>
+        <form onSubmit={onSubmitLogin} className="bg-white p-8 lg:p-10 xl:p-12 rounded-xl shadow-lg w-full max-w-sm lg:max-w-md xl:max-w-lg flex flex-col space-y-4 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
         <input
           type="email"
           id="email-login"
@@ -106,6 +148,17 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
             )}
           </button>
         </div>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            setShowForgotPassword(true);
+          }}
+          className="text-sm text-right text-blue-600 hover:underline"
+          style={{ textAlign: 'left', color: 'rgb(238, 145, 22)' }}
+        >
+          Esqueci minha senha
+        </a>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         <button
           type="submit"
@@ -138,7 +191,108 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
       >
         Não tem conta? Registre-se aqui!
       </button>
-    </div>
+      </div>
+
+      {/* Modal de Esqueci minha senha */}
+      {showForgotPassword && (
+        <div 
+          className="fixed inset-0 flex items-center justify-center z-[9999] p-4"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backdropFilter: 'blur(4px)'
+          }}
+          onClick={() => {
+            if (!forgotPasswordLoading) {
+              setShowForgotPassword(false);
+              setForgotPasswordEmail('');
+              setForgotPasswordSuccess(false);
+            }
+          }}
+        >
+          <div 
+            className="bg-white rounded-xl shadow-lg p-6 max-w-md w-full"
+            onClick={(e) => e.stopPropagation()}
+            style={{ 
+              border: '2px solid rgb(238, 145, 22)',
+              position: 'relative',
+              zIndex: 1001,
+              opacity: 1
+            }}
+          >
+            <h3 className="text-2xl font-bold mb-4" style={{ color: 'rgb(238, 145, 22)' }}>
+              Esqueci minha senha
+            </h3>
+            
+            {forgotPasswordSuccess ? (
+              <div className="text-center py-4">
+                <p className="text-green-600 mb-4">
+                  ✅ Email enviado com sucesso! Verifique sua caixa de entrada.
+                </p>
+                <button
+                  onClick={() => {
+                    setShowForgotPassword(false);
+                    setForgotPasswordEmail('');
+                    setForgotPasswordSuccess(false);
+                  }}
+                  className="px-4 py-2 rounded-lg text-white font-semibold"
+                  style={{ backgroundColor: 'rgb(238, 145, 22)' }}
+                >
+                  Fechar
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-gray-600 mb-4">
+                  Digite seu email e enviaremos um link para redefinir sua senha.
+                </p>
+                <form onSubmit={handleForgotPassword}>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={forgotPasswordEmail}
+                      onChange={(e) => setForgotPasswordEmail(e.target.value)}
+                      required
+                      className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      placeholder="seu@email.com"
+                      disabled={forgotPasswordLoading}
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowForgotPassword(false);
+                        setForgotPasswordEmail('');
+                        setError('');
+                      }}
+                      className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition-colors"
+                      disabled={forgotPasswordLoading}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={forgotPasswordLoading}
+                      className="flex-1 px-4 py-2 rounded-lg text-white font-semibold transition-opacity"
+                      style={{ 
+                        backgroundColor: 'rgb(238, 145, 22)',
+                        opacity: forgotPasswordLoading ? 0.6 : 1,
+                        cursor: forgotPasswordLoading ? 'not-allowed' : 'pointer'
+                      }}
+                    >
+                      {forgotPasswordLoading ? 'Enviando...' : 'Enviar'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
 

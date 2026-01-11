@@ -90,9 +90,8 @@ const loginSchema = Joi.object({
     'string.empty': 'Senha é obrigatória'
   }),
   
-  role: Joi.string().valid('student', 'parent', 'school').required().messages({
-    'any.only': 'Role deve ser student, parent ou school',
-    'string.empty': 'Role é obrigatório'
+  role: Joi.string().valid('student', 'parent', 'school', 'admin', 'student-gratuito').optional().messages({
+    'any.only': 'Role deve ser student, parent, school, admin ou student-gratuito'
   })
 });
 

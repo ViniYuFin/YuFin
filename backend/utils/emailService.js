@@ -450,8 +450,93 @@ const sendLicenseConfirmationEmail = async (email, licenseData) => {
   }
 };
 
+// Função para enviar email de redefinição de senha
+const sendPasswordResetEmail = async (email, resetToken, role = 'admin') => {
+  try {
+    // Determinar a URL correta baseada no role
+    let resetUrl;
+    if (role === 'admin') {
+      // Para admin, usar URL específica do admin panel (gerador de licenças)
+      const adminUrl = process.env.ADMIN_FRONTEND_URL || process.env.LICENSES_FRONTEND_URL || process.env.FRONTEND_URL || 'http://localhost:5174';
+      resetUrl = `${adminUrl}/reset-password?token=${resetToken}`;
+    } else {
+      // Para outros perfis (student, parent, school), usar FRONTEND_URL do app principal
+      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+    }
+    
+    // Verificar se as configurações de email estão disponíveis
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log('⚠️ [DEV MODE] Configurações de email não encontradas, simulando envio');
+      console.log('📧 Para:', email);
+      console.log('🔑 Token:', resetToken);
+      console.log('🔗 Link de redefinição:', resetUrl);
+      console.log('🔧 Admin URL usada:', adminUrl);
+      return { success: true, messageId: 'dev-simulation' };
+    }
+    
+    const transporter = createTransporter();
+    
+    const mailOptions = {
+      from: process.env.EMAIL_USER || 'contato.yufin@gmail.com',
+      to: email,
+      subject: '🔐 YüFin - Redefinição de Senha',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f8f9fa;">
+          <div style="background: linear-gradient(135deg, #EE9116 0%, #FFB300 100%); padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 20px;">
+            <h1 style="color: white; margin: 0; font-size: 28px;">YüFin</h1>
+            <p style="color: white; margin: 10px 0 0 0; font-size: 16px;">Redefinição de Senha</p>
+          </div>
+          
+          <div style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="color: #333; margin-top: 0;">Olá! 👋</h2>
+            
+            <p style="color: #555; line-height: 1.6; font-size: 16px;">
+              Recebemos uma solicitação para redefinir a senha da sua conta administrativa na <strong>YüFin</strong>.
+            </p>
+            
+            <div style="text-align: center; margin: 30px 0;">
+              <a href="${resetUrl}" 
+                 style="display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #EE9116 0%, #FFB300 100%); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                Redefinir Senha
+              </a>
+            </div>
+            
+            <p style="color: #666; font-size: 14px; line-height: 1.6;">
+              Ou copie e cole este link no seu navegador:<br>
+              <a href="${resetUrl}" style="color: #EE9116; word-break: break-all;">${resetUrl}</a>
+            </p>
+            
+            <div style="background: #fff3cd; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
+              <p style="color: #856404; margin: 0; font-size: 14px;">
+                ⚠️ <strong>Importante:</strong> Este link expira em 1 hora. Se você não solicitou esta redefinição, ignore este email.
+              </p>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+            
+            <p style="color: #888; font-size: 12px; text-align: center; margin: 0;">
+              <strong>Com gratidão,</strong><br>
+              Equipe YüFin 🧡<br>
+              Educação financeira para o futuro de quem mais importa.
+            </p>
+          </div>
+        </div>
+      `
+    };
+    
+    const result = await transporter.sendMail(mailOptions);
+    console.log('✅ Email de redefinição de senha enviado:', result.messageId);
+    return { success: true, messageId: result.messageId };
+  } catch (error) {
+    console.error('❌ Erro ao enviar email de redefinição de senha:', error);
+    return { success: false, error: error.message };
+  }
+};
+
 module.exports = {
   sendParentValidationEmail,
   sendRegistrationConfirmationEmail,
-  sendLicenseConfirmationEmail
+  sendLicenseConfirmationEmail,
+  sendPasswordResetEmail
 };

@@ -122,8 +122,8 @@ schoolLicenseSchema.statics.generateLicenseCode = function() {
 
 // Método para verificar se a licença é válida
 schoolLicenseSchema.methods.isValid = function() {
-  // Verificar se status da licença está ativo
-  if (this.status !== 'paid' && this.status !== 'active') return false;
+  // Verificar se status da licença está pago
+  if (this.status !== 'paid') return false;
   
   // Verificar se assinatura está ativa
   if (this.subscription && this.subscription.status !== 'active') return false;

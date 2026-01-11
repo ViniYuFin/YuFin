@@ -9,6 +9,7 @@ import Register from './src/components/Register';
 import RegisterWithToken from './src/components/RegisterWithToken';
 import RegisterGratuito from './src/components/RegisterGratuito';
 import ValidateParentConsent from './src/components/ValidateParentConsent';
+import ResetPassword from './src/components/ResetPassword';
 import StudentDashboard from './src/components/StudentDashboard';
 import Lesson from './src/components/Lesson';
 import Profile from './src/components/Profile';
@@ -83,8 +84,11 @@ function App() {
           document.documentElement.classList.remove('dark');
           setUser(null);
           
-          // Verificar se é rota de registro gratuito ou validação
+          // Verificar se é rota de registro gratuito, validação ou reset de senha
           const path = window.location.pathname;
+          const urlParams = new URLSearchParams(window.location.search);
+          const resetToken = urlParams.get('token');
+          
           console.log('🔍 Path detectado:', path);
           if (path === '/register-gratuito' || path.endsWith('/register-gratuito')) {
             console.log('✅ Redirecionando para register-gratuito');
@@ -92,6 +96,9 @@ function App() {
           } else if (path === '/validate-parent-consent' || path.endsWith('/validate-parent-consent')) {
             console.log('✅ Redirecionando para validate-parent-consent');
             setActiveScreen('validate-parent-consent');
+          } else if (path === '/reset-password' || path.endsWith('/reset-password') || resetToken) {
+            console.log('✅ Redirecionando para reset-password');
+            setActiveScreen('reset-password');
           } else {
             console.log('✅ Redirecionando para welcome');
             setActiveScreen('welcome');
@@ -664,6 +671,9 @@ function App() {
         case 'validate-parent-consent':
           console.log('✅ Caso: validate-parent-consent - Renderizando ValidateParentConsent!');
           return <ValidateParentConsent setActiveScreen={setActiveScreen} />;
+        case 'reset-password':
+          console.log('🔐 Caso: reset-password - Renderizando ResetPassword!');
+          return <ResetPassword setActiveScreen={setActiveScreen} />;
         default:
           console.log('📱 Caso: default - Renderizando Welcome');
           return <Welcome setActiveScreen={setActiveScreen} />;
@@ -761,11 +771,11 @@ function App() {
 
   // Lógica simplificada para mostrar navegação
   const screenName = getScreenName(activeScreen);
-  const shouldShowNavigation = user && 
+    const shouldShowNavigation = user && 
     !isInitializing &&
     screenName && 
     !screenName.startsWith('lesson-') && 
-    !['welcome', 'login-student', 'login-parent', 'login-school', 'register-student', 'register-parent', 'register-school', 'register-gratuito'].includes(screenName);
+    !['welcome', 'login-student', 'login-parent', 'login-school', 'register-student', 'register-parent', 'register-school', 'register-gratuito', 'reset-password'].includes(screenName);
 
   if (isInitializing) return null;
 

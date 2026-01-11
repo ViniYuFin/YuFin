@@ -4,12 +4,13 @@ const User = require('../models/User');
 const RegistrationToken = require('../models/RegistrationToken');
 const RefreshToken = require('../models/RefreshToken');
 const ParentValidationToken = require('../models/ParentValidationToken');
+const PasswordResetToken = require('../models/PasswordResetToken');
 const UniversalLicense = require('../models/UniversalLicense');
 const { hashPassword, comparePassword } = require('../utils/password');
 const { generateTokenPair } = require('../utils/jwt');
 const { validate, loginSchema, registerSchema } = require('../utils/validators');
 const { checkParentConsent } = require('../middleware/lgpd');
-const { sendParentValidationEmail, sendRegistrationConfirmationEmail } = require('../utils/emailService');
+const { sendParentValidationEmail, sendRegistrationConfirmationEmail, sendPasswordResetEmail } = require('../utils/emailService');
 const crypto = require('crypto');
 
 /**
@@ -19,10 +20,23 @@ const crypto = require('crypto');
 router.post('/login', validate(loginSchema), async (req, res) => {
   try {
     const { email, password, role } = req.body;
+    console.log('🔐 LOGIN - Dados recebidos:', { 
+      email, 
+      role, 
+      passwordLength: password ? password.length : 0,
+      passwordPreview: password ? (password.substring(0, 3) + '***') : 'undefined',
+      rawBody: JSON.stringify(req.body).substring(0, 100) // Primeiros 100 caracteres do body
+    });
     
-    // Buscar usuário
-    const user = await User.findOne({ email, role });
+    // Buscar usuário (se role fornecido, filtrar por role; senão, buscar apenas por email)
+    const query = role ? { email: email.toLowerCase().trim(), role } : { email: email.toLowerCase().trim() };
+    console.log('🔍 LOGIN - Query de busca:', query);
+    
+    const user = await User.findOne(query);
+    console.log('🔍 LOGIN - Usuário encontrado:', user ? { email: user.email, role: user.role, hasPasswordHash: !!user.passwordHash } : 'Não encontrado');
+    
     if (!user) {
+      console.log('❌ LOGIN - Usuário não encontrado');
       return res.status(401).json({ 
         error: 'Credenciais inválidas',
         code: 'INVALID_CREDENTIALS'
@@ -30,8 +44,12 @@ router.post('/login', validate(loginSchema), async (req, res) => {
     }
     
     // Comparar senha com hash
+    console.log('🔐 LOGIN - Comparando senha...');
     const isPasswordValid = await comparePassword(password, user.passwordHash);
+    console.log('🔐 LOGIN - Senha válida:', isPasswordValid);
+    
     if (!isPasswordValid) {
+      console.log('❌ LOGIN - Senha inválida');
       return res.status(401).json({ 
         error: 'Credenciais inválidas',
         code: 'INVALID_CREDENTIALS'
@@ -1119,6 +1137,173 @@ router.get('/validate-universal-license/:code', async (req, res) => {
     res.status(500).json({
       error: 'Erro interno do servidor',
       code: 'INTERNAL_ERROR'
+    });
+  }
+});
+
+/**
+ * POST /auth/forgot-password
+ * Solicita redefinição de senha (envia email com token)
+ */
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email, role } = req.body;
+    
+    console.log('🔐 FORGOT-PASSWORD - Dados recebidos:', { 
+      email, 
+      role,
+      emailNormalized: email ? email.toLowerCase().trim() : null
+    });
+    
+    if (!email) {
+      return res.status(400).json({
+        error: 'Email é obrigatório',
+        code: 'MISSING_EMAIL'
+      });
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    // Buscar usuário - primeiro tentar com role se fornecido, depois sem role
+    let user = null;
+    if (role) {
+      const queryWithRole = { email: normalizedEmail, role };
+      console.log('🔍 FORGOT-PASSWORD - Buscando com role:', queryWithRole);
+      user = await User.findOne(queryWithRole);
+      
+      // Se não encontrou com role, tentar sem role (pode ser que o email exista mas com outro role)
+      if (!user) {
+        console.log('⚠️ FORGOT-PASSWORD - Não encontrado com role, tentando sem role...');
+        const queryWithoutRole = { email: normalizedEmail };
+        user = await User.findOne(queryWithoutRole);
+        if (user) {
+          console.log(`⚠️ FORGOT-PASSWORD - Email encontrado mas com role diferente: ${user.role} (esperado: ${role})`);
+        }
+      }
+    } else {
+      const queryWithoutRole = { email: normalizedEmail };
+      console.log('🔍 FORGOT-PASSWORD - Buscando sem role:', queryWithoutRole);
+      user = await User.findOne(queryWithoutRole);
+    }
+    
+    console.log('🔍 FORGOT-PASSWORD - Usuário encontrado:', user ? { 
+      email: user.email, 
+      role: user.role,
+      hasPasswordHash: !!user.passwordHash 
+    } : 'Não encontrado');
+    
+    // Por segurança, sempre retornar sucesso mesmo se o usuário não existir
+    if (!user) {
+      console.log('⚠️ Tentativa de redefinição para email não cadastrado:', normalizedEmail);
+      return res.json({
+        success: true,
+        message: 'Se o email estiver cadastrado, você receberá um link de redefinição.'
+      });
+    }
+
+    // Gerar token único
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    
+    // Criar ou atualizar token de redefinição
+    await PasswordResetToken.findOneAndUpdate(
+      { email: user.email, role: user.role },
+      {
+        email: user.email,
+        token: resetToken,
+        role: user.role,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hora
+        isUsed: false,
+        usedAt: null
+      },
+      { upsert: true, new: true }
+    );
+
+    // Enviar email
+    await sendPasswordResetEmail(user.email, resetToken, user.role);
+    
+    console.log(`✅ Email de redefinição enviado para: ${user.email}`);
+    
+    res.json({
+      success: true,
+      message: 'Se o email estiver cadastrado, você receberá um link de redefinição.'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao processar solicitação de redefinição:', error);
+    res.status(500).json({
+      error: 'Erro ao processar solicitação',
+      code: 'RESET_PASSWORD_ERROR'
+    });
+  }
+});
+
+/**
+ * POST /auth/reset-password
+ * Redefine a senha usando o token
+ */
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+    
+    if (!token || !newPassword) {
+      return res.status(400).json({
+        error: 'Token e nova senha são obrigatórios',
+        code: 'MISSING_DATA'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        error: 'A senha deve ter pelo menos 6 caracteres',
+        code: 'WEAK_PASSWORD'
+      });
+    }
+
+    // Buscar token
+    const resetToken = await PasswordResetToken.findOne({ token });
+    
+    if (!resetToken || !resetToken.isValid()) {
+      return res.status(400).json({
+        error: 'Token inválido ou expirado',
+        code: 'INVALID_TOKEN'
+      });
+    }
+
+    // Buscar usuário
+    const user = await User.findOne({ 
+      email: resetToken.email, 
+      role: resetToken.role 
+    });
+    
+    if (!user) {
+      return res.status(404).json({
+        error: 'Usuário não encontrado',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
+    // Atualizar senha
+    const newPasswordHash = await hashPassword(newPassword);
+    user.passwordHash = newPasswordHash;
+    await user.save();
+
+    // Marcar token como usado
+    resetToken.isUsed = true;
+    resetToken.usedAt = new Date();
+    await resetToken.save();
+
+    console.log(`✅ Senha redefinida para: ${user.email}`);
+    
+    res.json({
+      success: true,
+      message: 'Senha redefinida com sucesso!'
+    });
+    
+  } catch (error) {
+    console.error('❌ Erro ao redefinir senha:', error);
+    res.status(500).json({
+      error: 'Erro ao redefinir senha',
+      code: 'RESET_PASSWORD_ERROR'
     });
   }
 });

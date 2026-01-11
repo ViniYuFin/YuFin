@@ -167,6 +167,18 @@ const familyLicenseSchema = new mongoose.Schema({
     },
     expiresAt: Date,
     reason: String // 'payment_failed', 'subscription_paused'
+  },
+  
+  // Permissões de geração de tokens (para licenças manuais)
+  tokenPermissions: {
+    firstCanGenerate: {
+      type: Boolean,
+      default: true
+    },
+    secondCanGenerate: {
+      type: Boolean,
+      default: false
+    }
   }
 }, {
   timestamps: true
