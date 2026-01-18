@@ -68,6 +68,12 @@ const ResetPassword = ({ setActiveScreen }) => {
       }
 
       setSuccess(true);
+      
+      // Limpar token da URL
+      const url = new URL(window.location);
+      url.searchParams.delete('token');
+      window.history.replaceState({}, '', url);
+      
       setTimeout(() => {
         setActiveScreen('welcome');
       }, 3000);
@@ -84,16 +90,16 @@ const ResetPassword = ({ setActiveScreen }) => {
         <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
           <div className="text-center">
             <div className="text-6xl mb-4">✅</div>
-            <h2 className="text-2xl font-bold mb-4" style={{ color: 'rgb(238, 145, 22)' }}>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: 'rgb(238, 145, 22)', fontFamily: "'Nunito', sans-serif" }}>
               Senha Redefinida!
             </h2>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-6" style={{ fontFamily: "'Nunito', sans-serif" }}>
               Sua senha foi redefinida com sucesso. Você será redirecionado para a tela de login em instantes.
             </p>
             <button
               onClick={() => setActiveScreen('welcome')}
               className="px-6 py-3 rounded-xl text-white font-semibold"
-              style={{ backgroundColor: 'rgb(238, 145, 22)' }}
+              style={{ backgroundColor: 'rgb(238, 145, 22)', fontFamily: "'Nunito', sans-serif" }}
             >
               Ir para Login
             </button>
@@ -105,13 +111,14 @@ const ResetPassword = ({ setActiveScreen }) => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen auth-background p-4 animate-fadeIn">
-      <h2 className="text-4xl font-bold text-white mb-6 text-center">
-        Redefinir Senha
+      <h2 className="text-4xl font-bold text-white mb-6 text-center" style={{ fontFamily: "'Nunito', sans-serif" }}>
+        <span style={{ fontFamily: "'Nunito', sans-serif" }}>Redefinir </span>
+        <span style={{ fontFamily: "'Cherry Bomb One', cursive" }}>Senha</span>
       </h2>
       <form onSubmit={handleSubmit} className="bg-white p-8 lg:p-10 xl:p-12 rounded-xl shadow-lg w-full max-w-sm lg:max-w-md xl:max-w-lg flex flex-col space-y-4 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
         {!token && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4">
-            <p className="text-yellow-800 text-sm">
+            <p className="text-yellow-800 text-sm" style={{ fontFamily: "'Nunito', sans-serif" }}>
               ⚠️ Token não encontrado. Por favor, use o link enviado por email.
             </p>
           </div>
@@ -124,6 +131,7 @@ const ResetPassword = ({ setActiveScreen }) => {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             className="p-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            style={{ fontFamily: "'Nunito', sans-serif" }}
             required
             disabled={loading || !token}
             autoComplete="new-password"
@@ -155,6 +163,7 @@ const ResetPassword = ({ setActiveScreen }) => {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="p-3 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 w-full"
+            style={{ fontFamily: "'Nunito', sans-serif" }}
             required
             disabled={loading || !token}
             autoComplete="new-password"
@@ -179,12 +188,12 @@ const ResetPassword = ({ setActiveScreen }) => {
           </button>
         </div>
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+        {error && <p className="text-red-500 text-sm" style={{ fontFamily: "'Nunito', sans-serif" }}>{error}</p>}
         
         <button
           type="submit"
           className="text-white font-bold py-3 px-6 rounded-xl shadow-md hover:opacity-90 transition-all duration-300 text-lg flex items-center justify-center relative"
-          style={{ backgroundColor: 'rgb(238, 145, 22)' }}
+          style={{ backgroundColor: 'rgb(238, 145, 22)', fontFamily: "'Nunito', sans-serif" }}
           disabled={loading || !token}
         >
           {loading && (
@@ -195,7 +204,7 @@ const ResetPassword = ({ setActiveScreen }) => {
               </svg>
             </div>
           )}
-          <span className={`${loading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`}>
+          <span className={`${loading ? 'opacity-0' : 'opacity-100'} transition-opacity duration-300`} style={{ fontFamily: "'Nunito', sans-serif" }}>
             Redefinir Senha
           </span>
         </button>
@@ -204,6 +213,7 @@ const ResetPassword = ({ setActiveScreen }) => {
       <button
         onClick={() => setActiveScreen('welcome')}
         className="mt-6 text-white text-md hover:underline transition-colors duration-300"
+        style={{ fontFamily: "'Nunito', sans-serif" }}
         disabled={loading}
       >
         Voltar

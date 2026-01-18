@@ -264,7 +264,9 @@ const styles = {
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '20px'
+    gap: '20px',
+    width: '100%',
+    boxSizing: 'border-box'
   },
   field: {
     display: 'flex',
@@ -378,7 +380,10 @@ const styles = {
     fontSize: '14px',
     color: '#EE9116',
     fontWeight: 'bold',
-    marginBottom: '8px'
+    marginBottom: '8px',
+    wordBreak: 'break-all',
+    overflowWrap: 'break-word',
+    overflowX: 'auto'
   },
   codeDetails: {
     display: 'flex',

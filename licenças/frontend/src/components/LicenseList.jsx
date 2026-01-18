@@ -250,8 +250,10 @@ const styles = {
   },
   actions: {
     display: 'flex',
+    flexWrap: 'wrap',
     gap: '12px',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: '100%'
   },
   filter: {
     padding: '8px 12px',
@@ -299,8 +301,10 @@ const styles = {
   },
   cardsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-    gap: '20px'
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+    gap: '20px',
+    width: '100%',
+    boxSizing: 'border-box'
   },
   card: {
     background: 'white',
@@ -308,7 +312,10 @@ const styles = {
     borderRadius: '12px',
     padding: '20px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    transition: 'transform 0.2s, box-shadow 0.2s'
+    transition: 'transform 0.2s, box-shadow 0.2s',
+    minWidth: 0,
+    overflow: 'hidden',
+    boxSizing: 'border-box'
   },
   cardHeader: {
     display: 'flex',
@@ -316,11 +323,14 @@ const styles = {
     alignItems: 'center',
     marginBottom: '16px',
     paddingBottom: '16px',
-    borderBottom: '2px solid #f3f4f6'
+    borderBottom: '2px solid #f3f4f6',
+    gap: '8px',
+    minWidth: 0
   },
   cardActions: {
     display: 'flex',
-    gap: '8px'
+    gap: '8px',
+    flexShrink: 0
   },
   cardBody: {
     display: 'flex',
@@ -358,7 +368,11 @@ const styles = {
     padding: '6px 10px',
     background: '#fff7ed',
     borderRadius: '6px',
-    border: '1px solid #fed7aa'
+    border: '1px solid #fed7aa',
+    wordBreak: 'break-all',
+    overflowWrap: 'break-word',
+    minWidth: 0,
+    flex: '1 1 auto'
   },
   badge: {
     padding: '4px 10px',

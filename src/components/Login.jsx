@@ -219,7 +219,7 @@ const Login = ({ handleLogin, setActiveScreen, role }) => {
               opacity: 1
             }}
           >
-            <h3 className="text-2xl font-bold mb-4" style={{ color: 'rgb(238, 145, 22)' }}>
+            <h3 className="text-2xl font-bold mb-4 text-center" style={{ color: 'rgb(238, 145, 22)' }}>
               Esqueci minha senha
             </h3>
             

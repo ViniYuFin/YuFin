@@ -92,6 +92,7 @@ app.use((req, res, next) => {
     'https://www.yufin.com.br',
     'https://app.yufin.com.br',
     'https://validacao.yufin.com.br',
+    'https://licencas.yufin.com.br', // Frontend de geração de licenças (produção)
     'https://yufin-frontend.vercel.app',
     'https://yufin-backend.vercel.app',
     'https://yufin-deploy.vercel.app',
@@ -99,6 +100,8 @@ app.use((req, res, next) => {
   'https://yufin-landing-bbaweogrp-vinicius-assuncaos-projects-ffa185b9.vercel.app',
   'https://yufin-landing-856q5gemc-vinicius-assuncaos-projects-ffa185b9.vercel.app',
     'https://yufin-deploy-hngkufy5x-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    // Frontend de geração de licenças - Vercel
+    'https://yufin-licencas.vercel.app',
     // Adicionar domínios temporários do Vercel que aparecem nos logs
     'https://yufin-backend-705bjj13-vinicius-assuncaos-projects-ffa185b9.vercel.app',
     'https://yufin-backend-1tgubu2id-vinicius-assuncaos-projects-ffa185b9.vercel.app',
@@ -107,7 +110,7 @@ app.use((req, res, next) => {
     'https://mercadopago.com',
     'https://www.mercadopago.com',
     'http://localhost:5173',
-    'http://localhost:5174', // Frontend de geração de licenças
+    'http://localhost:5174', // Frontend de geração de licenças (desenvolvimento)
     'http://localhost:3000',
     'http://localhost:3001'
   ];

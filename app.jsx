@@ -57,6 +57,20 @@ function App() {
   useEffect(() => {
     const initializeApp = () => {
       try {
+        // Verificar PRIMEIRO se há token de reset na URL (PRIORITÁRIO)
+        const urlParams = new URLSearchParams(window.location.search);
+        const resetToken = urlParams.get('token');
+        const path = window.location.pathname;
+        
+        console.log('🔍 Inicializando app - Path:', path, 'Token:', resetToken ? 'SIM' : 'NÃO');
+        
+        if (resetToken || path === '/reset-password' || path.endsWith('/reset-password')) {
+          console.log('🔐 Token de reset detectado - DEFININDO reset-password como tela ativa');
+          setActiveScreen('reset-password');
+          setIsInitializing(false);
+          return; // IMPORTANTE: Não continuar com o resto da inicialização
+        }
+        
         // Usar a nova função de carregamento com validação
         const savedUser = loadUserFromStorage();
         console.log('🔍 Usuário carregado do storage:', savedUser);
@@ -66,14 +80,18 @@ function App() {
           console.log('✅ Usuário definido no estado:', savedUser);
           advancedGamificationService.loadData();
           
-          if (savedUser.role === 'student' || savedUser.role === 'student-gratuito') {
-            setActiveScreen('home');
-          } else if (savedUser.role === 'parent') {
-            setActiveScreen('parent-dashboard');
-          } else if (savedUser.role === 'school') {
-            setActiveScreen('school-dashboard');
-          } else if (savedUser.role === 'admin') {
-            setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
+          // Só definir tela se não houver token de reset (verificação dupla)
+          const currentToken = new URLSearchParams(window.location.search).get('token');
+          if (!currentToken && path !== '/reset-password' && !path.endsWith('/reset-password')) {
+            if (savedUser.role === 'student' || savedUser.role === 'student-gratuito') {
+              setActiveScreen('home');
+            } else if (savedUser.role === 'parent') {
+              setActiveScreen('parent-dashboard');
+            } else if (savedUser.role === 'school') {
+              setActiveScreen('school-dashboard');
+            } else if (savedUser.role === 'admin') {
+              setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
+            }
           }
         } else {
           // Limpar dados inválidos
@@ -84,11 +102,7 @@ function App() {
           document.documentElement.classList.remove('dark');
           setUser(null);
           
-          // Verificar se é rota de registro gratuito, validação ou reset de senha
-          const path = window.location.pathname;
-          const urlParams = new URLSearchParams(window.location.search);
-          const resetToken = urlParams.get('token');
-          
+          // Verificar se é rota de registro gratuito ou validação
           console.log('🔍 Path detectado:', path);
           if (path === '/register-gratuito' || path.endsWith('/register-gratuito')) {
             console.log('✅ Redirecionando para register-gratuito');
@@ -96,9 +110,6 @@ function App() {
           } else if (path === '/validate-parent-consent' || path.endsWith('/validate-parent-consent')) {
             console.log('✅ Redirecionando para validate-parent-consent');
             setActiveScreen('validate-parent-consent');
-          } else if (path === '/reset-password' || path.endsWith('/reset-password') || resetToken) {
-            console.log('✅ Redirecionando para reset-password');
-            setActiveScreen('reset-password');
           } else {
             console.log('✅ Redirecionando para welcome');
             setActiveScreen('welcome');
@@ -278,6 +289,12 @@ function App() {
     
     console.log('🔍 useEffect token - Path:', path, 'Token:', token);
     
+    // NÃO processar se for rota de reset de senha
+    if (path === '/reset-password' || path.endsWith('/reset-password')) {
+      console.log('🔐 Token de reset detectado, ignorando token de registro');
+      return;
+    }
+    
     // Só processar token se NÃO for a rota de validação de pais
     if (token && path !== '/validate-parent-consent' && !path.endsWith('/validate-parent-consent')) {
       console.log('✅ Token de registro detectado, definindo register-with-token');
@@ -289,10 +306,46 @@ function App() {
     }
   }, []);
 
+  // Efeito para monitorar mudanças na URL (especialmente token de reset)
+  useEffect(() => {
+    const checkUrlForResetToken = () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const resetToken = urlParams.get('token');
+      const path = window.location.pathname;
+      
+      if (resetToken || path === '/reset-password' || path.endsWith('/reset-password')) {
+        console.log('🔐 Token de reset detectado na URL (monitoramento), garantindo reset-password');
+        if (activeScreen !== 'reset-password') {
+          setActiveScreen('reset-password');
+        }
+      }
+    };
+    
+    // Verificar imediatamente
+    checkUrlForResetToken();
+    
+    // Verificar quando a URL mudar (popstate para navegação do browser)
+    window.addEventListener('popstate', checkUrlForResetToken);
+    
+    return () => {
+      window.removeEventListener('popstate', checkUrlForResetToken);
+    };
+  }, [activeScreen]);
+
   // Efeito para salvar/remover usuário no localStorage sempre que o estado 'user' muda
   useEffect(() => {
     // NÃO executar durante a inicialização para evitar race condition
     if (isInitializing) return;
+    
+    // Verificar se há token de reset na URL antes de alterar activeScreen
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('token');
+    const path = window.location.pathname;
+    
+    if (resetToken || path === '/reset-password' || path.endsWith('/reset-password')) {
+      console.log('🔐 Token de reset detectado, não alterando activeScreen');
+      return; // Não alterar activeScreen se houver token de reset
+    }
     
     if (user) {
       storageService.save(STORAGE_KEYS.USER, user);
@@ -314,7 +367,8 @@ function App() {
       const path = window.location.pathname;
       console.log('🔍 Verificando rota no useEffect user:', path);
       if (path !== '/register-gratuito' && !path.endsWith('/register-gratuito') && 
-          path !== '/validate-parent-consent' && !path.endsWith('/validate-parent-consent')) {
+          path !== '/validate-parent-consent' && !path.endsWith('/validate-parent-consent') &&
+          path !== '/reset-password' && !path.endsWith('/reset-password')) {
         console.log('✅ Definindo welcome (não é rota específica)');
         setActiveScreen('welcome');
       } else {
@@ -679,6 +733,13 @@ function App() {
           return <Welcome setActiveScreen={setActiveScreen} />;
       }
     }
+    
+    // Tela de reset de senha tem prioridade mesmo se usuário estiver logado
+    if (screenName === 'reset-password') {
+      console.log('🔐 Reset-password detectado (usuário logado), renderizando ResetPassword!');
+      return <ResetPassword setActiveScreen={setActiveScreen} />;
+    }
+    
     // Telas que requerem autenticação (usuário logado)
     switch (true) {
       case screenName === 'home':

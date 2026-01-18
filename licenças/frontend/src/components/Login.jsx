@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { apiRequest } from '../config/api';
+import API_BASE_URL, { apiRequest } from '../config/api';
 import toast from 'react-hot-toast';
 
 const Login = ({ onLogin }) => {
@@ -19,11 +19,12 @@ const Login = ({ onLogin }) => {
       console.log('🔐 Frontend - Dados do login:', {
         email: email.toLowerCase().trim(),
         passwordLength: password.length,
-        passwordPreview: password.substring(0, 3) + '***'
+        passwordPreview: password.substring(0, 3) + '***',
+        apiUrl: API_BASE_URL
       });
 
-      // Tentar login via endpoint de auth
-      const response = await fetch('http://localhost:3001/auth/login', {
+      // Tentar login via endpoint de auth usando API_BASE_URL
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -60,7 +61,7 @@ const Login = ({ onLogin }) => {
     setForgotPasswordLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3001/auth/forgot-password', {
+      const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

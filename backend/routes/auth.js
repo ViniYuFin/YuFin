@@ -1276,23 +1276,88 @@ router.post('/reset-password', async (req, res) => {
     });
     
     if (!user) {
+      console.log('❌ RESET-PASSWORD - Usuário não encontrado:', {
+        email: resetToken.email,
+        role: resetToken.role
+      });
       return res.status(404).json({
         error: 'Usuário não encontrado',
         code: 'USER_NOT_FOUND'
       });
     }
 
+    console.log('🔐 RESET-PASSWORD - Usuário encontrado:', {
+      email: user.email,
+      role: user.role,
+      hasPasswordHash: !!user.passwordHash
+    });
+
     // Atualizar senha
+    console.log('🔐 RESET-PASSWORD - Gerando hash da nova senha...');
     const newPasswordHash = await hashPassword(newPassword);
-    user.passwordHash = newPasswordHash;
-    await user.save();
+    console.log('🔐 RESET-PASSWORD - Hash gerado:', {
+      hashLength: newPasswordHash.length,
+      hashPreview: newPasswordHash.substring(0, 20) + '...'
+    });
+    
+    // Usar updateOne para garantir que a atualização seja persistida
+    console.log('💾 RESET-PASSWORD - Atualizando senha no banco...');
+    const updateResult = await User.updateOne(
+      { _id: user._id },
+      { 
+        $set: { 
+          passwordHash: newPasswordHash 
+        } 
+      }
+    );
+    
+    console.log('✅ RESET-PASSWORD - Resultado da atualização:', {
+      matchedCount: updateResult.matchedCount,
+      modifiedCount: updateResult.modifiedCount,
+      acknowledged: updateResult.acknowledged
+    });
+
+    // Verificar se foi salvo corretamente fazendo uma busca
+    const verifyUser = await User.findOne({ 
+      email: resetToken.email, 
+      role: resetToken.role 
+    });
+    
+    if (!verifyUser) {
+      console.error('❌ RESET-PASSWORD - ERRO: Usuário não encontrado após atualização!');
+      return res.status(500).json({
+        error: 'Erro ao salvar nova senha',
+        code: 'SAVE_ERROR'
+      });
+    }
+    
+    console.log('🔍 RESET-PASSWORD - Verificação pós-salvamento:', {
+      email: verifyUser.email,
+      hasPasswordHash: !!verifyUser.passwordHash,
+      passwordHashLength: verifyUser.passwordHash ? verifyUser.passwordHash.length : 0,
+      passwordHashMatches: verifyUser.passwordHash === newPasswordHash
+    });
+    
+    // Testar se a senha funciona
+    const testPassword = await comparePassword(newPassword, verifyUser.passwordHash);
+    console.log('🧪 RESET-PASSWORD - Teste de comparação de senha:', {
+      passwordMatches: testPassword
+    });
+    
+    if (!testPassword) {
+      console.error('❌ RESET-PASSWORD - ERRO CRÍTICO: Nova senha não corresponde ao hash salvo!');
+      return res.status(500).json({
+        error: 'Erro ao validar nova senha',
+        code: 'VALIDATION_ERROR'
+      });
+    }
 
     // Marcar token como usado
     resetToken.isUsed = true;
     resetToken.usedAt = new Date();
     await resetToken.save();
 
-    console.log(`✅ Senha redefinida para: ${user.email}`);
+    console.log(`✅ RESET-PASSWORD - Senha redefinida com sucesso para: ${user.email}`);
     
     res.json({
       success: true,
