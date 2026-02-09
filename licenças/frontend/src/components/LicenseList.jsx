@@ -17,6 +17,8 @@ const LicenseList = () => {
       const response = await apiRequest(`/api/admin/licenses?type=${filter === 'all' ? '' : filter}`);
       setLicenses(response);
     } catch (error) {
+      // Não exibir toast se o erro for de token expirado (App.jsx já cuida disso)
+      if (error.isTokenExpired) return;
       toast.error(error.message || 'Erro ao carregar licenças');
     } finally {
       setLoading(false);
@@ -44,6 +46,8 @@ const LicenseList = () => {
       toast.success('Licença excluída com sucesso!');
       loadLicenses(); // Recarregar lista
     } catch (error) {
+      // Não exibir toast se o erro for de token expirado (App.jsx já cuida disso)
+      if (error.isTokenExpired) return;
       console.error('❌ Erro ao deletar:', error);
       toast.error(error.message || 'Erro ao excluir licença');
     }

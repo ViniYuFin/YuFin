@@ -61,6 +61,8 @@ const CreateFamilyLicense = () => {
         quantity: 1
       });
     } catch (error) {
+      // Não exibir toast se o erro for de token expirado (App.jsx já cuida disso)
+      if (error.isTokenExpired) return;
       toast.error(error.message || 'Erro ao criar licença');
     } finally {
       setLoading(false);

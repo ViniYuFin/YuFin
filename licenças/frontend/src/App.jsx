@@ -18,6 +18,30 @@ function App() {
     }
   }, []);
 
+  // Verificar se há token salvo ao carregar
+  useEffect(() => {
+    const token = localStorage.getItem('adminToken');
+    if (token) {
+      // Token existe, mas não sabemos se é válido
+      // A verificação será feita na primeira requisição
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // Listener para token expirado
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      setAdminUser(null);
+      setIsAuthenticated(false);
+      toast.error('Sessão expirada. Por favor, faça login novamente.');
+    };
+
+    window.addEventListener('tokenExpired', handleTokenExpired);
+    return () => {
+      window.removeEventListener('tokenExpired', handleTokenExpired);
+    };
+  }, []);
+
   const handleLogin = (user, accessToken) => {
     setAdminUser(user);
     setIsAuthenticated(true);

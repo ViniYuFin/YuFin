@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CreateFamilyLicense from './CreateFamilyLicense';
 import CreateSchoolLicense from './CreateSchoolLicense';
 import LicenseList from './LicenseList';
+import LessonManager from './LessonManager';
 
 const AdminDashboard = ({ adminUser, onLogout }) => {
   const [activeTab, setActiveTab] = useState('create-family');
@@ -19,7 +20,8 @@ const AdminDashboard = ({ adminUser, onLogout }) => {
   const tabs = [
     { id: 'create-family', label: 'Criar Licença Família', icon: '👨‍👩‍👧‍👦' },
     { id: 'create-school', label: 'Criar Licença Escola', icon: '🏫' },
-    { id: 'list', label: 'Listar Licenças', icon: '📋' }
+    { id: 'list', label: 'Listar Licenças', icon: '📋' },
+    { id: 'lessons', label: 'Gerenciar Lições', icon: '📚' }
   ];
 
   const responsiveStyles = getResponsiveStyles(isMobile);
@@ -64,6 +66,7 @@ const AdminDashboard = ({ adminUser, onLogout }) => {
         {activeTab === 'create-family' && <CreateFamilyLicense />}
         {activeTab === 'create-school' && <CreateSchoolLicense />}
         {activeTab === 'list' && <LicenseList />}
+        {activeTab === 'lessons' && <LessonManager />}
       </main>
     </div>
   );
