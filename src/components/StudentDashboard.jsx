@@ -19,6 +19,11 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const [classes, setClasses] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  
+  // Cache e controle de chamadas para evitar rate limiting
+  const lastLoadTimeRef = useRef({ gradeProgress: 0, classes: 0 });
+  const loadingRef = useRef({ gradeProgress: false, classes: false });
+  const CACHE_DURATION = 2000; // 2 segundos de cache entre chamadas
 
   // Função para finalizar o tour
   const handleFinishTour = () => {
@@ -32,8 +37,16 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   };
 
   useEffect(() => {
-    loadGradeProgress();
-    loadClasses();
+    const now = Date.now();
+    
+    // Evitar chamadas duplicadas muito próximas
+    if (now - lastLoadTimeRef.current.gradeProgress > CACHE_DURATION && !loadingRef.current.gradeProgress) {
+      loadGradeProgress();
+    }
+    
+    if (now - lastLoadTimeRef.current.classes > CACHE_DURATION && !loadingRef.current.classes) {
+      loadClasses();
+    }
     
     // Carregar preferência do modo escuro
     const savedDarkMode = localStorage.getItem('darkMode') === 'true';
@@ -114,11 +127,31 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   }, [gradeProgress]);
 
   const loadClasses = async () => {
+    // Evitar chamadas duplicadas
+    if (loadingRef.current.classes) {
+      return;
+    }
+    
+    const now = Date.now();
+    if (now - lastLoadTimeRef.current.classes < CACHE_DURATION) {
+      return;
+    }
+    
     try {
+      loadingRef.current.classes = true;
+      lastLoadTimeRef.current.classes = now;
+      
       const classesData = await apiGet('/classes');
       setClasses(classesData);
     } catch (error) {
       console.error('Erro ao carregar turmas:', error);
+      // Em caso de erro 429, aguardar antes de tentar novamente
+      if (error.message && error.message.includes('429')) {
+        lastLoadTimeRef.current.classes = now + 5000; // Aguardar 5 segundos
+        notificationService.warning('Muitas requisições. Aguarde alguns segundos...');
+      }
+    } finally {
+      loadingRef.current.classes = false;
     }
   };
 
@@ -128,7 +161,19 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   };
 
   const loadGradeProgress = async () => {
+    // Evitar chamadas duplicadas
+    if (loadingRef.current.gradeProgress) {
+      return;
+    }
+    
+    const now = Date.now();
+    if (now - lastLoadTimeRef.current.gradeProgress < CACHE_DURATION) {
+      return;
+    }
+    
     try {
+      loadingRef.current.gradeProgress = true;
+      lastLoadTimeRef.current.gradeProgress = now;
       setLoading(true);
       console.log('🔄 Carregando progresso da série...');
       
@@ -253,12 +298,20 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       setGradeProgress(progress);
     } catch (error) {
       console.error('Erro ao carregar progresso:', error);
-      // Para usuários gratuitos, não mostrar erro
-      if (!(user.isGratuito || user.role === 'student-gratuito')) {
-        notificationService.error('Erro ao carregar progresso da série');
+      
+      // Em caso de erro 429, aguardar antes de tentar novamente
+      if (error.message && error.message.includes('429')) {
+        lastLoadTimeRef.current.gradeProgress = Date.now() + 5000; // Aguardar 5 segundos
+        notificationService.warning('Muitas requisições. Aguarde alguns segundos...');
+      } else {
+        // Para usuários gratuitos, não mostrar erro
+        if (!(user.isGratuito || user.role === 'student-gratuito')) {
+          notificationService.error('Erro ao carregar progresso da série');
+        }
       }
     } finally {
       setLoading(false);
+      loadingRef.current.gradeProgress = false;
     }
   };
 
@@ -1214,21 +1267,39 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
             </div>
             
             {/* Informações da Turma */}
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div 
+              className="mb-4 p-3 rounded-lg border"
+              style={darkMode 
+                ? { backgroundColor: 'rgba(31, 41, 55, 0.5)', borderColor: 'rgba(75, 85, 99, 0.5)' }
+                : { backgroundColor: '#f9fafb', borderColor: '#e5e7eb' }
+              }
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="text-lg">🏫</span>
                   <div>
-                    <div className="text-sm font-medium text-gray-700">
+                    <div 
+                      className="text-sm font-medium"
+                      style={darkMode ? { color: '#e5e7eb' } : { color: '#374151' }}
+                    >
                       {user.classId ? `Turma: ${getClassName(user.classId)}` : 'Sem turma atribuída'}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div 
+                      className="text-xs"
+                      style={darkMode ? { color: '#9ca3af' } : { color: '#6b7280' }}
+                    >
                       {user.gradeId} • {user.classId ? 'Turma ativa' : 'Aguardando atribuição'}
                     </div>
                   </div>
                 </div>
                 {!user.classId && (
-                  <div className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <div 
+                    className="px-2 py-1 rounded-full text-xs font-medium"
+                    style={darkMode 
+                      ? { backgroundColor: 'rgba(251, 191, 36, 0.2)', color: '#fbbf24' }
+                      : { backgroundColor: '#fef3c7', color: '#92400e' }
+                    }
+                  >
                     {window.innerWidth >= 640 ? '⏳ Aguardando' : 'Aguardando'}
                   </div>
                 )}
@@ -1512,12 +1583,25 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                   <div className="flex flex-wrap gap-1">
                     {getLessonTags(lesson).length > 0 ? (
                       getLessonTags(lesson).slice(0, 2).map(tag => (
-                        <span key={tag} className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                        <span 
+                          key={tag} 
+                          className="px-2 py-1 rounded-full text-xs font-medium"
+                          style={darkMode 
+                            ? { backgroundColor: 'rgba(251, 191, 36, 0.2)', color: '#fbbf24' }
+                            : { backgroundColor: '#fef3c7', color: '#92400e' }
+                          }
+                        >
                           {tag}
                         </span>
                       ))
                     ) : (
-                      <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
+                      <span 
+                        className="px-2 py-1 rounded-full text-xs font-medium"
+                        style={darkMode 
+                          ? { backgroundColor: 'rgba(156, 163, 175, 0.2)', color: '#d1d5db' }
+                          : { backgroundColor: '#f3f4f6', color: '#4b5563' }
+                        }
+                      >
                         Sem tags
                       </span>
                     )}

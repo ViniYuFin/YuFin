@@ -27,6 +27,13 @@
     rgba(255, 179, 0, 0.4) 100%
   );
   
+  /* Garantir que o gradiente cubra toda a área */
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  
   /* Adaptação para mobile */
   @media (max-width: 480px) {
     background: linear-gradient(
@@ -34,6 +41,8 @@
       #FFD49E 0%,
       #FFFFFF 100%
     );
+    background-size: cover;
+    background-attachment: scroll; /* Melhor performance em mobile */
   }
   
   /* Adaptação para landscape mobile */
@@ -43,6 +52,8 @@
       #FFD49E 0%,
       #FFFFFF 100%
     );
+    background-size: cover;
+    background-attachment: scroll;
   }
   
   /* Adaptação para telas grandes */
@@ -53,6 +64,7 @@
       #FFFFFF 30%,
       rgba(255, 179, 0, 0.4) 100%
     );
+    background-size: cover;
   }
   
   /* Adaptação para ultrawide */
@@ -63,6 +75,7 @@
       #FFFFFF 25%,
       rgba(255, 179, 0, 0.3) 100%
     );
+    background-size: cover;
   }
 }
 
@@ -79,6 +92,13 @@
     rgba(255, 179, 0, 0.2) 100%
   );
   
+  /* Garantir que o gradiente cubra toda a área */
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100%;
+  
   /* Adaptação para mobile */
   @media (max-width: 480px) {
     background: linear-gradient(
@@ -86,6 +106,8 @@
       rgba(255, 212, 158, 0.6) 0%,
       rgba(255, 255, 255, 0.8) 100%
     );
+    background-size: cover;
+    background-attachment: scroll; /* Melhor performance em mobile */
   }
   
   /* Adaptação para landscape mobile */
@@ -95,6 +117,8 @@
       rgba(255, 212, 158, 0.6) 0%,
       rgba(255, 255, 255, 0.8) 100%
     );
+    background-size: cover;
+    background-attachment: scroll;
   }
 }
 

@@ -11,7 +11,8 @@
     "start": "vite",
     "electron": "electron .",
     "dist": "electron-builder",
-    "dev:all": "concurrently \"npm run dev\" \"npm run start --prefix backend\""
+    "dev:all": "concurrently \"npm run dev\" \"npm run start --prefix backend\"",
+    "test:token": "node test-token-refresh.js"
   },
   "dependencies": {
     "axios": "^1.11.0",

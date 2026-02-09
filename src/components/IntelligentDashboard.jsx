@@ -431,29 +431,73 @@ const IntelligentDashboard = ({ user, setUser, setActiveScreen }) => {
 
         {/* Seção de Performance */}
         {performanceMetrics && (
-          <div className="bg-white rounded-xl shadow-md p-4 border-2 mb-4" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">⚡ Performance</h2>
+          <div 
+            className="rounded-xl shadow-md p-4 border-2 mb-4" 
+            style={{ 
+              borderColor: 'rgb(238, 145, 22)',
+              backgroundColor: darkMode ? '#374151' : 'white'
+            }}
+          >
+            <h2 
+              className="text-lg font-semibold mb-3"
+              style={darkMode ? { color: '#ffffff' } : { color: '#1f2937' }}
+            >
+              ⚡ Performance
+            </h2>
             
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-blue-50 rounded-lg">
-                <div className="text-sm font-semibold text-gray-800">Tempo de Carregamento</div>
-                <div className="text-lg font-bold text-blue-600">
+              <div 
+                className="text-center p-3 rounded-lg"
+                style={darkMode ? { backgroundColor: '#1e3a8a' } : { backgroundColor: '#eff6ff' }}
+              >
+                <div 
+                  className="text-sm font-semibold"
+                  style={darkMode ? { color: '#ffffff' } : { color: '#1f2937' }}
+                >
+                  Tempo de Carregamento
+                </div>
+                <div 
+                  className="text-lg font-bold"
+                  style={darkMode ? { color: '#93c5fd' } : { color: '#2563eb' }}
+                >
                   {performanceMetrics.averagePageLoadTime?.toFixed(0) || 0}ms
                 </div>
               </div>
               
-              <div className="text-center p-3 bg-green-50 rounded-lg">
-                <div className="text-sm font-semibold text-gray-800">Renderização</div>
-                <div className="text-lg font-bold text-green-600">
+              <div 
+                className="text-center p-3 rounded-lg"
+                style={darkMode ? { backgroundColor: '#14532d' } : { backgroundColor: '#f0fdf4' }}
+              >
+                <div 
+                  className="text-sm font-semibold"
+                  style={darkMode ? { color: '#ffffff' } : { color: '#1f2937' }}
+                >
+                  Renderização
+                </div>
+                <div 
+                  className="text-lg font-bold"
+                  style={darkMode ? { color: '#86efac' } : { color: '#16a34a' }}
+                >
                   {performanceMetrics.averageComponentRenderTime?.toFixed(0) || 0}ms
                 </div>
               </div>
             </div>
             
             {performanceMetrics.recommendations?.length > 0 && (
-              <div className="mt-3 p-3 bg-yellow-50 rounded-lg">
-                <div className="text-sm font-semibold text-yellow-800 mb-2">💡 Recomendações de Performance:</div>
-                <ul className="text-xs text-yellow-700 space-y-1">
+              <div 
+                className="mt-3 p-3 rounded-lg"
+                style={darkMode ? { backgroundColor: '#451a03' } : { backgroundColor: '#fefce8' }}
+              >
+                <div 
+                  className="text-sm font-semibold mb-2"
+                  style={darkMode ? { color: '#fbbf24' } : { color: '#92400e' }}
+                >
+                  💡 Recomendações de Performance:
+                </div>
+                <ul 
+                  className="text-xs space-y-1"
+                  style={darkMode ? { color: '#fbbf24' } : { color: '#854d0e' }}
+                >
                   {performanceMetrics.recommendations.map((rec, index) => (
                     <li key={index}>• {rec}</li>
                   ))}

@@ -124,11 +124,18 @@ const DragAndDropLesson = ({ lesson, onComplete, onExit }) => {
         isCorrectZone = itemData && itemData.correctCategory === targetZone;
       }
       
+      // Permitir colocar em qualquer zona (correta ou incorreta)
+      setItems(prev => prev.map(item => 
+        item.id === draggedItem.id ? { 
+          ...item, 
+          isPlaced: true, 
+          zone: targetZone,
+          isCorrect: isCorrectZone
+        } : item
+      ));
+      
+      // Adicionar pontos apenas se estiver correto
       if (isCorrectZone) {
-        // Item correto
-        setItems(prev => prev.map(item => 
-          item.id === draggedItem.id ? { ...item, isPlaced: true, zone: targetZone } : item
-        ));
         setScore(prev => prev + 25); // 25 pontos por item correto
       }
       
@@ -244,19 +251,26 @@ const DragAndDropLesson = ({ lesson, onComplete, onExit }) => {
                               {zone.name}
                             </p>
                           </div>
-                          {placedItems.map((item, index) => (
-                            <div 
-                              key={index} 
-                              className="flex items-center justify-between p-2 rounded-lg border border-green-300"
-                              style={{
-                                backgroundColor: darkMode ? '#065f46' : '#dcfce7',
-                                color: darkMode ? '#ffffff' : '#1f2937'
-                              }}
-                            >
-                              <p className="font-medium font-sans text-sm">{item.text}</p>
-                              <span className="text-green-600 text-lg font-sans">✓</span>
-                            </div>
-                          ))}
+                          {placedItems.map((item, index) => {
+                            const isCorrect = item.isCorrect !== false; // Default true se não especificado
+                            return (
+                              <div 
+                                key={index} 
+                                className={`flex items-center justify-between p-2 rounded-lg border ${isCorrect ? 'border-green-300' : 'border-red-300'}`}
+                                style={{
+                                  backgroundColor: isCorrect 
+                                    ? (darkMode ? '#065f46' : '#dcfce7')
+                                    : (darkMode ? '#7f1d1d' : '#fee2e2'),
+                                  color: darkMode ? '#ffffff' : '#1f2937'
+                                }}
+                              >
+                                <p className="font-medium font-sans text-sm">{item.text}</p>
+                                <span className={`text-lg font-sans ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                                  {isCorrect ? '✓' : '✗'}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       );
                     } else {
@@ -314,19 +328,26 @@ const DragAndDropLesson = ({ lesson, onComplete, onExit }) => {
                           >
                             {category.name}
                           </p>
-                          {placedItems.map((item, index) => (
-                            <div 
-                              key={index} 
-                              className="flex items-center justify-between p-2 rounded-lg border border-green-300"
-                              style={{
-                                backgroundColor: darkMode ? '#065f46' : '#dcfce7',
-                                color: darkMode ? '#ffffff' : '#1f2937'
-                              }}
-                            >
-                              <p className="font-medium font-sans text-sm">{item.text}</p>
-                              <span className="text-green-600 text-lg font-sans">✓</span>
-                            </div>
-                          ))}
+                          {placedItems.map((item, index) => {
+                            const isCorrect = item.isCorrect !== false; // Default true se não especificado
+                            return (
+                              <div 
+                                key={index} 
+                                className={`flex items-center justify-between p-2 rounded-lg border ${isCorrect ? 'border-green-300' : 'border-red-300'}`}
+                                style={{
+                                  backgroundColor: isCorrect 
+                                    ? (darkMode ? '#065f46' : '#dcfce7')
+                                    : (darkMode ? '#7f1d1d' : '#fee2e2'),
+                                  color: darkMode ? '#ffffff' : '#1f2937'
+                                }}
+                              >
+                                <p className="font-medium font-sans text-sm">{item.text}</p>
+                                <span className={`text-lg font-sans ${isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                                  {isCorrect ? '✓' : '✗'}
+                                </span>
+                              </div>
+                            );
+                          })}
                         </div>
                       );
                     } else {

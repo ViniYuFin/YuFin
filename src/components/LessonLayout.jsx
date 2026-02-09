@@ -22,7 +22,7 @@ const LessonLayout = ({ title, timeSpent, onExit, children, icon, reviewMode }) 
   }, []);
 
   return (
-    <div className="h-screen lesson-background flex flex-col font-sans">
+    <div className="h-screen min-h-screen lesson-background flex flex-col font-sans" style={{ minHeight: '100vh' }}>
     {/* Header padronizado */}
     <div 
       className="backdrop-blur-md p-4 shadow-xl border-b-4 border-primary-dark rounded-b-3xl"

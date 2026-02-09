@@ -393,26 +393,73 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
             )}
 
             {/* Dicas e Recomendações */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">💡 Dicas e Recomendações</h2>
+            <div 
+              className="rounded-xl shadow-lg p-6 border-2" 
+              style={{ 
+                borderColor: 'rgb(238, 145, 22)',
+                backgroundColor: darkMode ? '#374151' : '#ffffff'
+              }}
+            >
+              <h2 
+                className="text-xl font-bold mb-4"
+                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+              >
+                💡 Dicas e Recomendações
+              </h2>
               <div className="space-y-3">
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3">
-                  <p className="text-yellow-800 text-sm">
+                <div 
+                  className="border-l-4 p-3"
+                  style={darkMode 
+                    ? { backgroundColor: '#451a03', borderLeftColor: '#fbbf24' }
+                    : { backgroundColor: '#fefce8', borderLeftColor: '#facc15' }
+                  }
+                >
+                  <p 
+                    className="text-sm"
+                    style={darkMode ? { color: '#fbbf24' } : { color: '#854d0e' }}
+                  >
                     <strong>Comece pequeno:</strong> R$ 0,50 por lição é um bom ponto de partida
                   </p>
                 </div>
-                <div className="bg-blue-50 border-l-4 border-blue-400 p-3">
-                  <p className="text-blue-800 text-sm">
+                <div 
+                  className="border-l-4 p-3"
+                  style={darkMode 
+                    ? { backgroundColor: '#1e3a8a', borderLeftColor: '#60a5fa' }
+                    : { backgroundColor: '#eff6ff', borderLeftColor: '#60a5fa' }
+                  }
+                >
+                  <p 
+                    className="text-sm"
+                    style={darkMode ? { color: '#93c5fd' } : { color: '#1e40af' }}
+                  >
                     <strong>Incentive consistência:</strong> Bônus por ofensiva motiva hábitos diários
                   </p>
                 </div>
-                <div className="bg-green-50 border-l-4 border-green-400 p-3">
-                  <p className="text-green-800 text-sm">
+                <div 
+                  className="border-l-4 p-3"
+                  style={darkMode 
+                    ? { backgroundColor: '#14532d', borderLeftColor: '#4ade80' }
+                    : { backgroundColor: '#f0fdf4', borderLeftColor: '#4ade80' }
+                  }
+                >
+                  <p 
+                    className="text-sm"
+                    style={darkMode ? { color: '#86efac' } : { color: '#166534' }}
+                  >
                     <strong>Recompense qualidade:</strong> Bônus por lições perfeitas incentiva esforço
                   </p>
                 </div>
-                <div className="bg-purple-50 border-l-4 border-purple-400 p-3">
-                  <p className="text-purple-800 text-sm">
+                <div 
+                  className="border-l-4 p-3"
+                  style={darkMode 
+                    ? { backgroundColor: '#581c87', borderLeftColor: '#a78bfa' }
+                    : { backgroundColor: '#faf5ff', borderLeftColor: '#a78bfa' }
+                  }
+                >
+                  <p 
+                    className="text-sm"
+                    style={darkMode ? { color: '#c084fc' } : { color: '#6b21a8' }}
+                  >
                     <strong>Defina limites:</strong> Evite gastos excessivos com limite mensal
                   </p>
                 </div>

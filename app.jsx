@@ -83,14 +83,14 @@ function App() {
           // Só definir tela se não houver token de reset (verificação dupla)
           const currentToken = new URLSearchParams(window.location.search).get('token');
           if (!currentToken && path !== '/reset-password' && !path.endsWith('/reset-password')) {
-            if (savedUser.role === 'student' || savedUser.role === 'student-gratuito') {
-              setActiveScreen('home');
-            } else if (savedUser.role === 'parent') {
-              setActiveScreen('parent-dashboard');
-            } else if (savedUser.role === 'school') {
-              setActiveScreen('school-dashboard');
-            } else if (savedUser.role === 'admin') {
-              setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
+          if (savedUser.role === 'student' || savedUser.role === 'student-gratuito') {
+            setActiveScreen('home');
+          } else if (savedUser.role === 'parent') {
+            setActiveScreen('parent-dashboard');
+          } else if (savedUser.role === 'school') {
+            setActiveScreen('school-dashboard');
+          } else if (savedUser.role === 'admin') {
+            setActiveScreen('school-dashboard'); // Admin usa dashboard da escola
             }
           }
         } else {
@@ -738,6 +738,21 @@ function App() {
     if (screenName === 'reset-password') {
       console.log('🔐 Reset-password detectado (usuário logado), renderizando ResetPassword!');
       return <ResetPassword setActiveScreen={setActiveScreen} />;
+    }
+    
+    // Se activeScreen for uma tela de login mas usuário já está logado, redirecionar para dashboard
+    if (screenName === 'login-student' || screenName === 'login-parent' || screenName === 'login-school' || 
+        screenName === 'welcome' || screenName === 'register-student' || screenName === 'register-parent' || 
+        screenName === 'register-school' || screenName === 'register-gratuito') {
+      console.log('🔄 Usuário logado tentando acessar tela de login/registro, redirecionando para dashboard');
+      // Redirecionar para dashboard apropriado baseado na role
+      if (user.role === 'student' || user.role === 'student-gratuito') {
+        return <StudentDashboard user={user} setUser={setUser} onNavigate={handleNavigate} currentModule={currentModule} />;
+      } else if (user.role === 'parent') {
+        return <ParentDashboard user={user} setUser={setUser} setActiveScreen={setActiveScreen} />;
+      } else if (user.role === 'school' || user.role === 'admin') {
+        return <SchoolDashboard user={user} setActiveScreen={setActiveScreen} />;
+      }
     }
     
     // Telas que requerem autenticação (usuário logado)

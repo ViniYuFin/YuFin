@@ -7,9 +7,12 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
   const [userGoal, setUserGoal] = useState({
     item: '',
     cost: '',
+    available: '',
+    currentSpending: '',
     months: '',
     category: ''
   });
+  const [dynamicInputs, setDynamicInputs] = useState({});
   const [timeSpent, setTimeSpent] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
   const [exampleResults, setExampleResults] = useState({});
@@ -52,6 +55,8 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
         setUserGoal({
           item: '',
           cost: '',
+          available: '',
+          currentSpending: '',
           months: '',
           category: ''
         });
@@ -104,8 +109,27 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
   };
 
   const handleSubmitGoal = () => {
-    if (userGoal.item && userGoal.cost && userGoal.months && userGoal.category) {
-      const monthlySavings = Math.round(parseFloat(userGoal.cost) / parseInt(userGoal.months));
+    if (!userGoal.category) return;
+    
+    const hasAnyField = 
+      userGoal.item || 
+      userGoal.cost || 
+      userGoal.available ||
+      userGoal.currentSpending ||
+      userGoal.months || 
+      (Object.keys(dynamicInputs).length > 0 && Object.values(dynamicInputs).some(v => v && v.toString().trim() !== ''));
+    
+    if (hasAnyField) {
+      // Calcular poupança mensal: se tem custo e meses, usar custo; senão, calcular diferença entre custo e disponível
+      let monthlySavings = 0;
+      if (userGoal.cost && userGoal.months) {
+        monthlySavings = Math.round(parseFloat(userGoal.cost) / parseInt(userGoal.months));
+      } else if (userGoal.cost && userGoal.available && userGoal.months) {
+        const remaining = parseFloat(userGoal.cost) - parseFloat(userGoal.available);
+        if (remaining > 0) {
+          monthlySavings = Math.round(remaining / parseInt(userGoal.months));
+        }
+      }
       
       setIsCompleted(true);
       
@@ -116,6 +140,7 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
           isPerfect: true,
           userGoal: {
             ...userGoal,
+            ...dynamicInputs,
             monthlySavings
           }
         });
@@ -419,36 +444,100 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
                     </div>
                     
                     <div className="space-y-4">
-                      {lesson.content.inputFields.filter(field => field.type !== 'select').map((field, index) => (
-                        <div key={index}>
-                          <label 
-                            className="block text-sm font-medium mb-2"
-                            style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                          >
-                            {field.label}
-                          </label>
-                          <input
-                            type={field.type}
-                            placeholder={field.placeholder}
-                            value={
-                              field.label.includes('O que você quer comprar') || field.label.includes('Qual produto') || field.label.includes('Para onde') || field.label.includes('Qual investimento') || field.label.includes('Qual empresa') || field.label.includes('Qual estratégia') || field.label.includes('Qual gasto') || field.label.includes('Qual hábito') || field.label.includes('Qual causa') ? (userGoal.item || '') :
-                              field.label.includes('Quanto custa') || field.label.includes('Qual seu orçamento') || field.label.includes('Quanto quer gastar') || field.label.includes('Quanto quer investir') || field.label.includes('Quanto quer economizar') || field.label.includes('Quanto quer doar') ? (userGoal.cost || '') :
-                              field.label.includes('Em quantos meses') || field.label.includes('Em quanto tempo') || field.label.includes('Por quantos meses') || field.label.includes('Por quantos anos') ? (userGoal.months || '') : ''
-                            }
-                            onChange={(e) => handleInputChange(
-                              field.label.includes('O que você quer comprar') || field.label.includes('Qual produto') || field.label.includes('Para onde') || field.label.includes('Qual investimento') || field.label.includes('Qual empresa') || field.label.includes('Qual estratégia') || field.label.includes('Qual gasto') || field.label.includes('Qual hábito') || field.label.includes('Qual causa') ? 'item' :
-                              field.label.includes('Quanto custa') || field.label.includes('Qual seu orçamento') || field.label.includes('Quanto quer gastar') || field.label.includes('Quanto quer investir') || field.label.includes('Quanto quer economizar') || field.label.includes('Quanto quer doar') ? 'cost' : 'months', 
-                              e.target.value
-                            )}
-                            className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none"
-                            style={{
-                              backgroundColor: darkMode ? '#374151' : '#ffffff',
-                              color: darkMode ? '#ffffff' : '#1f2937',
-                              borderColor: darkMode ? '#6b7280' : '#d8b4fe'
-                            }}
-                          />
-                        </div>
-                      ))}
+                      {lesson.content.inputFields.filter(field => field.type !== 'select').map((field, index) => {
+                        const labelLower = field.label.toLowerCase();
+                        let fieldKey = null;
+                        let currentValue = '';
+                        
+                        // Verificar primeiro campos de valor disponível (mais específico, antes de "quanto custa")
+                        if (labelLower.includes('quanto você tem disponível') || labelLower.includes('quanto você tem para') || labelLower.includes('quanto você já economizou') || labelLower.includes('quanto você já tem')) {
+                          fieldKey = 'available';
+                          currentValue = userGoal.available || '';
+                        }
+                        // Verificar primeiro campos de gasto atual (mais específico, antes de "reduzir")
+                        if (labelLower.includes('quanto você gasta atualmente') || labelLower.includes('quanto você gasta por mês')) {
+                          fieldKey = 'currentSpending';
+                          currentValue = userGoal.currentSpending || '';
+                        }
+                        // Verificar campos de redução/economia (mais específicos)
+                        else if (labelLower.includes('quanto você consegue reduzir') || labelLower.includes('quanto consegue economizar') || labelLower.includes('quanto quer economizar')) {
+                          fieldKey = 'cost';
+                          currentValue = userGoal.cost || '';
+                        }
+                        // Verificar outros campos de custo/preço
+                        else if (labelLower.includes('quanto custa') || labelLower.includes('qual seu orçamento') || labelLower.includes('quanto quer gastar') || labelLower.includes('quanto você quer gastar') || labelLower.includes('quanto quer investir') || labelLower.includes('quanto quer doar') || labelLower.includes('qual foi o valor') || labelLower.includes('quanto custa sua meta')) {
+                          fieldKey = 'cost';
+                          currentValue = userGoal.cost || '';
+                        } 
+                        // Depois verificar campos de item/produto (verificar se NÃO contém "quanto custa" para evitar conflito)
+                        else if ((labelLower.includes('o que você quer') && !labelLower.includes('quanto custa')) || labelLower.includes('qual produto') || labelLower.includes('para onde') || labelLower.includes('qual investimento') || labelLower.includes('qual empresa') || labelLower.includes('qual estratégia') || labelLower.includes('qual gasto') || labelLower.includes('qual hábito') || labelLower.includes('qual causa') || labelLower.includes('qual problema')) {
+                          fieldKey = 'item';
+                          currentValue = userGoal.item || '';
+                        } 
+                        // Verificar outros campos de valor disponível (genéricos)
+                        else if (labelLower.includes('quanto você tem') || labelLower.includes('quanto você pode')) {
+                          fieldKey = 'available';
+                          currentValue = userGoal.available || '';
+                        } 
+                        // Verificar campos de tempo
+                        else if (labelLower.includes('em quantos meses') || labelLower.includes('em quanto tempo') || labelLower.includes('por quantos meses') || labelLower.includes('por quantos anos') || labelLower.includes('há quanto tempo')) {
+                          fieldKey = 'months';
+                          currentValue = userGoal.months || '';
+                        } 
+                        // Campos dinâmicos
+                        else {
+                          fieldKey = `field_${index}`;
+                          currentValue = dynamicInputs[fieldKey] || '';
+                        }
+                        
+                        return (
+                          <div key={index}>
+                            <label 
+                              className="block text-sm font-medium mb-2"
+                              style={{ color: darkMode ? '#ffffff' : '#374151' }}
+                            >
+                              {field.label}
+                            </label>
+                            <input
+                              type={field.type || 'text'}
+                              placeholder={field.placeholder}
+                              value={currentValue}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (fieldKey === 'item' || fieldKey === 'cost' || fieldKey === 'available' || fieldKey === 'currentSpending' || fieldKey === 'months') {
+                                  handleInputChange(fieldKey, value);
+                                } else {
+                                  setDynamicInputs(prev => ({
+                                    ...prev,
+                                    [fieldKey]: value
+                                  }));
+                                }
+                              }}
+                              onFocus={(e) => {
+                                e.target.style.borderColor = darkMode ? '#a78bfa' : '#9333ea';
+                                e.target.style.boxShadow = `0 0 0 3px ${darkMode ? 'rgba(167, 139, 250, 0.3)' : 'rgba(147, 51, 234, 0.3)'}`;
+                              }}
+                              onBlur={(e) => {
+                                e.target.style.borderColor = darkMode ? '#6b7280' : '#d8b4fe';
+                                e.target.style.boxShadow = 'none';
+                              }}
+                              className="w-full p-3 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                              style={{
+                                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                                color: darkMode ? '#ffffff' : '#1f2937',
+                                borderColor: darkMode ? '#6b7280' : '#d8b4fe',
+                                cursor: isCompleted ? 'not-allowed' : 'text',
+                                pointerEvents: isCompleted ? 'none' : 'auto',
+                                WebkitAppearance: 'none',
+                                MozAppearance: 'textfield'
+                              }}
+                              disabled={isCompleted}
+                              readOnly={isCompleted}
+                              autoComplete="off"
+                            />
+                          </div>
+                        );
+                      })}
                     </div>
 
                     {/* Cálculo automático em tempo real */}
@@ -469,8 +558,46 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
                         <p 
                           style={{ color: darkMode ? '#bfdbfe' : '#1d4ed8' }}
                         >
-                          Para comprar <strong>{userGoal.item || 'seu objetivo'}</strong> por R$ {userGoal.cost} em {userGoal.months} meses,
-                          você precisará guardar <strong>R$ {Math.round(parseFloat(userGoal.cost) / parseInt(userGoal.months))},00 por mês</strong>.
+                          {(() => {
+                            const cost = parseFloat(userGoal.cost);
+                            const available = userGoal.available ? parseFloat(userGoal.available) : 0;
+                            const currentSpending = userGoal.currentSpending ? parseFloat(userGoal.currentSpending) : 0;
+                            const months = parseInt(userGoal.months);
+                            
+                            // Verificar se é uma lição de redução de gastos
+                            const isReductionGoal = currentSpending > 0 || 
+                                                   lesson.content.scenario?.toLowerCase().includes('reduzir') || 
+                                                   lesson.content.scenario?.toLowerCase().includes('economia') ||
+                                                   lesson.title?.toLowerCase().includes('decisões financeiras');
+                            
+                            if (isReductionGoal && currentSpending > 0 && cost > 0 && months > 0) {
+                              // Lição de redução de gastos
+                              const totalSavings = cost * months;
+                              return (
+                                <>
+                                  Reduzindo <strong>{userGoal.item || 'seus gastos'}</strong> em R$ {cost.toFixed(2)} por mês durante {months} meses, você economizará um total de <strong>R$ {totalSavings.toFixed(2)}</strong>!
+                                </>
+                              );
+                            } else {
+                              // Lição de compra/poupança tradicional
+                              const remaining = cost - available;
+                              const monthlySavings = remaining > 0 ? Math.round(remaining / months) : Math.round(cost / months);
+                              
+                              if (available > 0 && remaining > 0) {
+                                return (
+                                  <>
+                                    Para comprar <strong>{userGoal.item || 'seu objetivo'}</strong> por R$ {cost.toFixed(2)} em {months} meses, você já tem R$ {available.toFixed(2)} disponível. Você precisará guardar <strong>R$ {monthlySavings},00 por mês</strong>.
+                                  </>
+                                );
+                              } else {
+                                return (
+                                  <>
+                                    Para comprar <strong>{userGoal.item || 'seu objetivo'}</strong> por R$ {cost.toFixed(2)} em {months} meses, você precisará guardar <strong>R$ {monthlySavings},00 por mês</strong>.
+                                  </>
+                                );
+                              }
+                            }
+                          })()}
                         </p>
                         <p 
                           className="text-sm mt-2"
@@ -483,10 +610,21 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
 
                     <button
                       onClick={handleSubmitGoal}
-                      disabled={!userGoal.item || !userGoal.cost || !userGoal.months}
+                      disabled={
+                        !userGoal.category || 
+                        (!userGoal.item && !userGoal.cost && !userGoal.available && !userGoal.currentSpending && !userGoal.months && 
+                         !(Object.keys(dynamicInputs).length > 0 && Object.values(dynamicInputs).some(v => v && v.toString().trim() !== '')))
+                      }
                       className={`w-full mt-4 py-3 px-6 rounded-lg font-bold text-lg transition-all duration-300 ${
-                        userGoal.item && userGoal.cost && userGoal.months
-                          ? 'bg-primary text-white shadow-lg transform hover:scale-105'
+                        userGoal.category && (
+                          userGoal.item || 
+                          userGoal.cost || 
+                          userGoal.available ||
+                          userGoal.currentSpending ||
+                          userGoal.months || 
+                          (Object.keys(dynamicInputs).length > 0 && Object.values(dynamicInputs).some(v => v && v.toString().trim() !== ''))
+                        )
+                          ? 'bg-primary text-white shadow-lg transform hover:scale-105 cursor-pointer'
                           : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                     >
@@ -507,23 +645,73 @@ const GoalsLesson = ({ lesson, onComplete, onExit }) => {
 
       </div>
 
-      {isCompleted && (
-        <div className="mt-6 p-6 bg-green-50 text-green-800 rounded-2xl text-center shadow-lg border-2 border-green-200">
-          <div className="text-4xl mb-3">🎉</div>
-          <h3 className="text-xl font-bold mb-2">{lesson.content.successMessage}</h3>
-          <p className="text-sm">
-            Sua meta: {userGoal.item} - R$ {userGoal.cost} em {userGoal.months} meses
-          </p>
-          <p className="text-sm font-semibold mt-2">
-            Você precisará guardar R$ {Math.round(parseFloat(userGoal.cost) / parseInt(userGoal.months))} por mês!
-          </p>
-          {selectedCategory && (
-            <p className="text-sm mt-1">
-              Categoria: {selectedCategory.name}
+      {isCompleted && (() => {
+        // Calcular monthlySavings de forma segura
+        let monthlySavings = 0;
+        const cost = userGoal.cost ? parseFloat(userGoal.cost) : 0;
+        const available = userGoal.available ? parseFloat(userGoal.available) : 0;
+        const months = userGoal.months ? parseInt(userGoal.months) : 0;
+        
+        if (cost > 0 && months > 0) {
+          if (available > 0) {
+            const remaining = cost - available;
+            if (remaining > 0) {
+              monthlySavings = Math.round(remaining / months);
+            } else {
+              monthlySavings = 0;
+            }
+          } else {
+            monthlySavings = Math.round(cost / months);
+          }
+        }
+        
+        return (
+          <div className="mt-6 p-6 bg-green-50 text-green-800 rounded-2xl text-center shadow-lg border-2 border-green-200">
+            <div className="text-4xl mb-3">🎉</div>
+            <h3 className="text-xl font-bold mb-2">{lesson.content.successMessage}</h3>
+            <p className="text-sm">
+              Sua meta: {userGoal.item || 'seu objetivo'}{cost > 0 ? ` - R$ ${cost.toFixed(2)}` : ''}{months > 0 ? ` em ${months} meses` : ''}
             </p>
-          )}
-        </div>
-      )}
+            {(() => {
+              // Verificar se é uma lição de redução de gastos (tem "reduzir" no contexto)
+              const isReductionGoal = lesson.content.scenario?.toLowerCase().includes('reduzir') || 
+                                      lesson.content.scenario?.toLowerCase().includes('economia') ||
+                                      lesson.title?.toLowerCase().includes('decisões financeiras');
+              
+              if (cost > 0 && months > 0) {
+                if (isReductionGoal) {
+                  // Para metas de redução: mostrar economia mensal e total
+                  const totalSavings = cost * months;
+                  return (
+                    <>
+                      <p className="text-sm font-semibold mt-2">
+                        Você economizará R$ {cost.toFixed(2)} por mês!
+                      </p>
+                      <p className="text-sm font-semibold mt-1">
+                        Economia total em {months} meses: R$ {totalSavings.toFixed(2)}!
+                      </p>
+                    </>
+                  );
+                } else {
+                  // Para outras metas: mostrar quanto precisa guardar por mês
+                  const calculated = monthlySavings > 0 ? monthlySavings : Math.round(cost / months);
+                  return (
+                    <p className="text-sm font-semibold mt-2">
+                      Você precisará guardar R$ {calculated},00 por mês!
+                    </p>
+                  );
+                }
+              }
+              return null;
+            })()}
+            {selectedCategory && (
+              <p className="text-sm mt-1">
+                Categoria: {selectedCategory.name}
+              </p>
+            )}
+          </div>
+        );
+      })()}
     </LessonLayout>
   );
 };
