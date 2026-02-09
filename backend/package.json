@@ -9,6 +9,9 @@
     "create-grades": "node create-basic-grades.js",
     "setup-db": "node setup-database.js",
     "redistribute-lessons": "node redistribute-lessons.js",
+    "validate-lessons": "node scripts/validate-lessons-structure.js",
+    "analyze-lessons": "node scripts/analyze-lessons-content.js",
+    "list-gamification": "node scripts/list-gamification-types.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

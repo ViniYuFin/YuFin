@@ -29,6 +29,7 @@ const testDbRoutes = require('./routes/test-db');
 const marketValidationRoutes = require('./routes/marketValidation');
 const licensesRoutes = require('./routes/licenses');
 const adminLicensesRoutes = require('./routes/adminLicenses');
+const adminLessonsRoutes = require('./routes/adminLessons');
 
 // Importar middlewares
 const { authenticateToken, authorizeRoles, authorizeOwner } = require('./middleware/auth');
@@ -196,6 +197,7 @@ app.use('/api', testDbRoutes); // Teste de conexão MongoDB
 app.use('/api/market-validation', marketValidationRoutes); // Validação de mercado
 app.use('/api', licensesRoutes); // Licenças: mine, history, cancel subscription
 app.use('/api/admin/licenses', adminLicensesRoutes); // Geração manual de licenças (admin)
+app.use('/api/admin/lessons', adminLessonsRoutes); // Gerenciamento de lições (admin)
 
 // Endpoint de teste
 app.get('/', (req, res) => {

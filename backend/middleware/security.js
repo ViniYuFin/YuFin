@@ -131,14 +131,17 @@ const lgpdLimiter = rateLimit({
   }
 });
 
-// Rate limiter para API geral (requests autenticados - 200 por 15 min)
+// Rate limiter para API geral (requests autenticados - 500 por 15 min)
+// Aumentado para suportar uso intenso durante navegação entre lições
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
+  max: 500,
   message: {
     error: 'Limite de requisições da API atingido',
     code: 'API_RATE_LIMIT_EXCEEDED'
-  }
+  },
+  standardHeaders: true,
+  legacyHeaders: false
 });
 
 /**
