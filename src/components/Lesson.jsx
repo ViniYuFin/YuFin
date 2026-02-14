@@ -215,7 +215,7 @@ const Lesson = (props) => {
     const totalCoins = yuCoinsEarned;
     
     return (
-      <div className="h-screen bg-gradient-to-b from-primary to-secondary flex items-center justify-center p-4 pb-20">
+      <div className="h-screen min-h-screen lesson-background flex items-center justify-center p-4 pb-20">
         {showConfetti && <ConfettiEffect onEnd={() => setShowConfetti(false)} />}
         <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-full text-center animate-bounce-in max-h-[70vh] overflow-y-auto">
           <div className="text-6xl mb-3 animate-bounce">
@@ -229,7 +229,7 @@ const Lesson = (props) => {
           <div className="space-y-3 mb-4">
             <div className="bg-gradient-to-r from-blue-100 to-blue-200 rounded-lg p-4">
               <p className="text-sm text-gray-600">Pontuação</p>
-              <p className="text-3xl font-bold text-white">{lessonResults.score}/100</p>
+              <p className="text-3xl font-bold" style={{ color: '#EE9116' }}>{lessonResults.score}/100</p>
             </div>
             
             <div className="bg-gradient-to-r from-green-100 to-green-200 rounded-lg p-4">

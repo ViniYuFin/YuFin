@@ -29,7 +29,7 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
       case 'student':
         return [
           { id: 'home', label: 'Início', icon: '🏠', screen: 'home' },
-          { id: 'intelligent-dashboard', label: 'IA', icon: '🤖', screen: 'intelligent-dashboard' },
+          { id: 'intelligent-dashboard', label: 'Tutor', icon: '🤖', screen: 'intelligent-dashboard' },
           { id: 'friends', label: 'Amigos', icon: '👥', screen: 'friends' },
           { id: 'challenges', label: 'Desafios', icon: '🏆', screen: 'challenges' },
           { id: 'store', label: 'Loja', icon: '🛍️', screen: 'store' },
@@ -39,7 +39,7 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
       case 'student-gratuito':
         return [
           { id: 'home', label: 'Início', icon: '🏠', screen: 'home', enabled: true },
-          { id: 'intelligent-dashboard', label: 'IA', icon: '🤖', screen: 'intelligent-dashboard', enabled: false },
+          { id: 'intelligent-dashboard', label: 'Tutor', icon: '🤖', screen: 'intelligent-dashboard', enabled: false },
           { id: 'friends', label: 'Amigos', icon: '👥', screen: 'friends', enabled: false },
           { id: 'challenges', label: 'Desafios', icon: '🏆', screen: 'challenges', enabled: false },
           { id: 'store', label: 'Loja', icon: '🛍️', screen: 'store', enabled: false },
@@ -48,14 +48,14 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
         ];
       case 'parent':
         return [
-          { id: 'parent-dashboard', label: 'Dashboard', icon: '📊', screen: 'parent-dashboard' },
+          { id: 'parent-dashboard', label: 'Início', icon: '📊', screen: 'parent-dashboard' },
           { id: 'savings-config', label: 'Poupança', icon: '🏦', screen: 'savings-config' },
           { id: 'reports', label: 'Relatórios', icon: '📈', screen: 'reports' },
           { id: 'settings', label: 'Config', icon: '⚙️', screen: 'settings' }
         ];
       case 'school':
         return [
-          { id: 'school-dashboard', label: 'Dashboard', icon: '🏫', screen: 'school-dashboard' },
+          { id: 'school-dashboard', label: 'Início', icon: '🏫', screen: 'school-dashboard' },
           { id: 'classes', label: 'Turmas', icon: '📚', screen: 'classes' },
           { id: 'reports', label: 'Relatórios', icon: '📈', screen: 'reports' },
           { id: 'news', label: 'Notícias', icon: '📰', screen: 'news' },
@@ -87,7 +87,7 @@ const Navigation = ({ role, activeScreen, setActiveScreen }) => {
               setActiveScreen(item.screen);
             } else {
               // Mostrar modal de upgrade para usuários gratuitos
-              alert('🔒 Esta funcionalidade está disponível no plano completo!\n\nUpgrade seu plano para acessar IA, Amigos, Desafios, Loja e Carteira!');
+              alert('🔒 Esta funcionalidade está disponível no plano completo!\n\nUpgrade seu plano para acessar Tutor, Amigos, Desafios, Loja e Carteira!');
             }
           };
 

@@ -75,7 +75,13 @@ const Reports = ({ user, setActiveScreen }) => {
       totalStudents: linkedStudents.length,
       totalXp: linkedStudents.reduce((sum, student) => sum + (student.progress?.xp || 0), 0),
       totalLessons: linkedStudents.reduce((sum, student) => sum + (student.progress?.completedLessons?.length || 0), 0),
-      totalSavings: linkedStudents.reduce((sum, student) => sum + (student.savings?.balance || 0), 0),
+      totalSavings: linkedStudents.reduce((sum, student) => {
+        const baseBalance = student.savings?.balance || 0;
+        const incentiveRate = 0.10; // 10% de incentivo
+        const incentiveAmount = baseBalance * incentiveRate;
+        const totalWithIncentive = baseBalance + incentiveAmount;
+        return sum + totalWithIncentive;
+      }, 0),
       averageLevel: linkedStudents.length > 0 
         ? linkedStudents.reduce((sum, student) => sum + (student.progress?.level || 1), 0) / linkedStudents.length 
         : 0,
@@ -273,12 +279,6 @@ const Reports = ({ user, setActiveScreen }) => {
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <button
-                onClick={() => setActiveScreen(user.role === 'parent' ? 'parent-dashboard' : user.role === 'school' ? 'school-dashboard' : 'home')}
-                className="text-primary hover:text-primary-dark mb-2 flex items-center"
-              >
-                ← Voltar ao Dashboard
-              </button>
               <h1 className="text-3xl font-yufin text-primary">📊 Relatórios Detalhados</h1>
             </div>
             {/* Botões apenas para desktop - ocultar no mobile */}
@@ -497,7 +497,7 @@ const Reports = ({ user, setActiveScreen }) => {
             }}
           >
             <h2 
-              className="text-2xl font-bold mb-4"
+              className="text-2xl font-bold mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               🏆 Top 10 Alunos da Escola
@@ -545,7 +545,7 @@ const Reports = ({ user, setActiveScreen }) => {
 
         {/* Seção de Engajamento */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">📈 Engajamento</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">📈 Engajamento</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <div className="text-center">
               <div className="text-3xl font-bold text-primary mb-2">
@@ -583,7 +583,7 @@ const Reports = ({ user, setActiveScreen }) => {
           }}
         >
           <h2 
-            className="text-2xl font-bold mb-4"
+            className="text-2xl font-bold mb-4 text-center"
             style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
           >
             🎯 Atividades Recentes
@@ -675,16 +675,6 @@ const Reports = ({ user, setActiveScreen }) => {
             </div>
           </div>
         )}
-
-        {/* Botão Voltar */}
-        <div className="text-center">
-          <button
-            onClick={() => setActiveScreen(user.role === 'parent' ? 'parent-dashboard' : user.role === 'school' ? 'school-dashboard' : 'home')}
-            className="bg-primary text-white px-8 py-3 rounded-lg font-semibold hover:bg-primary-dark transition transform hover:scale-105"
-          >
-            Voltar ao Dashboard
-          </button>
-        </div>
       </div>
     </div>
   );

@@ -13,10 +13,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
     perStreak: user.savingsConfig?.perStreak || 2.0,
     perPerfectLesson: user.savingsConfig?.perPerfectLesson || 1.0,
     perLevelUp: user.savingsConfig?.perLevelUp || 5.0,
-    perAchievement: user.savingsConfig?.perAchievement || 3.0,
-    autoTransfer: user.savingsConfig?.autoTransfer || false,
-    monthlyLimit: user.savingsConfig?.monthlyLimit || 100,
-    weeklyGoal: user.savingsConfig?.weeklyGoal || 20
+    perAchievement: user.savingsConfig?.perAchievement || 3.0
   });
 
   const [linkedStudents, setLinkedStudents] = useState([]);
@@ -82,31 +79,11 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
     }
   };
 
-  const calculateMonthlyProjection = (student) => {
-    if (!student) return 0;
-    
-    const lessonsPerWeek = 5; // Estimativa
-    const weeksPerMonth = 4;
-    const perfectRate = 0.3; // 30% de lições perfeitas
-    const levelUpsPerMonth = 2; // Estimativa
-    const achievementsPerMonth = 1; // Estimativa
-    
-    const monthlyLessons = lessonsPerWeek * weeksPerMonth;
-    const monthlyPerfectLessons = monthlyLessons * perfectRate;
-    const monthlyStreak = 7; // Streak médio
-    
-    const projection = 
-      (monthlyLessons * config.perLesson) +
-      (monthlyStreak * config.perStreak) +
-      (monthlyPerfectLessons * config.perPerfectLesson) +
-      (levelUpsPerMonth * config.perLevelUp) +
-      (achievementsPerMonth * config.perAchievement);
-    
-    return Math.min(projection, config.monthlyLimit);
-  };
-
   const getStudentStats = (student) => {
-    const currentSavings = student.savings?.balance || 0;
+    const baseBalance = student.savings?.balance || 0;
+    const incentiveRate = 0.10; // 10% de incentivo
+    const incentiveAmount = baseBalance * incentiveRate;
+    const currentSavings = baseBalance + incentiveAmount; // Valor total incluindo incentivo
     const completedLessons = student.progress?.completedLessons?.length || 0;
     const streak = student.progress?.streak || 0;
     const level = student.progress?.level || 1;
@@ -117,8 +94,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
       completedLessons,
       streak,
       level,
-      perfectLessons,
-      monthlyProjection: calculateMonthlyProjection(student)
+      perfectLessons
     };
   };
 
@@ -133,16 +109,10 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
             borderColor: 'rgb(238, 145, 22)' 
           }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <button
-                onClick={() => setActiveScreen('parent-dashboard')}
-                className="text-primary hover:text-primary-dark mb-2 flex items-center"
-              >
-                ← Voltar ao Dashboard
-              </button>
+          <div className="mb-4">
+            <div className="text-center">
               <h1 
-                className="text-3xl font-yufin"
+                className="text-3xl font-yufin text-center"
                 style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
               >
                 💰 Configurar Poupança Educativa
@@ -150,6 +120,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
             </div>
           </div>
           <p 
+            className="text-center"
             style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}
           >
             Configure as regras de poupança para incentivar o aprendizado dos seus filhos
@@ -168,7 +139,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
               }}
             >
               <h2 
-                className="text-xl font-bold mb-4"
+                className="text-xl font-bold mb-4 text-center"
                 style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               >
                 🎯 Recompensas por Atividade
@@ -327,10 +298,26 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
           {/* Preview e Estatísticas */}
           <div className="space-y-6">
             {/* Seleção de Filho */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">👶 Selecione um Filho</h2>
+            <div 
+              className="rounded-xl shadow-lg p-6 border-2" 
+              style={{ 
+                backgroundColor: darkMode ? '#374151' : '#ffffff',
+                borderColor: 'rgb(238, 145, 22)' 
+              }}
+            >
+              <h2 
+                className="text-xl font-bold mb-4 text-center"
+                style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+              >
+                👶 Selecione um Filho
+              </h2>
               {linkedStudents.length === 0 ? (
-                <p className="text-gray-600 text-center py-4">Nenhum filho vinculado ainda.</p>
+                <p 
+                  className="text-center py-4"
+                  style={{ color: darkMode ? '#d1d5db' : '#4b5563' }}
+                >
+                  Nenhum filho vinculado ainda.
+                </p>
               ) : (
                 <div className="space-y-2">
                   {linkedStudents.map((student) => (
@@ -340,13 +327,35 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                       className={`w-full p-3 rounded-lg border-2 transition ${
                         selectedStudent?.id === student.id
                           ? 'border-primary bg-primary text-white'
-                          : 'border-gray-300 hover:border-primary'
+                          : darkMode
+                            ? 'border-gray-600 hover:border-primary'
+                            : 'border-gray-300 hover:border-primary'
                       }`}
+                      style={
+                        selectedStudent?.id === student.id
+                          ? {}
+                          : {
+                              backgroundColor: darkMode ? '#4b5563' : '#ffffff',
+                              color: darkMode ? '#ffffff' : '#1f2937'
+                            }
+                      }
                     >
                       <div className="text-left">
                         <div className="font-semibold">{student.name}</div>
-                        <div className="text-sm opacity-80">
-                          Nível {student.progress?.level || 1} • R$ {(student.savings?.balance || 0).toFixed(2)}
+                        <div 
+                          className="text-sm"
+                          style={{ 
+                            opacity: selectedStudent?.id === student.id ? 0.9 : 0.8,
+                            color: selectedStudent?.id === student.id ? '#ffffff' : (darkMode ? '#d1d5db' : '#4b5563')
+                          }}
+                        >
+                          Nível {student.progress?.level || 1} • R$ {(() => {
+                            const baseBalance = student.savings?.balance || 0;
+                            const incentiveRate = 0.10; // 10% de incentivo
+                            const incentiveAmount = baseBalance * incentiveRate;
+                            const totalWithIncentive = baseBalance + incentiveAmount;
+                            return totalWithIncentive.toFixed(2);
+                          })()}
                         </div>
                       </div>
                     </button>
@@ -357,34 +366,100 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
 
             {/* Estatísticas do Filho Selecionado */}
             {selectedStudent && (
-              <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">📊 Estatísticas de {selectedStudent.name}</h2>
+              <div 
+                className="rounded-xl shadow-lg p-6 border-2" 
+                style={{ 
+                  backgroundColor: darkMode ? '#374151' : '#ffffff',
+                  borderColor: 'rgb(238, 145, 22)' 
+                }}
+              >
+                <h2 
+                  className="text-xl font-bold mb-4 text-center"
+                  style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+                >
+                  📊 Estatísticas de {selectedStudent.name}
+                </h2>
                 {(() => {
                   const stats = getStudentStats(selectedStudent);
                   return (
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-blue-50 p-3 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">R$ {stats.currentSavings.toFixed(2)}</div>
-                          <div className="text-sm text-gray-600">Poupança Atual</div>
+                        <div 
+                          className="p-3 rounded-lg"
+                          style={{
+                            backgroundColor: darkMode ? '#1e3a5f' : '#eff6ff'
+                          }}
+                        >
+                          <div 
+                            className="text-2xl font-bold"
+                            style={{ color: darkMode ? '#60a5fa' : '#2563eb' }}
+                          >
+                            R$ {stats.currentSavings.toFixed(2)}
+                          </div>
+                          <div 
+                            className="text-sm"
+                            style={{ color: darkMode ? '#cbd5e1' : '#4b5563' }}
+                          >
+                            Poupança Atual
+                          </div>
                         </div>
-                        <div className="bg-green-50 p-3 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{stats.completedLessons}</div>
-                          <div className="text-sm text-gray-600">Lições Concluídas</div>
+                        <div 
+                          className="p-3 rounded-lg"
+                          style={{
+                            backgroundColor: darkMode ? '#1a3a2e' : '#f0fdf4'
+                          }}
+                        >
+                          <div 
+                            className="text-2xl font-bold"
+                            style={{ color: darkMode ? '#4ade80' : '#16a34a' }}
+                          >
+                            {stats.completedLessons}
+                          </div>
+                          <div 
+                            className="text-sm"
+                            style={{ color: darkMode ? '#cbd5e1' : '#4b5563' }}
+                          >
+                            Lições Concluídas
+                          </div>
                         </div>
-                        <div className="bg-purple-50 p-3 rounded-lg">
-                          <div className="text-2xl font-bold text-purple-600">{stats.streak} 🔥</div>
-                          <div className="text-sm text-gray-600">Ofensiva Atual</div>
+                        <div 
+                          className="p-3 rounded-lg"
+                          style={{
+                            backgroundColor: darkMode ? '#3a1a3a' : '#faf5ff'
+                          }}
+                        >
+                          <div 
+                            className="text-2xl font-bold"
+                            style={{ color: darkMode ? '#a78bfa' : '#9333ea' }}
+                          >
+                            {stats.streak} 🔥
+                          </div>
+                          <div 
+                            className="text-sm"
+                            style={{ color: darkMode ? '#cbd5e1' : '#4b5563' }}
+                          >
+                            Ofensiva Atual
+                          </div>
                         </div>
-                        <div className="bg-orange-50 p-3 rounded-lg">
-                          <div className="text-2xl font-bold text-orange-600">{stats.perfectLessons}</div>
-                          <div className="text-sm text-gray-600">Lições Perfeitas</div>
+                        <div 
+                          className="p-3 rounded-lg"
+                          style={{
+                            backgroundColor: darkMode ? '#3a2a1a' : '#fff7ed'
+                          }}
+                        >
+                          <div 
+                            className="text-2xl font-bold"
+                            style={{ color: darkMode ? '#fb923c' : '#ea580c' }}
+                          >
+                            {stats.perfectLessons}
+                          </div>
+                          <div 
+                            className="text-sm"
+                            style={{ color: darkMode ? '#cbd5e1' : '#4b5563' }}
+                          >
+                            Lições Perfeitas
+                          </div>
                         </div>
-                      </div>
-
-                      <div className="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 rounded-lg">
-                        <div className="text-2xl font-bold">R$ {stats.monthlyProjection.toFixed(2)}</div>
-                        <div className="text-sm opacity-90">Projeção Mensal com Configuração Atual</div>
                       </div>
                     </div>
                   );
@@ -401,7 +476,7 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
               }}
             >
               <h2 
-                className="text-xl font-bold mb-4"
+                className="text-xl font-bold mb-4 text-center"
                 style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
               >
                 💡 Dicas e Recomendações
@@ -463,81 +538,6 @@ const SavingsConfig = ({ user, setUser, setActiveScreen }) => {
                     <strong>Defina limites:</strong> Evite gastos excessivos com limite mensal
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Configurações Avançadas - MOVIDO PARA BAIXO */}
-            <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">⚙️ Configurações Avançadas</h2>
-              
-              <div className="space-y-4">
-                <div>
-                  <label 
-                    className="block font-semibold mb-2"
-                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                  >
-                    Limite Mensal (R$)
-                  </label>
-                  <input
-                    type="number"
-                    step="1"
-                    min="0"
-                    value={config.monthlyLimit}
-                    onChange={(e) => handleConfigChange('monthlyLimit', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
-                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
-                      color: darkMode ? '#ffffff' : '#1f2937'
-                    }}
-                    placeholder="100"
-                  />
-                  <p 
-                    className="text-sm mt-1"
-                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
-                  >Limite máximo de depósitos por mês</p>
-                </div>
-
-                <div>
-                  <label 
-                    className="block font-semibold mb-2"
-                    style={{ color: darkMode ? '#ffffff' : '#374151' }}
-                  >
-                    Meta Semanal (R$)
-                  </label>
-                  <input
-                    type="number"
-                    step="1"
-                    min="0"
-                    value={config.weeklyGoal}
-                    onChange={(e) => handleConfigChange('weeklyGoal', parseFloat(e.target.value) || 0)}
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    style={{
-                      backgroundColor: darkMode ? '#4b5563' : '#ffffff',
-                      borderColor: darkMode ? '#6b7280' : '#d1d5db',
-                      color: darkMode ? '#ffffff' : '#1f2937'
-                    }}
-                    placeholder="20"
-                  />
-                  <p 
-                    className="text-sm mt-1"
-                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
-                  >Meta de poupança semanal para incentivar consistência</p>
-                </div>
-
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="checkbox"
-                    id="autoTransfer"
-                    checked={config.autoTransfer}
-                    onChange={(e) => handleConfigChange('autoTransfer', e.target.checked)}
-                    className="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary"
-                  />
-                  <label htmlFor="autoTransfer" className="font-semibold text-gray-700">
-                    Transferência Automática
-                  </label>
-                </div>
-                <p className="text-sm text-gray-600 ml-7">Transferir automaticamente para conta bancária quando atingir meta</p>
               </div>
             </div>
           </div>

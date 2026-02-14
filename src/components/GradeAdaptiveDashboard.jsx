@@ -150,13 +150,13 @@ const GradeAdaptiveDashboard = ({ user, gradeId }) => {
           </div>
         </div>
 
-        {/* Navegação entre Anos */}
+        {/* Navegação entre Níveis */}
         <div className="mt-8 flex justify-center space-x-4">
           <button className="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors">
-            ⬅️ Ano Anterior
+            ⬅️ Nível Anterior
           </button>
           <button className="px-6 py-3 bg-gradient-to-r from-primary to-secondary text-white rounded-lg hover:from-primary-dark hover:to-secondary transition-colors">
-            Próximo Ano ➡️
+            Próximo Nível ➡️
           </button>
         </div>
       </div>

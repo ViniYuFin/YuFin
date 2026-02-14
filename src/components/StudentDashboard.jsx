@@ -19,6 +19,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const [classes, setClasses] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   const [showTour, setShowTour] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   
   // Cache e controle de chamadas para evitar rate limiting
   const lastLoadTimeRef = useRef({ gradeProgress: 0, classes: 0 });
@@ -86,6 +87,19 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
     // Atualizar o módulo selecionado quando currentModule mudar
     setSelectedModule(currentModule);
   }, [currentModule]);
+
+  // Detectar mudanças na largura da tela para mobile
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Verificar na montagem inicial
+    handleResize();
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Animar o progresso quando os dados forem carregados
   useEffect(() => {
@@ -158,6 +172,40 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
   const getClassName = (classId) => {
     const classData = classes.find(c => c.id === classId);
     return classData ? classData.name : 'Turma não encontrada';
+  };
+
+  // Função para mapear série para nível lúdico
+  const getLudicLevel = (gradeId) => {
+    const ludicLevels = {
+      '6º Ano': 'Explorador Financeiro',
+      '7º Ano': 'Aventureiro Financeiro',
+      '8º Ano': 'Estrategista Financeiro',
+      '9º Ano': 'Gestor Financeiro',
+      '1º EM': 'Investidor em Formação',
+      '1º Ano EM': 'Investidor em Formação',
+      '2º EM': 'Analista Financeiro',
+      '2º Ano EM': 'Analista Financeiro',
+      '3º EM': 'Mestre em Educação Financeira',
+      '3º Ano EM': 'Mestre em Educação Financeira'
+    };
+    return ludicLevels[gradeId] || gradeId; // Retorna o nível lúdico ou a série original se não encontrar
+  };
+
+  // Função para mapear série para descrição do nível lúdico
+  const getLudicLevelDescription = (gradeId) => {
+    const descriptions = {
+      '6º Ano': 'Aprenda os fundamentos da educação financeira',
+      '7º Ano': 'Desenvolva habilidades básicas de planejamento financeiro',
+      '8º Ano': 'Aprenda sobre investimentos, crédito e economia',
+      '9º Ano': 'Desenvolva habilidades empreendedoras e de negócios',
+      '1º EM': 'Domine análise financeira e matemática avançada',
+      '1º Ano EM': 'Domine análise financeira e matemática avançada',
+      '2º EM': 'Explore economia, análise técnica e mercados',
+      '2º Ano EM': 'Explore economia, análise técnica e mercados',
+      '3º EM': 'Torne-se um consultor financeiro completo',
+      '3º Ano EM': 'Torne-se um consultor financeiro completo'
+    };
+    return descriptions[gradeId] || gradeId; // Retorna a descrição do nível lúdico ou a série original se não encontrar
   };
 
   const loadGradeProgress = async () => {
@@ -1234,8 +1282,10 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
       <div className="pt-0">
         {/* Indicador de Modo Dev */}
         {devModeService.isDevModeEnabled(user) && (
-          <div className="fixed top-20 left-1/2 transform -translate-x-1/2 z-40 bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-pulse">
-            🔧 MODO DEV ATIVO - Todas as séries e lições liberadas
+          <div className="fixed top-20 left-0 right-0 z-40 flex justify-center items-center">
+            <div className="bg-red-500 text-white text-sm px-4 py-2 rounded-lg shadow-lg animate-pulse text-center whitespace-nowrap">
+              🔧 MODO DEV ATIVO - Todas as séries e lições liberadas
+            </div>
           </div>
         )}
         {/* Espaçamento para evitar sobreposição com header superior fixo */}
@@ -1245,25 +1295,29 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
           <div className="bg-white rounded-lg p-8 shadow-lg border-2 border-orange-200 mb-8 tour-section-summary">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-3xl font-bold text-orange-600">{grade.name}</h2>
-                <p className="text-gray-600">{grade.description}</p>
+                <h2 className="text-3xl font-bold text-orange-600">{getLudicLevel(user.gradeId)}</h2>
+                {!isMobile && (
+                  <p className="text-gray-600">{getLudicLevelDescription(user.gradeId)}</p>
+                )}
               </div>
-                          <div className="text-right">
-              {progress.hasContent ? (
-                <>
-                  <div className="text-2xl font-bold text-orange-600">
-                    {progress.totalCompleted}/{progress.totalLessons}
-                  </div>
-                  <div className="text-gray-600">lições concluídas</div>
-                </>
-              ) : (
-                <>
-                  <div className="text-2xl font-bold text-orange-600">
-                    Em breve
-                  </div>
-                </>
-              )}
-            </div>
+              <div className="text-right">
+                {progress.hasContent ? (
+                  <>
+                    <div className="text-2xl font-bold text-orange-600">
+                      {progress.totalCompleted}/{progress.totalLessons}
+                    </div>
+                    {!isMobile && (
+                      <div className="text-gray-600">lições concluídas</div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="text-2xl font-bold text-orange-600">
+                      Em breve
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
             
             {/* Informações da Turma */}
@@ -1411,7 +1465,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                       {devModeService.isDevModeEnabled(user) ? '🔧' : '🎓'}
                     </div>
                     <div className="text-sm">Próximo</div>
-                    <div className="text-xs">Ano</div>
+                    <div className="text-xs">Nível</div>
                   </div>
                 </button>
               )}
@@ -1441,7 +1495,7 @@ const StudentDashboard = ({ user, setUser, onNavigate, currentModule = 1 }) => {
                         : '⬅️'
                     }
                   </div>
-                  <div className="text-sm">Ano</div>
+                  <div className="text-sm">Nível</div>
                   <div className="text-xs">Anterior</div>
                 </div>
               </button>

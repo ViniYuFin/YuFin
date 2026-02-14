@@ -1,5 +1,55 @@
 /* Sistema de Gradientes Responsivos - YuFin */
 
+/* Scrollbar customizado para Histórico de Conquistas - Modo Escuro */
+.wallet-scrollbar-dark {
+  scrollbar-width: thin;
+  scrollbar-color: #6b7280 #374151;
+}
+
+.wallet-scrollbar-dark::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wallet-scrollbar-dark::-webkit-scrollbar-track {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.wallet-scrollbar-dark::-webkit-scrollbar-thumb {
+  background: #6b7280;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.wallet-scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Scrollbar customizado para Histórico de Conquistas - Modo Claro */
+.wallet-scrollbar-light {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #ffffff;
+}
+
+.wallet-scrollbar-light::-webkit-scrollbar {
+  width: 8px;
+}
+
+.wallet-scrollbar-light::-webkit-scrollbar-track {
+  background: #ffffff;
+  border-radius: 4px;
+}
+
+.wallet-scrollbar-light::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.wallet-scrollbar-light::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
 /* Variáveis CSS para gradientes - MANTENDO CORES ORIGINAIS */
 :root {
   --gradient-primary: linear-gradient(135deg, #EE9116 0%, #FFB300 100%);

@@ -270,34 +270,6 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
     return subjectProgress;
   };
 
-  // Calcular ranking da escola
-  const calculateSchoolRanking = () => {
-    // Obter todos os alunos que estão vinculados às turmas da escola
-    const schoolStudentsIds = new Set();
-    classes.forEach(classData => {
-      if (Array.isArray(classData.students)) {
-        classData.students.forEach(studentId => {
-          schoolStudentsIds.add(studentId);
-        });
-      }
-    });
-
-    // Filtrar apenas alunos que estão nas turmas da escola
-    const schoolStudentsOnly = schoolStudents.filter(student => schoolStudentsIds.has(student.id));
-
-    return schoolStudentsOnly
-      .map(student => ({
-        id: student.id,
-        name: student.name,
-        xp: student.progress?.xp || 0,
-        level: student.progress?.level || 1,
-        streak: student.progress?.streak || 0,
-        lessonsCompleted: student.progress?.completedLessons?.length || 0
-      }))
-      .sort((a, b) => b.xp - a.xp)
-      .slice(0, 10);
-  };
-
   const handleClassSelect = (classData) => {
     setSelectedClass(classData);
     setShowDetailedView(true);
@@ -541,19 +513,20 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           }}
         >
           <h1 
-            className="text-4xl font-yufin mb-4 tour-header"
+            className="text-4xl font-yufin mb-4 tour-header text-center"
             style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
           >
-            🏫 Dashboard da Escola {user.name ? user.name : ''}
+            {user.name ? user.name : 'Escola'}
           </h1>
           <p 
+            className="text-center"
             style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
           >
             Acompanhe o progresso educacional de toda a escola
           </p>
           
           {/* Abas */}
-          <div className="flex flex-wrap gap-2 mt-6">
+          <div className="flex flex-wrap gap-2 mt-6 justify-center">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-overview ${
@@ -655,7 +628,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
               }}
             >
           <h2 
-            className="text-2xl font-bold mb-4"
+            className="text-2xl font-bold mb-4 text-center"
             style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
           >
             📊 Resumo da Escola
@@ -699,7 +672,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           }}
         >
           <h2 
-            className="text-2xl font-bold mb-4"
+            className="text-2xl font-bold mb-4 text-center"
             style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
           >
             🏫 Turmas
@@ -757,76 +730,54 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
           </div>
         </div>
 
-        {/* Ranking da Escola */}
-        <div 
-          className="rounded-xl shadow-lg p-6 mb-6 border-2" 
-          style={{ 
-            backgroundColor: darkMode ? '#374151' : '#ffffff',
-            borderColor: 'rgb(238, 145, 22)' 
-          }}
-        >
-          <h2 
-            className="text-2xl font-bold mb-4"
-            style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-          >
-            🏆 Ranking da Escola
-          </h2>
-          <div className="space-y-3">
-            {calculateSchoolRanking().map((student, index) => (
-              <div 
-                key={student.id} 
-                className="flex items-center justify-between p-4 rounded-lg"
-                style={{ backgroundColor: darkMode ? '#4b5563' : '#f9fafb' }}
-              >
-                <div className="flex items-center space-x-4">
-                  <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">
-                    {index + 1}
-                  </div>
-                  <div>
-                    <h4 
-                      className="font-semibold"
-                      style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
-                    >
-                      {student.name}
-                    </h4>
-                    <p 
-                      className="text-sm"
-                      style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
-                    >
-                      Nível {student.level} • {student.lessonsCompleted} lições
-                    </p>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-lg font-bold text-primary">{student.xp} XP</div>
-                  <div 
-                    className="text-sm"
-                    style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
-                  >
-                    {student.streak} 🔥
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Ações Rápidas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">📊 Relatórios Detalhados</h2>
-            <p className="text-gray-600 mb-4">Acesse relatórios completos de progresso e engajamento</p>
-        <button
-          onClick={() => setActiveScreen('reports')}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2"
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-xl font-bold mb-4 text-center"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📊 Relatórios Detalhados
+            </h2>
+            <p 
+              className="mb-4 text-center"
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            >
+              Acesse relatórios completos de progresso e engajamento
+            </p>
+            <button
+              onClick={() => setActiveScreen('reports')}
               className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition"
-        >
+            >
               Ver Relatórios
-        </button>
+            </button>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2" style={{ borderColor: 'rgb(238, 145, 22)' }}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">📈 Análise de Performance</h2>
-            <p className="text-gray-600 mb-4">Analise tendências e performance dos alunos</p>
+          <div 
+            className="rounded-xl shadow-lg p-6 border-2"
+            style={{ 
+              backgroundColor: darkMode ? '#374151' : '#ffffff',
+              borderColor: 'rgb(238, 145, 22)' 
+            }}
+          >
+            <h2 
+              className="text-xl font-bold mb-4 text-center"
+              style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
+            >
+              📈 Análise de Performance
+            </h2>
+            <p 
+              className="mb-4 text-center"
+              style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
+            >
+              Analise tendências e performance dos alunos
+            </p>
             <button
               onClick={() => alert('Funcionalidade de análise de performance em desenvolvimento!')}
               className="w-full bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-primary-dark transition"
@@ -855,7 +806,7 @@ const SchoolDashboard = ({ user, setActiveScreen }) => {
             }}
           >
             <h2 
-              className="text-2xl font-bold mb-4"
+              className="text-2xl font-bold mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               🎓 Progressão Escolar

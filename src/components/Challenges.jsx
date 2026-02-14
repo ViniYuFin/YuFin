@@ -24,8 +24,8 @@ const Challenges = ({ user }) => {
             backgroundColor: darkMode ? '#374151' : 'white'
           }}
         >
-          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 sm:gap-4">
-            <div className="flex-1">
+          <div className="flex flex-col items-center gap-3 sm:gap-4">
+            <div className="text-center">
               <h1 
                 className="text-xl sm:text-2xl font-yufin text-primary mb-2"
                 style={darkMode ? { color: '#fb923c' } : {}}

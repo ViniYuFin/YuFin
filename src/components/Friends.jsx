@@ -336,15 +336,13 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
             backgroundColor: darkMode ? '#374151' : 'white'
           }}
         >
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-3">
-              <h1 
-                className="text-2xl font-yufin text-primary"
-                style={darkMode ? { color: '#fb923c' } : {}}
-              >
-                👥 Amigos
-              </h1>
-            </div>
+          <div className="flex items-center justify-center mb-3">
+            <h1 
+              className="text-2xl font-yufin text-primary text-center"
+              style={darkMode ? { color: '#fb923c' } : {}}
+            >
+              👥 Amigos
+            </h1>
           </div>
           
           <div className="grid grid-cols-2 gap-4 mb-6">
@@ -440,7 +438,7 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-2 mb-4">
+          <div className="flex flex-wrap gap-2 mb-4 justify-center">
             <button
               onClick={() => setActiveTab('friends')}
               className={`px-3 sm:px-4 py-2 rounded-lg text-sm font-medium transition ${
@@ -487,7 +485,7 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
           <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
           {activeTab === 'friends' && (
                     <div>
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Meus Amigos</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4 text-center">Meus Amigos</h2>
               
               {loading ? (
                 <div className="text-center py-8">
@@ -561,16 +559,16 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
                   <div className="space-y-3">
                     {parentLinkRequests?.map((request) => (
                       <div key={request.parentId} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="flex items-center space-x-4 flex-1 min-w-0">
+                            <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                               👨‍👩‍👧‍👦
                             </div>
-                            <div>
-                              <p className="font-semibold text-gray-800 text-lg">{request.parentName || 'Nome não disponível'}</p>
+                            <div className="min-w-0 flex-1">
+                              <p className="font-semibold text-gray-800 text-lg truncate">{request.parentName || 'Nome não disponível'}</p>
                               <p className="text-sm text-gray-600">Deseja se vincular como responsável</p>
                               {request.message && (
-                                <p className="text-xs text-blue-600 mt-1">"{request.message}"</p>
+                                <p className="text-xs text-blue-600 mt-1 break-words">"{request.message}"</p>
                               )}
                               <p className="text-xs text-gray-500 mt-1">
                                 {request.requestDate ? new Date(request.requestDate).toLocaleDateString('pt-BR') : 'Data não disponível'}
@@ -578,18 +576,18 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
                             </div>
                           </div>
                           
-                          <div className="flex items-center space-x-2">
+                          <div className="flex items-center gap-2 sm:flex-shrink-0">
                             <button
                               onClick={() => respondToParentLinkRequest(request.parentId, true)}
-                              className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition"
+                              className="flex-1 sm:flex-none bg-green-500 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-green-600 transition whitespace-nowrap"
                             >
-                              ✅ Aceitar
+                              Aceitar
                             </button>
                             <button
                               onClick={() => respondToParentLinkRequest(request.parentId, false)}
-                              className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                              className="flex-1 sm:flex-none bg-red-500 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-red-600 transition whitespace-nowrap"
                             >
-                              ❌ Rejeitar
+                              Rejeitar
                             </button>
                           </div>
                         </div>
@@ -609,33 +607,32 @@ const Friends = ({ user, setUser, setActiveScreen }) => {
                 <div className="space-y-4">
                   {pendingRequests.map((request) => (
                     <div key={request.id} className="bg-gray-50 rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex items-center space-x-4 flex-1 min-w-0">
+                          <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
                             {request.name ? request.name.charAt(0) : '?'}
                           </div>
-                          <div>
-                            <p className="font-semibold text-gray-800 text-lg">{request.name || 'Nome não disponível'}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600">
+                          <div className="min-w-0 flex-1">
+                            <p className="font-semibold text-gray-800 text-lg truncate">{request.name || 'Nome não disponível'}</p>
+                            <div className="flex items-center space-x-4 text-sm text-gray-600 flex-wrap">
                               <span>Nível {request.level || 1}</span>
                               <span>🏫 {request.gradeId || 'N/A'}</span>
-
                             </div>
                           </div>
                         </div>
                         
-                        <div className="flex items-center space-x-2">
+                        <div className="flex items-center gap-2 sm:flex-shrink-0">
                           <button
                             onClick={() => handleFriendRequest(request.id, 'accept')}
-                            className="bg-green-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-600 transition"
+                            className="flex-1 sm:flex-none bg-green-500 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-green-600 transition whitespace-nowrap"
                           >
-                            ✅ Aceitar
+                            Aceitar
                           </button>
                           <button
                             onClick={() => handleFriendRequest(request.id, 'reject')}
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition"
+                            className="flex-1 sm:flex-none bg-red-500 text-white px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm hover:bg-red-600 transition whitespace-nowrap"
                           >
-                            ❌ Rejeitar
+                            Rejeitar
                           </button>
                         </div>
                       </div>

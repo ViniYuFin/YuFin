@@ -181,9 +181,9 @@ const Classes = ({ user, onChange }) => {
             borderColor: 'rgb(238, 145, 22)' 
           }}
         >
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-center mb-6">
             <h2 
-              className="text-2xl font-bold"
+              className="text-2xl font-bold text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               📚 Gestão de Turmas

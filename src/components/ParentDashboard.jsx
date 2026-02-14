@@ -20,6 +20,8 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // overview, tokens
   const [darkMode, setDarkMode] = useState(false);
+  const [redemptionRequests, setRedemptionRequests] = useState([]);
+  const [loadingRedemptionRequests, setLoadingRedemptionRequests] = useState(false);
 
   useEffect(() => {
     // Verificar se deve mostrar o tour (desabilitado em mobile)
@@ -67,7 +69,60 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
         setLoadingUsers(false);
       })
       .catch(() => setLoadingUsers(false));
-  }, []);
+    
+    // Carregar solicitações de resgate
+    loadRedemptionRequests();
+  }, [user]);
+
+  const loadRedemptionRequests = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoadingRedemptionRequests(true);
+      const response = await apiGet(`/parents/${user.id}/wallet-redemption-requests`);
+      setRedemptionRequests(response.requests || []);
+    } catch (error) {
+      console.error('Erro ao carregar solicitações de resgate:', error);
+    } finally {
+      setLoadingRedemptionRequests(false);
+    }
+  };
+
+  const handleApproveRedemption = async (requestId, studentId) => {
+    try {
+      const response = await apiPost(`/parents/${user.id}/approve-wallet-redemption/${requestId}`);
+      notificationService.success(response.message || 'Resgate aprovado com sucesso!');
+      await loadRedemptionRequests();
+      // Recarregar usuários para atualizar saldo
+      const users = await apiGet('/users');
+      setAllUsers(users);
+    } catch (error) {
+      console.error('Erro ao aprovar resgate:', error);
+      notificationService.error(error.message || 'Erro ao aprovar resgate');
+    }
+  };
+
+  const handleRejectRedemption = async (requestId) => {
+    try {
+      const response = await apiPost(`/parents/${user.id}/reject-wallet-redemption/${requestId}`, {
+        notes: ''
+      });
+      notificationService.info(response.message || 'Resgate rejeitado');
+      await loadRedemptionRequests();
+    } catch (error) {
+      console.error('Erro ao rejeitar resgate:', error);
+      notificationService.error(error.message || 'Erro ao rejeitar resgate');
+    }
+  };
+
+  const getRedemptionStatus = (studentId) => {
+    const request = redemptionRequests.find(req => req.studentId === studentId);
+    if (!request) return { status: 'none', text: 'Sem Resgate' };
+    if (request.status === 'pending') return { status: 'pending', text: 'Solicitou Resgate', request };
+    if (request.status === 'approved') return { status: 'approved', text: 'Resgate Aprovado' };
+    if (request.status === 'rejected') return { status: 'rejected', text: 'Resgate Rejeitado' };
+    return { status: 'none', text: 'Sem Resgate' };
+  };
 
 
 
@@ -135,7 +190,13 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
 
     const totalXp = linkedStudents.reduce((sum, student) => sum + (student.progress?.xp || 0), 0);
     const totalLessons = linkedStudents.reduce((sum, student) => sum + (student.progress?.completedLessons?.length || 0), 0);
-    const totalSavings = linkedStudents.reduce((sum, student) => sum + (student.savings?.balance || 0), 0);
+    const totalSavings = linkedStudents.reduce((sum, student) => {
+      const baseBalance = student.savings?.balance || 0;
+      const incentiveRate = 0.10; // 10% de incentivo
+      const incentiveAmount = baseBalance * incentiveRate;
+      const totalWithIncentive = baseBalance + incentiveAmount;
+      return sum + totalWithIncentive;
+    }, 0);
     const averageLevel = linkedStudents.reduce((sum, student) => sum + (student.progress?.level || 1), 0) / linkedStudents.length;
     const totalStreak = linkedStudents.reduce((sum, student) => sum + (student.progress?.streak || 0), 0);
 
@@ -299,7 +360,15 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
               </div>
               <div className="text-white p-4 rounded-lg shadow-lg" style={{ background: 'linear-gradient(to right, #f97316, #ea580c)' }}>
                 <h3 className="text-sm font-medium text-white">Poupança</h3>
-                <p className="text-2xl font-bold text-white">R$ {(selectedStudent.savings?.balance || 0).toFixed(2)}</p>
+                <p className="text-2xl font-bold text-white">
+                  R$ {(() => {
+                    const baseBalance = selectedStudent.savings?.balance || 0;
+                    const incentiveRate = 0.10; // 10% de incentivo
+                    const incentiveAmount = baseBalance * incentiveRate;
+                    const totalWithIncentive = baseBalance + incentiveAmount;
+                    return totalWithIncentive.toFixed(2);
+                  })()}
+                </p>
               </div>
             </div>
           </div>
@@ -409,7 +478,13 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
               {selectedStudent.savings?.balance > 0 && (
                 <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
                   <p className="text-blue-800">
-                    <strong>Poupança em crescimento:</strong> {selectedStudent.name} já tem R$ {(selectedStudent.savings.balance).toFixed(2)} na poupança educativa. Que tal conversar sobre objetivos financeiros?
+                    <strong>Poupança em crescimento:</strong> {selectedStudent.name} já tem R$ {(() => {
+                      const baseBalance = selectedStudent.savings?.balance || 0;
+                      const incentiveRate = 0.10; // 10% de incentivo
+                      const incentiveAmount = baseBalance * incentiveRate;
+                      const totalWithIncentive = baseBalance + incentiveAmount;
+                      return totalWithIncentive.toFixed(2);
+                    })()} na poupança educativa. Que tal conversar sobre objetivos financeiros?
                   </p>
                 </div>
               )}
@@ -443,19 +518,20 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
           }}
         >
           <h1 
-            className="text-4xl font-yufin mb-4 tour-header"
+            className="text-4xl font-yufin mb-4 tour-header text-center"
             style={{ color: darkMode ? '#ffffff' : 'rgb(238, 145, 22)' }}
           >
-            👨‍👩‍👧‍👦 Dashboard da Família
+            {user.name ? user.name : 'Responsável'}
           </h1>
           <p 
+            className="text-center"
             style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
           >
             Acompanhe o progresso educacional e financeiro dos seus filhos
           </p>
           
           {/* Abas */}
-          <div className="flex flex-wrap gap-2 mt-6">
+          <div className="flex flex-wrap gap-2 mt-6 justify-center">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-3 sm:px-6 py-3 rounded-lg font-semibold transition-all duration-200 shadow-sm tour-tab-overview ${
@@ -520,7 +596,7 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             }}
           >
             <h2 
-              className="text-2xl font-bold mb-4"
+              className="text-2xl font-bold mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               📊 Resumo da Família
@@ -641,22 +717,64 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
                         </div>
                         <div className="flex justify-between">
                           <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>Poupança:</span>
-                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>R$ {(student.savings?.balance || 0).toFixed(2)}</span>
+                          <span className="font-semibold" style={{ color: darkMode ? '#ffffff' : '#1f2937' }}>
+                            R$ {(() => {
+                              const baseBalance = student.savings?.balance || 0;
+                              const incentiveRate = 0.10; // 10% de incentivo
+                              const incentiveAmount = baseBalance * incentiveRate;
+                              const totalWithIncentive = baseBalance + incentiveAmount;
+                              return totalWithIncentive.toFixed(2);
+                            })()}
+                          </span>
                         </div>
                       </div>
 
-                      {/* Barra de Progresso Geral */}
+                      {/* Status de Resgate */}
                       <div className="mb-4">
-                        <div className="flex justify-between text-sm mb-1" style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>
-                          <span>Progresso Geral</span>
-                          <span>{completedSubjects}/{totalSubjects} matérias</span>
-                        </div>
-                        <div className="w-full rounded-full h-2" style={{ backgroundColor: darkMode ? '#6b7280' : '#e5e7eb' }}>
-                          <div
-                            className="bg-primary h-2 rounded-full transition-all duration-500"
-                            style={{ width: `${totalSubjects > 0 ? (completedSubjects / totalSubjects) * 100 : 0}%` }}
-                          ></div>
-                        </div>
+                        {(() => {
+                          const redemptionStatus = getRedemptionStatus(student.id);
+                          return (
+                            <div>
+                              <div className="flex justify-between items-center mb-2">
+                                <span style={{ color: darkMode ? '#d1d5db' : '#6b7280' }}>
+                                  {redemptionStatus.text}
+                                </span>
+                              </div>
+                              {redemptionStatus.status === 'pending' && redemptionStatus.request && (
+                                <div className="flex gap-2 mt-2">
+                                  <button
+                                    onClick={() => {
+                                      const requestId = redemptionStatus.request._id || redemptionStatus.request.id;
+                                      if (requestId) {
+                                        handleApproveRedemption(requestId, student.id);
+                                      } else {
+                                        console.error('Request ID não encontrado:', redemptionStatus.request);
+                                        notificationService.error('Erro: ID da solicitação não encontrado');
+                                      }
+                                    }}
+                                    className="flex-1 bg-green-500 text-white text-xs py-1.5 px-2 rounded-lg font-semibold hover:bg-green-600 transition"
+                                  >
+                                    Aprovar
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      const requestId = redemptionStatus.request._id || redemptionStatus.request.id;
+                                      if (requestId) {
+                                        handleRejectRedemption(requestId);
+                                      } else {
+                                        console.error('Request ID não encontrado:', redemptionStatus.request);
+                                        notificationService.error('Erro: ID da solicitação não encontrado');
+                                      }
+                                    }}
+                                    className="flex-1 bg-red-500 text-white text-xs py-1.5 px-2 rounded-lg font-semibold hover:bg-red-600 transition"
+                                  >
+                                    Rejeitar
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </div>
 
@@ -799,13 +917,13 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             }}
           >
             <h2 
-              className="text-xl font-bold mb-4"
+              className="text-xl font-bold mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               💰 Configurações Financeiras
             </h2>
             <p 
-              className="mb-4"
+              className="mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
             >
               Gerencie as regras de poupança educativa para seus filhos
@@ -826,13 +944,13 @@ const ParentDashboard = ({ user, setActiveScreen, setUser }) => {
             }}
           >
             <h2 
-              className="text-xl font-bold mb-4"
+              className="text-xl font-bold mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#1f2937' }}
             >
               📊 Relatórios Detalhados
             </h2>
             <p 
-              className="mb-4"
+              className="mb-4 text-center"
               style={{ color: darkMode ? '#ffffff' : '#6b7280' }}
             >
               Acesse relatórios completos de progresso e engajamento
