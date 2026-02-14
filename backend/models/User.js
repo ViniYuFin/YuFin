@@ -89,6 +89,26 @@ const userSchema = new mongoose.Schema({
       message: { type: String, default: '' }
     }]
   },
+  // Sistema de solicitações de resgate da carteira
+  walletRedemptionRequests: [{
+    studentId: { type: String, required: true },
+    studentName: { type: String, required: true },
+    amount: { type: Number, required: true },
+    requestDate: { type: Date, default: Date.now },
+    status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    approvedBy: [{ 
+      parentId: { type: String },
+      parentName: { type: String },
+      approvedAt: { type: Date }
+    }],
+    rejectedBy: [{ 
+      parentId: { type: String },
+      parentName: { type: String },
+      rejectedAt: { type: Date },
+      notes: { type: String }
+    }],
+    notes: { type: String }
+  }],
   savingsConfig: {
     perLesson: { type: Number, default: 0.5 },
     perStreak: { type: Number, default: 2.0 },

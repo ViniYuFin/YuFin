@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const mongoose = require('mongoose');
 const connectDB = require('./config/database');
 
 // Importar modelos
@@ -3700,6 +3701,441 @@ app.patch('/users/:id/desvincular-filho', async (req, res) => {
     res.json(parent);
   } catch (error) {
     res.status(400).json({ error: error.message });
+  }
+});
+
+// ===== ROTAS DE RESGATE DA CARTEIRA =====
+
+// Solicitar resgate da carteira (aluno)
+app.post('/students/:studentId/request-wallet-redemption', async (req, res) => {
+  try {
+    const student = await User.findById(req.params.studentId);
+    
+    if (!student || student.role !== 'student') {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    
+    // Verificar se há saldo
+    const balance = student.savings?.balance || 0;
+    if (balance <= 0) {
+      return res.status(400).json({ error: 'Não há saldo para resgatar' });
+    }
+    
+    // Verificar se já existe solicitação pendente
+    const pendingRequest = student.walletRedemptionRequests?.find(
+      req => req.status === 'pending'
+    );
+    
+    if (pendingRequest) {
+      return res.status(400).json({ error: 'Já existe uma solicitação de resgate pendente' });
+    }
+    
+    // Verificar se a trilha está completa
+    let currentGrade = await Grade.findOne({ name: student.gradeId });
+    if (!currentGrade) {
+      const levelMatch = student.gradeId.match(/(\d+)º/);
+      const level = levelMatch ? parseInt(levelMatch[1]) : 6;
+      currentGrade = new Grade({
+        name: student.gradeId,
+        level: level,
+        ageRange: { min: level + 5, max: level + 6 },
+        description: `${student.gradeId} do ensino fundamental`,
+        bnccObjectives: ['Matemática financeira', 'Educação financeira'],
+        difficultyRange: { min: Math.max(1, level - 5), max: Math.min(6, level - 4) }
+      });
+      await currentGrade.save();
+    }
+    
+    const lessons = await Lesson.find({ 
+      gradeId: currentGrade.name, 
+      isActive: true 
+    }).sort({ module: 1, order: 1 });
+    
+    const completedLessons = student.progress?.completedLessons || [];
+    const currentGradeLessonIds = lessons.map(lesson => lesson._id.toString());
+    const completedInCurrentGrade = completedLessons.filter(lessonId => 
+      currentGradeLessonIds.includes(lessonId)
+    );
+    const hasCompletedCurrentGrade = completedInCurrentGrade.length >= lessons.length;
+    
+    if (!hasCompletedCurrentGrade) {
+      return res.status(400).json({ error: 'É necessário completar todas as lições da trilha atual para solicitar resgate' });
+    }
+    
+    // Buscar todos os responsáveis vinculados
+    const parents = await User.find({
+      role: 'parent',
+      linkedStudents: { $in: [student.id] }
+    });
+    
+    if (parents.length === 0) {
+      return res.status(400).json({ error: 'Nenhum responsável vinculado encontrado' });
+    }
+    
+    // Calcular valor total incluindo incentivo educacional (10%)
+    const incentiveRate = 0.10; // 10% de incentivo
+    const incentiveAmount = balance * incentiveRate;
+    const totalWithIncentive = balance + incentiveAmount;
+    
+    // Criar ID único para a solicitação
+    const requestId = new mongoose.Types.ObjectId();
+    const requestDate = new Date();
+    
+    // Criar solicitação de resgate com valor total (base + incentivo)
+    const redemptionRequest = {
+      _id: requestId,
+      studentId: student.id,
+      studentName: student.name,
+      amount: totalWithIncentive, // Valor total incluindo incentivo
+      baseAmount: balance, // Valor da poupança base (para referência)
+      incentiveAmount: incentiveAmount, // Valor do incentivo (para transparência)
+      requestDate: requestDate,
+      status: 'pending',
+      approvedBy: [],
+      rejectedBy: [],
+      notes: ''
+    };
+    
+    // Adicionar solicitação ao aluno
+    if (!student.walletRedemptionRequests) {
+      student.walletRedemptionRequests = [];
+    }
+    student.walletRedemptionRequests.push(redemptionRequest);
+    await student.save();
+    
+    // Adicionar solicitação a todos os responsáveis vinculados
+    for (const parent of parents) {
+      if (!parent.walletRedemptionRequests) {
+        parent.walletRedemptionRequests = [];
+      }
+      parent.walletRedemptionRequests.push({
+        ...redemptionRequest
+      });
+      await parent.save();
+    }
+    
+    res.json({ 
+      message: 'Solicitação de resgate enviada com sucesso!',
+      request: redemptionRequest
+    });
+  } catch (error) {
+    console.error('Erro ao solicitar resgate:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Listar solicitações de resgate pendentes (responsável)
+app.get('/parents/:parentId/wallet-redemption-requests', async (req, res) => {
+  try {
+    const parent = await User.findById(req.params.parentId);
+    
+    if (!parent || parent.role !== 'parent') {
+      return res.status(404).json({ error: 'Responsável não encontrado' });
+    }
+    
+    const pendingRequests = (parent.walletRedemptionRequests || []).filter(
+      req => req.status === 'pending'
+    );
+    
+    // Buscar informações completas dos alunos
+    const requestsWithStudentInfo = await Promise.all(
+      pendingRequests.map(async (request) => {
+        const student = await User.findById(request.studentId);
+        const requestObj = request.toObject();
+        
+        // Se a solicitação não tem baseAmount/incentiveAmount, é uma solicitação antiga
+        // Recalcular o valor total incluindo o incentivo (10%)
+        let amount = requestObj.amount || request.amount || 0;
+        let baseAmount = requestObj.baseAmount || request.baseAmount;
+        let incentiveAmount = requestObj.incentiveAmount || request.incentiveAmount;
+        
+        // Se não tem baseAmount, significa que é uma solicitação antiga
+        // Recalcular o valor total incluindo o incentivo
+        if (!baseAmount && amount > 0) {
+          const incentiveRate = 0.10; // 10% de incentivo
+          baseAmount = amount; // O valor antigo era apenas a base
+          incentiveAmount = baseAmount * incentiveRate;
+          amount = baseAmount + incentiveAmount; // Novo valor total
+        }
+        
+        return {
+          ...requestObj,
+          _id: requestObj._id || request._id?.toString() || request.id?.toString(),
+          id: requestObj._id || request._id?.toString() || request.id?.toString(),
+          amount: amount, // Valor total (pode ter sido recalculado)
+          baseAmount: baseAmount || amount, // Valor base
+          incentiveAmount: incentiveAmount || 0, // Valor do incentivo
+          studentName: student?.name || request.studentName,
+          studentGrade: student?.gradeId || 'N/A'
+        };
+      })
+    );
+    
+    res.json({ requests: requestsWithStudentInfo });
+  } catch (error) {
+    console.error('Erro ao listar solicitações de resgate:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Aprovar resgate da carteira (responsável)
+app.post('/parents/:parentId/approve-wallet-redemption/:requestId', async (req, res) => {
+  try {
+    const { parentId, requestId } = req.params;
+    
+    if (!requestId) {
+      return res.status(400).json({ error: 'requestId é obrigatório' });
+    }
+    
+    const parent = await User.findById(parentId);
+    
+    if (!parent || parent.role !== 'parent') {
+      return res.status(404).json({ error: 'Responsável não encontrado' });
+    }
+    
+    // Buscar solicitação no parent
+    const parentRequest = parent.walletRedemptionRequests?.find(
+      req => req._id.toString() === requestId
+    );
+    
+    if (!parentRequest) {
+      return res.status(404).json({ error: 'Solicitação não encontrada' });
+    }
+    
+    // Verificar se o aluno está vinculado
+    if (!parent.linkedStudents?.includes(parentRequest.studentId)) {
+      return res.status(403).json({ error: 'Aluno não vinculado a este responsável' });
+    }
+    
+    // Verificar se já foi aprovada ou rejeitada
+    if (parentRequest.status === 'approved') {
+      return res.status(400).json({ error: 'Solicitação já foi aprovada' });
+    }
+    
+    if (parentRequest.status === 'rejected') {
+      return res.status(400).json({ error: 'Solicitação já foi rejeitada' });
+    }
+    
+    // Buscar aluno
+    const student = await User.findById(parentRequest.studentId);
+    if (!student) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    
+    // Buscar solicitação no aluno
+    const studentRequest = student.walletRedemptionRequests?.find(
+      req => req._id.toString() === requestId
+    );
+    
+    if (!studentRequest) {
+      return res.status(404).json({ error: 'Solicitação não encontrada no aluno' });
+    }
+    
+    // Verificar se já foi aprovada por outro responsável
+    if (studentRequest.status === 'approved') {
+      return res.status(400).json({ error: 'Solicitação já foi aprovada por outro responsável' });
+    }
+    
+    // Adicionar aprovação do parent
+    if (!parentRequest.approvedBy) {
+      parentRequest.approvedBy = [];
+    }
+    parentRequest.approvedBy.push({
+      parentId: parent.id,
+      parentName: parent.name,
+      approvedAt: new Date()
+    });
+    
+    // Adicionar aprovação na solicitação do aluno
+    if (!studentRequest.approvedBy) {
+      studentRequest.approvedBy = [];
+    }
+    studentRequest.approvedBy.push({
+      parentId: parent.id,
+      parentName: parent.name,
+      approvedAt: new Date()
+    });
+    
+    // Se pelo menos um responsável aprovou, processar resgate
+    if (studentRequest.approvedBy.length > 0) {
+      // Zerar saldo do aluno (o incentivo já foi incluído no valor da solicitação)
+      student.savings.balance = 0;
+      
+      // Registrar transação com valor total resgatado
+      if (!student.savings.transactions) {
+        student.savings.transactions = [];
+      }
+      student.savings.transactions.push({
+        type: 'redemption',
+        amount: studentRequest.amount, // Valor total (base + incentivo)
+        baseAmount: studentRequest.baseAmount || studentRequest.amount, // Valor base para referência
+        incentiveAmount: studentRequest.incentiveAmount || 0, // Valor do incentivo para referência
+        date: new Date(),
+        status: 'approved',
+        approvedBy: parent.name
+      });
+      
+      // Atualizar status para aprovado
+      studentRequest.status = 'approved';
+      parentRequest.status = 'approved';
+      
+      // Atualizar status em todos os outros responsáveis vinculados
+      const otherParents = await User.find({
+        role: 'parent',
+        linkedStudents: { $in: [student.id] },
+        _id: { $ne: parent.id }
+      });
+      
+      for (const otherParent of otherParents) {
+        const otherParentRequest = otherParent.walletRedemptionRequests?.find(
+          req => req._id.toString() === requestId
+        );
+        if (otherParentRequest && otherParentRequest.status === 'pending') {
+          otherParentRequest.status = 'approved';
+          await otherParent.save();
+        }
+      }
+    }
+    
+    await parent.save();
+    await student.save();
+    
+    res.json({ 
+      message: 'Resgate aprovado com sucesso!',
+      request: studentRequest
+    });
+  } catch (error) {
+    console.error('Erro ao aprovar resgate:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Rejeitar resgate da carteira (responsável)
+app.post('/parents/:parentId/reject-wallet-redemption/:requestId', async (req, res) => {
+  try {
+    const { notes } = req.body;
+    const { parentId, requestId } = req.params;
+    
+    if (!requestId) {
+      return res.status(400).json({ error: 'requestId é obrigatório' });
+    }
+    
+    const parent = await User.findById(parentId);
+    
+    if (!parent || parent.role !== 'parent') {
+      return res.status(404).json({ error: 'Responsável não encontrado' });
+    }
+    
+    // Buscar solicitação no parent
+    const parentRequest = parent.walletRedemptionRequests?.find(
+      req => req._id.toString() === requestId
+    );
+    
+    if (!parentRequest) {
+      return res.status(404).json({ error: 'Solicitação não encontrada' });
+    }
+    
+    // Verificar se o aluno está vinculado
+    if (!parent.linkedStudents?.includes(parentRequest.studentId)) {
+      return res.status(403).json({ error: 'Aluno não vinculado a este responsável' });
+    }
+    
+    // Verificar se já foi aprovada ou rejeitada
+    if (parentRequest.status === 'approved') {
+      return res.status(400).json({ error: 'Solicitação já foi aprovada' });
+    }
+    
+    if (parentRequest.status === 'rejected') {
+      return res.status(400).json({ error: 'Solicitação já foi rejeitada' });
+    }
+    
+    // Buscar aluno
+    const student = await User.findById(parentRequest.studentId);
+    if (!student) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    
+    // Buscar solicitação no aluno
+    const studentRequest = student.walletRedemptionRequests?.find(
+      req => req._id.toString() === requestId
+    );
+    
+    if (!studentRequest) {
+      return res.status(404).json({ error: 'Solicitação não encontrada no aluno' });
+    }
+    
+    // Verificar se já foi aprovada
+    if (studentRequest.status === 'approved') {
+      return res.status(400).json({ error: 'Solicitação já foi aprovada por outro responsável' });
+    }
+    
+    // Adicionar rejeição do parent
+    if (!parentRequest.rejectedBy) {
+      parentRequest.rejectedBy = [];
+    }
+    parentRequest.rejectedBy.push({
+      parentId: parent.id,
+      parentName: parent.name,
+      rejectedAt: new Date(),
+      notes: notes || ''
+    });
+    
+    // Adicionar rejeição na solicitação do aluno
+    if (!studentRequest.rejectedBy) {
+      studentRequest.rejectedBy = [];
+    }
+    studentRequest.rejectedBy.push({
+      parentId: parent.id,
+      parentName: parent.name,
+      rejectedAt: new Date(),
+      notes: notes || ''
+    });
+    
+    // Atualizar status para rejeitado (apenas se nenhum responsável aprovou)
+    if (studentRequest.approvedBy?.length === 0) {
+      studentRequest.status = 'rejected';
+      parentRequest.status = 'rejected';
+    }
+    
+    await parent.save();
+    await student.save();
+    
+    res.json({ 
+      message: 'Resgate rejeitado',
+      request: studentRequest
+    });
+  } catch (error) {
+    console.error('Erro ao rejeitar resgate:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Verificar status da solicitação de resgate (aluno)
+app.get('/students/:studentId/wallet-redemption-status', async (req, res) => {
+  try {
+    const student = await User.findById(req.params.studentId);
+    
+    if (!student || student.role !== 'student') {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    
+    const pendingRequest = student.walletRedemptionRequests?.find(
+      req => req.status === 'pending'
+    );
+    
+    const lastRequest = student.walletRedemptionRequests?.length > 0
+      ? student.walletRedemptionRequests[student.walletRedemptionRequests.length - 1]
+      : null;
+    
+    res.json({
+      hasPendingRequest: !!pendingRequest,
+      pendingRequest: pendingRequest || null,
+      lastRequest: lastRequest || null,
+      balance: student.savings?.balance || 0
+    });
+  } catch (error) {
+    console.error('Erro ao verificar status de resgate:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
