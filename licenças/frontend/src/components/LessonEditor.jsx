@@ -8,10 +8,20 @@ const LessonEditor = ({ lessonId, onSave, onCancel }) => {
   const [saving, setSaving] = useState(false);
   const [editedLesson, setEditedLesson] = useState(null);
   const [editMode, setEditMode] = useState(true); // Sempre em modo edição
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
 
   useEffect(() => {
     loadLesson();
   }, [lessonId]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const loadLesson = async () => {
     try {
@@ -80,17 +90,44 @@ const LessonEditor = ({ lessonId, onSave, onCancel }) => {
   return (
     <div style={styles.container}>
       {/* Header de Edição */}
-      <div style={styles.editorHeader}>
-        <div style={styles.headerLeft}>
-          <h2 style={styles.title}>✏️ Editando: {editedLesson.title}</h2>
-          <span style={styles.badge}>Modo Edição</span>
+      <div style={{
+        ...styles.editorHeader,
+        flexDirection: isMobile ? 'column' : 'row',
+        gap: isMobile ? '12px' : '0',
+        padding: isMobile ? '12px 16px' : '16px 24px'
+      }}>
+        <div style={{
+          ...styles.headerLeft,
+          width: isMobile ? '100%' : 'auto',
+          justifyContent: isMobile ? 'flex-start' : 'center'
+        }}>
+          <h2 style={{
+            ...styles.title,
+            fontSize: isMobile ? '16px' : '18px'
+          }}>✏️ Editando: {editedLesson.title}</h2>
         </div>
-        <div style={styles.headerActions}>
-          <button onClick={onCancel} style={styles.cancelButton}>
-            ❌ Cancelar
+        <div style={{
+          ...styles.headerActions,
+          width: isMobile ? '100%' : 'auto',
+          flexDirection: isMobile ? 'column' : 'row',
+          gap: isMobile ? '8px' : '12px'
+        }}>
+          <button onClick={onCancel} style={{
+            ...styles.cancelButton,
+            width: isMobile ? '100%' : 'auto',
+            padding: isMobile ? '12px 16px' : '10px 20px'
+          }}>
+            {isMobile ? 'Cancelar' : '❌ Cancelar'}
           </button>
-          <button onClick={handleSave} disabled={saving} style={styles.saveButton}>
-            {saving ? '💾 Salvando...' : '💾 Salvar Alterações'}
+          <button onClick={handleSave} disabled={saving} style={{
+            ...styles.saveButton,
+            width: isMobile ? '100%' : 'auto',
+            padding: isMobile ? '12px 16px' : '10px 20px'
+          }}>
+            {saving 
+              ? (isMobile ? 'Salvando...' : '💾 Salvando...')
+              : (isMobile ? 'Salvar' : '💾 Salvar Alterações')
+            }
           </button>
         </div>
       </div>
@@ -2820,7 +2857,8 @@ const styles = {
   lessonContainer: {
     padding: '24px',
     maxWidth: '1200px',
-    margin: '0 auto'
+    margin: '0 auto',
+    boxSizing: 'border-box'
   },
   lessonWrapper: {
     background: 'white',
@@ -3219,7 +3257,9 @@ const styles = {
     background: 'white',
     borderRadius: '8px',
     border: '1px solid #e5e5e5',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
+    flexWrap: 'wrap',
+    boxSizing: 'border-box'
   },
   adjustmentLabel: {
     minWidth: '180px',
@@ -3227,13 +3267,16 @@ const styles = {
     fontWeight: '600',
     color: '#374151',
     fontFamily: "'Nunito', sans-serif",
-    textAlign: 'left'
+    textAlign: 'left',
+    flexShrink: 0
   },
   adjustmentInputs: {
     display: 'flex',
     gap: '12px',
     flex: 1,
-    alignItems: 'center'
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    minWidth: 0
   },
   adjustmentInput: {
     flex: 1,
@@ -3244,14 +3287,17 @@ const styles = {
     fontFamily: "'Nunito', sans-serif",
     transition: 'all 0.2s',
     minWidth: '0',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
+    boxSizing: 'border-box',
+    maxWidth: '100%'
   },
   formGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
     gap: '20px',
     width: '100%',
-    marginTop: '8px'
+    marginTop: '8px',
+    boxSizing: 'border-box'
   },
   formGroup: {
     display: 'flex',
@@ -3280,7 +3326,8 @@ const styles = {
     outline: 'none',
     backgroundColor: '#ffffff',
     lineHeight: '1.5',
-    color: '#1f2937'
+    color: '#1f2937',
+    maxWidth: '100%'
   },
   textarea: {
     padding: '12px 16px',
@@ -3296,7 +3343,8 @@ const styles = {
     outline: 'none',
     lineHeight: '1.5',
     backgroundColor: '#ffffff',
-    color: '#1f2937'
+    color: '#1f2937',
+    maxWidth: '100%'
   }
 };
 

@@ -97,7 +97,6 @@ const Login = ({ onLogin }) => {
         transition: 'opacity 0.3s ease'
       }}>
         <h1 style={styles.title}>YüFin</h1>
-        <h2 style={styles.subtitle}>Geração Manual de Licenças</h2>
         <p style={styles.description}>Acesso restrito a administradores</p>
 
         <form onSubmit={handleSubmit} style={styles.form}>

@@ -63,6 +63,88 @@ const LessonManager = () => {
     }
   };
 
+  const handleExportPDF = async () => {
+    try {
+      toast.loading('Gerando PDF...', { id: 'pdf-export' });
+      
+      // Importar API_BASE_URL
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const token = localStorage.getItem('adminToken');
+      
+      // Construir URL com filtros baseado no tipo
+      const params = new URLSearchParams();
+      if (filterGrade !== 'all') {
+        params.append('gradeId', filterGrade);
+      }
+      
+      // Tipo usado na API (slug interno)
+      let apiExportType = 'quiz';
+      if (filterType === 'budget-distribution') {
+        apiExportType = 'budget-distribution';
+      } else if (filterType === 'simulation') {
+        apiExportType = 'simulation';
+      } else if (filterType === 'match') {
+        apiExportType = 'match';
+      } else if (filterType === 'drag-drop') {
+        apiExportType = 'drag-drop';
+      } else if (filterType === 'goals') {
+        apiExportType = 'goals';
+      } else if (filterType === 'math-problems') {
+        apiExportType = 'math-problems';
+      }
+      const url = `${API_BASE_URL}/api/admin/lessons/export-pdf/${apiExportType}${params.toString() ? '?' + params.toString() : ''}`;
+      
+      // Fazer requisição para download do PDF
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      });
+      
+      // Tratar token expirado
+      if (response.status === 401) {
+        toast.dismiss('pdf-export');
+        return; // App.jsx já cuida da mensagem
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Erro ao gerar PDF' }));
+        throw new Error(errorData.error || 'Erro ao gerar PDF');
+      }
+      
+      // Criar blob e fazer download
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      // Tipo usado apenas no nome do arquivo (mais amigável)
+      let fileExportType = 'quiz';
+      if (filterType === 'budget-distribution') {
+        fileExportType = 'distribuicao-orcamento';
+      } else if (filterType === 'simulation') {
+        fileExportType = 'simulacao';
+      } else if (filterType === 'match') {
+        fileExportType = 'associacao-match';
+      } else if (filterType === 'drag-drop') {
+        fileExportType = 'arraste-solte';
+      } else if (filterType === 'goals') {
+        fileExportType = 'metas-financeiras';
+      } else if (filterType === 'math-problems') {
+        fileExportType = 'problemas-matematicos';
+      }
+      link.download = `licoes-${fileExportType}-${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+      
+      toast.success('PDF gerado e baixado com sucesso!', { id: 'pdf-export' });
+    } catch (error) {
+      toast.error(error.message || 'Erro ao exportar PDF', { id: 'pdf-export' });
+    }
+  };
+
   // Filtrar lições
   const filteredLessons = lessons.filter(lesson => {
     const matchesType = filterType === 'all' || lesson.type === filterType;
@@ -169,6 +251,12 @@ const LessonManager = () => {
         <button onClick={loadLessons} style={styles.refreshButton}>
           🔄 Atualizar
         </button>
+        
+        {(filterType === 'quiz' || filterType === 'budget-distribution' || filterType === 'simulation' || filterType === 'match' || filterType === 'drag-drop' || filterType === 'goals' || filterType === 'math-problems') && (
+          <button onClick={handleExportPDF} style={styles.exportButton}>
+            📄 Exportar PDF
+          </button>
+        )}
       </div>
 
       {/* Editor de Lição */}
@@ -256,6 +344,18 @@ const styles = {
   refreshButton: {
     padding: '8px 16px',
     background: 'linear-gradient(135deg, #EE9116 0%, #FFB300 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '600',
+    fontFamily: "'Nunito', sans-serif",
+    whiteSpace: 'nowrap'
+  },
+  exportButton: {
+    padding: '8px 16px',
+    background: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)',
     color: 'white',
     border: 'none',
     borderRadius: '6px',

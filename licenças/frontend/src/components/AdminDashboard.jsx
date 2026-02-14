@@ -32,7 +32,6 @@ const AdminDashboard = ({ adminUser, onLogout }) => {
         <div>
           <h1 style={{ ...styles.title, ...responsiveStyles.title }}>
             <span style={styles.logo}>YüFin</span>
-            <span style={{ ...styles.subtitleText, ...responsiveStyles.subtitleText }}> Geração Manual de Licenças</span>
           </h1>
           <p style={styles.subtitle}>Bem-vindo, {adminUser?.name || adminUser?.email}</p>
         </div>
