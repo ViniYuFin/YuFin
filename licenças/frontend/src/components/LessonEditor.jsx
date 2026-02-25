@@ -1357,56 +1357,87 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
   const currentPhase = phases[currentPhaseIndex] || {};
 
   const updatePhase = (phaseIndex, field, value) => {
-    const newPhases = [...phases];
-    newPhases[phaseIndex] = { ...newPhases[phaseIndex], [field]: value };
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentPhases = currentContent.phases || [];
+    const newPhases = currentPhases.map((phase, idx) => {
+      if (idx !== phaseIndex) return phase;
+      return { ...phase, [field]: value };
+    });
     updateField('content.phases', newPhases);
   };
 
-  const updateChoice = (phaseIndex, choiceIndex, field, value) => {
-    const newPhases = [...phases];
-    if (!newPhases[phaseIndex].choices) {
-      newPhases[phaseIndex].choices = [];
-    }
-    const newChoices = [...newPhases[phaseIndex].choices];
-    newChoices[choiceIndex] = { ...newChoices[choiceIndex], [field]: value };
-    newPhases[phaseIndex] = { ...newPhases[phaseIndex], choices: newChoices };
+  const updateChoice = (phaseIndex, choiceIndex, field, value, additionalFields = {}) => {
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentPhases = currentContent.phases || [];
+    const newPhases = currentPhases.map((phase, idx) => {
+      if (idx !== phaseIndex) return phase;
+      
+      const phaseCopy = { ...phase };
+      if (!phaseCopy.choices) {
+        phaseCopy.choices = [];
+      }
+      const newChoices = phaseCopy.choices.map((choice, cIdx) => {
+        if (cIdx !== choiceIndex) return choice;
+        return { ...choice, [field]: value, ...additionalFields };
+      });
+      phaseCopy.choices = newChoices;
+      return phaseCopy;
+    });
     updateField('content.phases', newPhases);
   };
 
   const addPhase = () => {
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentPhases = currentContent.phases || [];
     const newPhase = {
       title: 'Nova Fase',
       description: '',
       choices: []
     };
-    updateField('content.phases', [...phases, newPhase]);
+    updateField('content.phases', [...currentPhases, newPhase]);
   };
 
   const addChoice = (phaseIndex) => {
-    const newPhases = [...phases];
-    if (!newPhases[phaseIndex].choices) {
-      newPhases[phaseIndex].choices = [];
-    }
-    const newChoice = {
-      text: 'Nova Opção',
-      choice: 'Nova Opção',
-      correct: true,
-      feedback: 'Feedback da opção',
-      outcome: 'Feedback da opção'
-    };
-    newPhases[phaseIndex].choices = [...newPhases[phaseIndex].choices, newChoice];
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentPhases = currentContent.phases || [];
+    const newPhases = currentPhases.map((phase, idx) => {
+      if (idx !== phaseIndex) return phase;
+      const phaseCopy = { ...phase };
+      if (!phaseCopy.choices) {
+        phaseCopy.choices = [];
+      }
+      const newChoice = {
+        text: 'Nova Opção',
+        choice: 'Nova Opção',
+        correct: true,
+        feedback: 'Feedback da opção',
+        outcome: 'Feedback da opção'
+      };
+      phaseCopy.choices = [...phaseCopy.choices, newChoice];
+      return phaseCopy;
+    });
     updateField('content.phases', newPhases);
   };
 
-  const updateOption = (optionIndex, field, value) => {
-    const options = content.options || [];
-    const newOptions = [...options];
-    newOptions[optionIndex] = { ...newOptions[optionIndex], [field]: value };
+  const updateOption = (optionIndex, field, value, additionalFields = {}) => {
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentOptions = currentContent.options || [];
+    const newOptions = currentOptions.map((option, idx) => {
+      if (idx !== optionIndex) return option;
+      return { ...option, [field]: value, ...additionalFields };
+    });
     updateField('content.options', newOptions);
   };
 
   const addOption = () => {
-    const options = content.options || [];
+    // Usar o estado atualizado do lesson para garantir que temos os dados mais recentes
+    const currentContent = lesson.content || {};
+    const currentOptions = currentContent.options || [];
     const newOption = {
       choice: 'Nova Opção',
       text: 'Nova Opção',
@@ -1414,7 +1445,7 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
       feedback: '',
       outcome: ''
     };
-    updateField('content.options', [...options, newOption]);
+    updateField('content.options', [...currentOptions, newOption]);
   };
 
   return (
@@ -1529,8 +1560,7 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
                         value={choice.text || choice.choice || ''}
                         onChange={(e) => {
                           const value = e.target.value;
-                          updateChoice(pIndex, cIndex, 'text', value);
-                          updateChoice(pIndex, cIndex, 'choice', value);
+                          updateChoice(pIndex, cIndex, 'text', value, { choice: value });
                         }}
                         style={styles.adjustmentInput}
                         placeholder="Texto da opção"
@@ -1548,8 +1578,7 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
                         value={choice.feedback || choice.outcome || ''}
                         onChange={(e) => {
                           const value = e.target.value;
-                          updateChoice(pIndex, cIndex, 'feedback', value);
-                          updateChoice(pIndex, cIndex, 'outcome', value);
+                          updateChoice(pIndex, cIndex, 'feedback', value, { outcome: value });
                         }}
                         style={styles.adjustmentInput}
                         placeholder="Feedback da opção"
@@ -1612,8 +1641,7 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
                     value={option.choice || option.text || ''}
                     onChange={(e) => {
                       const value = e.target.value;
-                      updateOption(oIndex, 'choice', value);
-                      updateOption(oIndex, 'text', value);
+                      updateOption(oIndex, 'choice', value, { text: value });
                     }}
                     style={styles.input}
                     placeholder="Texto da opção"
@@ -1633,8 +1661,7 @@ const EditableSimulationLesson = ({ lesson, updateField }) => {
                     value={option.feedback || option.outcome || ''}
                     onChange={(e) => {
                       const value = e.target.value;
-                      updateOption(oIndex, 'feedback', value);
-                      updateOption(oIndex, 'outcome', value);
+                      updateOption(oIndex, 'feedback', value, { outcome: value });
                     }}
                     style={styles.textarea}
                     rows={2}

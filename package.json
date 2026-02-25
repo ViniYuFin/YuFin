@@ -15,6 +15,9 @@
     "test:token": "node test-token-refresh.js"
   },
   "dependencies": {
+    "@capacitor/android": "^8.1.0",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^8.1.0",
     "axios": "^1.11.0",
     "framer-motion": "^10.16.4",
     "lucide-react": "^0.525.0",

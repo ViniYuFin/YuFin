@@ -87,49 +87,63 @@ app.use(securityLogger);         // Logger de eventos suspeitos
 
 // Middleware CORS melhorado e restrito
 app.use((req, res, next) => {
-  console.log('🔍 Request:', req.method, req.path, 'from origin:', req.headers.origin);
-  
+  const origin = req.headers.origin;
+  console.log('🔍 Request:', req.method, req.path, 'from origin:', origin);
+
   const allowedOrigins = [
     'https://yufin.com.br',
     'https://www.yufin.com.br',
     'https://app.yufin.com.br',
     'https://validacao.yufin.com.br',
-    'https://licencas.yufin.com.br', // Frontend de geração de licenças (produção)
+    'https://licencas.yufin.com.br',
     'https://yufin-frontend.vercel.app',
     'https://yufin-backend.vercel.app',
     'https://yufin-deploy.vercel.app',
-  'https://yufin-landing.vercel.app',
-  'https://yufin-landing-bbaweogrp-vinicius-assuncaos-projects-ffa185b9.vercel.app',
-  'https://yufin-landing-856q5gemc-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    'https://yufin-landing.vercel.app',
+    'https://yufin-landing-bbaweogrp-vinicius-assuncaos-projects-ffa185b9.vercel.app',
+    'https://yufin-landing-856q5gemc-vinicius-assuncaos-projects-ffa185b9.vercel.app',
     'https://yufin-deploy-hngkufy5x-vinicius-assuncaos-projects-ffa185b9.vercel.app',
-    // Frontend de geração de licenças - Vercel
     'https://yufin-licencas.vercel.app',
-    // Adicionar domínios temporários do Vercel que aparecem nos logs
     'https://yufin-backend-705bjj13-vinicius-assuncaos-projects-ffa185b9.vercel.app',
     'https://yufin-backend-1tgubu2id-vinicius-assuncaos-projects-ffa185b9.vercel.app',
-    // MERCADO PAGO - Webhooks
     'https://api.mercadopago.com',
     'https://mercadopago.com',
     'https://www.mercadopago.com',
     'http://localhost:5173',
-    'http://localhost:5174', // Frontend de geração de licenças (desenvolvimento)
+    'http://localhost:5174',
     'http://localhost:3000',
-    'http://localhost:3001'
+    'http://localhost:3001',
+    // App Android/iOS (Capacitor) – várias formas que o WebView pode enviar
+    'capacitor://localhost',
+    'capacitor://android',
+    'https://localhost',
+    'https://localhost/',
+    'https://localhost:443',
+    'http://localhost',
+    'http://localhost/',
+    'http://localhost:8080',
+    'http://localhost:8081'
   ];
-  
-  const origin = req.headers.origin;
-  
-  // Apenas permitir origins na whitelist
+
+  const isAppOrigin = origin && (
+    origin.startsWith('capacitor://') ||
+    origin === 'https://localhost' ||
+    origin === 'https://localhost/' ||
+    origin.startsWith('https://localhost:') ||
+    (origin.startsWith('http://localhost') && !origin.includes('5173') && !origin.includes('5174') && !origin.includes('3000') && !origin.includes('3001'))
+  );
+
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
-    console.log('✅ CORS: Origin allowed:', origin);
+    console.log('✅ CORS: Origin allowed (list):', origin);
+  } else if (isAppOrigin) {
+    res.header('Access-Control-Allow-Origin', origin);
+    console.log('✅ CORS: Origin allowed (app):', origin);
   } else if (!origin || origin === 'null') {
-    // Permitir origin null/undefined (arquivos locais, file://)
     res.header('Access-Control-Allow-Origin', '*');
-    console.log('⚠️  CORS: Allowing null/undefined origin - Origin:', origin);
+    console.log('⚠️  CORS: Allowing null/undefined origin');
   } else {
     console.log('❌ CORS: Origin blocked:', origin);
-    // Não bloquear completamente, mas não adicionar header
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');

@@ -1,7 +1,5 @@
 import { getApiUrl } from '../config/environment';
 
-const API_URL = getApiUrl();
-
 // ============================================
 // 🔄 SISTEMA DE RENOVAÇÃO DE TOKEN CENTRALIZADO
 // ============================================
@@ -36,7 +34,7 @@ const refreshToken = async () => {
   }
 
   try {
-    const refreshRes = await fetch(`${API_URL}/token/refresh`, {
+    const refreshRes = await fetch(`${getApiUrl()}/token/refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken: refreshTokenValue })
@@ -166,7 +164,7 @@ export async function apiGet(path) {
     headers.Authorization = `Bearer ${token}`;
   }
   
-  const res = await executeRequestWithRetry(`${API_URL}${path}`, { headers });
+  const res = await executeRequestWithRetry(`${getApiUrl()}${path}`, { headers });
   
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({ error: 'Erro desconhecido' }));
@@ -184,7 +182,7 @@ export async function apiGet(path) {
 }
 
 export async function apiPost(path, body) {
-  console.log('🌐 [API DEBUG] Fazendo POST para:', `${API_URL}${path}`);
+  console.log('🌐 [API DEBUG] Fazendo POST para:', `${getApiUrl()}${path}`);
   console.log('🌐 [API DEBUG] Body:', body);
   
   const token = localStorage.getItem('authToken') || localStorage.getItem('accessToken');
@@ -196,7 +194,7 @@ export async function apiPost(path, body) {
     headers.Authorization = `Bearer ${token}`;
   }
   
-  const res = await executeRequestWithRetry(`${API_URL}${path}`, {
+  const res = await executeRequestWithRetry(`${getApiUrl()}${path}`, {
     method: 'POST',
     headers,
     body: JSON.stringify(body)
@@ -246,7 +244,7 @@ export async function apiPatch(path, body) {
     headers.Authorization = `Bearer ${token}`;
   }
   
-  const res = await executeRequestWithRetry(`${API_URL}${path}`, {
+  const res = await executeRequestWithRetry(`${getApiUrl()}${path}`, {
     method: 'PATCH',
     headers,
     body: JSON.stringify(body)
@@ -277,7 +275,7 @@ export async function apiPut(path, body) {
     headers.Authorization = `Bearer ${token}`;
   }
   
-  const res = await executeRequestWithRetry(`${API_URL}${path}`, {
+  const res = await executeRequestWithRetry(`${getApiUrl()}${path}`, {
     method: 'PUT',
     headers,
     body: JSON.stringify(body)
@@ -308,7 +306,7 @@ export async function apiDelete(path) {
     headers.Authorization = `Bearer ${token}`;
   }
   
-  const res = await executeRequestWithRetry(`${API_URL}${path}`, {
+  const res = await executeRequestWithRetry(`${getApiUrl()}${path}`, {
     method: 'DELETE',
     headers
   });

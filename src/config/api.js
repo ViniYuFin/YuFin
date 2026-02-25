@@ -2,8 +2,10 @@
 import { getApiUrl } from './environment';
 
 const API_CONFIG = {
-  // URL base do backend (automática baseada no ambiente)
-  BASE_URL: getApiUrl(),
+  // URL base (getter: reavaliado a cada acesso, importante no app Capacitor)
+  get BASE_URL() {
+    return getApiUrl();
+  },
   
   // URLs das rotas de autenticação
   AUTH: {

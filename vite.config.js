@@ -14,7 +14,17 @@ export default defineConfig({
     outDir: 'dist',
     assetsDir: 'assets',
     sourcemap: false,
-    minify: 'terser'
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        // Nome fixo do CSS para o link em index.html (dist/assets/index-Cn_c219N.css) continuar válido após cada build
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.name || '';
+          if (name.endsWith('.css')) return 'assets/index-Cn_c219N.css';
+          return 'assets/[name]-[hash][extname]';
+        }
+      }
+    }
   },
   server: {
     port: 5173,

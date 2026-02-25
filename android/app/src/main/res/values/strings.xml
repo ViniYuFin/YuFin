@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">YüFin</string>
+    <string name="title_activity_main">YüFin</string>
+    <string name="package_name">com.yufin.app</string>
+    <string name="custom_url_scheme">com.yufin.app</string>
+</resources>
