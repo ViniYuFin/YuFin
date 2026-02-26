@@ -242,6 +242,7 @@ class AuthModals {
 
   // Mostrar modal de login
   showLoginModal() {
+    this.closeRegisterModal();
     console.log('🔍 Tentando mostrar modal de login...');
     const modal = document.getElementById('loginModal');
     console.log('🔍 Modal encontrado:', modal);

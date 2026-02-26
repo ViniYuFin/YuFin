@@ -480,7 +480,7 @@ class LandingAuth {
             Histórico de Pagamentos
           </a>
         </div>
-        <a href="mailto:contato.yufin@gmail.com?subject=Suporte YüFin&body=Olá, tenho uma dúvida sobre:" class="sidebar-nav-item" onclick="landingAuth.closeSidebar();">
+        <a href="mailto:contato@yufin.com.br?subject=Suporte YüFin&body=Olá, tenho uma dúvida sobre:" class="sidebar-nav-item" onclick="landingAuth.closeSidebar();">
           Suporte
         </a>
       </nav>
